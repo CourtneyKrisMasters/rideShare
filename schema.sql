@@ -102,17 +102,17 @@ create table if not exists "Vehicle"
 	color varchar not null,
 	vehicletypeid integer not null
 		constraint "Vehicle_vehicletypeid_fkey"
-			references "Vehicle Type",
+			references "VehicleType",
 	capacity integer not null,
 	mpg double precision not null,
 	licensestate varchar not null,
 	licensenumber varchar not null
 );
 
-create table if not exists "Vehicle Type"
+create table if not exists "VehicleType"
 (
 	id integer not null
-		constraint "Vehicle Type_pkey"
+		constraint "VehicleType_pkey"
 			primary key,
 	type varchar not null
 );
