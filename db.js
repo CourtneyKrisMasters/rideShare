@@ -1,3 +1,12 @@
+const { Driver } = require("./Driver");
+const { Location } = require("./Location");
+const { Passenger } = require("./Passenger");
+const { Ride } = require("./Ride");
+const { rideShare } = require("./rideShare");
+const { State } = require("./State");
+const { Vehicle } = require("./Vehicle");
+const { VehicleType } = require("./VehicleType");
+
 // Configure Knex.
 const knex = require("knex")({
     client: "pg",
