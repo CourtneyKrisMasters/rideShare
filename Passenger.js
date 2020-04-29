@@ -2,7 +2,7 @@ const { Model } = require('objection');
 
 class Passenger extends Model {
     static get tableName() {
-        return 'passenger';
+        return 'Passenger';
     }
 
     static get idColumn() {
@@ -17,13 +17,13 @@ class Passenger extends Model {
                 relation: Model.ManyToManyRelation,
                 modelClass: __dirname + "/Ride",
                 join: {
-                    from: 'passenger.id',
+                    from: 'Passenger.id',
                     through: {
                         //passengers is the join table
-                        from: 'passengers.passengerId',
-                        to: 'passengers.rideId'
+                        from: 'Passengers.passengerId',
+                        to: 'Passengers.rideId'
                     },
-                    to: 'ride.id'
+                    to: 'Ride.id'
                 }
             }
         }

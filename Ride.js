@@ -2,7 +2,7 @@ const { Model } = require('objection');
 
 class Ride extends Model {
     static get tableName() {
-        return 'ride';
+        return 'Ride';
     }
 
     static get idColumn() {
@@ -19,12 +19,12 @@ class Ride extends Model {
                 relation: Model.BelongsToOneRelation,
                 modelClass: __dirname + "/Location",
                 join: {
-                    from: 'ride.fromLocationId',
-                    to: 'location.id'
+                    from: 'Ride.fromLocationId',
+                    to: 'Location.id'
                 },
                 join :{
-                    from: 'ride.toLocationId',
-                    to: 'location.id'
+                    from: 'Ride.toLocationId',
+                    to: 'Location.id'
                 }
             },
 
@@ -32,13 +32,13 @@ class Ride extends Model {
                 relation: Model.ManyToManyRelation,
                 modelClass: __dirname + "/Passenger",
                 join: {
-                    from: 'ride.id',
+                    from: 'Ride.id',
                     through: {
                         //passengers is the join table
-                        from: 'passengers.rideId',
-                        to: 'passengers.passengerId'
+                        from: 'Passengers.rideId',
+                        to: 'Passengers.passengerId'
                     },
-                    to: 'passenger.id'
+                    to: 'Passenger.id'
                 }
             },
 
@@ -46,13 +46,13 @@ class Ride extends Model {
                 relation: Model.ManyToManyRelation,
                 modelClass: __dirname + "/Driver",
                 join: {
-                    from: 'ride.id',
+                    from: 'Ride.id',
                     through: {
                         //drivers is the join table
-                        from: 'drivers.rideId',
-                        to: 'drivers.driverId'
+                        from: 'Drivers.rideId',
+                        to: 'Drivers.driverId'
                     },
-                    to: 'driver.id'
+                    to: 'Driver.id'
                 }
             },
 
@@ -60,8 +60,8 @@ class Ride extends Model {
                 relation: Model.BelongsToOneRelation,
                 modelClass: __dirname + "/Vehicle",
                 join: {
-                    from: 'ride.vehicleId',
-                    to: 'vehicle.id'
+                    from: 'Ride.vehicleId',
+                    to: 'Vehicle.id'
                 },
             }
         }

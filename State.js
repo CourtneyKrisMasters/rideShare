@@ -2,7 +2,7 @@ const { Model } = require('objection');
 
 class State extends Model {
     static get tableName() {
-        return 'state';
+        return 'State';
     }
 
     static get idColumn() {
@@ -26,8 +26,8 @@ class State extends Model {
                 relation: Model.HasManyRelation,
                 modelClass: __dirname + "/Location",
                 join: {
-                    from: 'state.abbreviation',
-                    to: 'location.state'
+                    from: 'State.abbreviation',
+                    to: 'Location.state'
                 }
             }
         }

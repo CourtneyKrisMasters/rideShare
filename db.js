@@ -1,23 +1,25 @@
-const { Driver } = require("./Driver");
-const { Location } = require("./Location");
-const { Passenger } = require("./Passenger");
-const { Ride } = require("./Ride");
-const { rideShare } = require("./rideShare");
-const { State } = require("./State");
-const { Vehicle } = require("./Vehicle");
-const { VehicleType } = require("./VehicleType");
+//import models
+
+const { Driver } = require("./Driver.js");
+const { Location } = require("./Location.js");
+const { Passenger } = require("./Passenger.js");
+const { Ride } = require("./Ride.js");
+const { State } = require("./State.js");
+const { Vehicle } = require("./Vehicle.js");
+const { VehicleType } = require("./VehicleType.js");
 
 // Configure Knex.
+//We just chose to connect to Julia's personal database - let us know if this is not okay
 const knex = require("knex")({
     client: "pg",
     connection: {
-    host: 'faraday.cse.taylor.edu',
-    user: 'readonly',
-    password: 'vijivali',
-    database: "julia_hofmeister",
-    },
+        host: 'faraday.cse.taylor.edu',
+        user: 'readonly',
+        password: 'vijivali',
+        database: "julia_hofmeister",
+        },
     });
     
-    // Configure Objection.
-    const { Model } = require("objection");
-    Model.knex(knex);
+// Configure Objection.
+const { Model } = require("objection");
+Model.knex(knex);
