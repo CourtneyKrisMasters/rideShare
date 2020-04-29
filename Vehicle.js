@@ -11,9 +11,6 @@ class Vehicle extends Model {
 
     
     static get relationMappings() {
-        const Driver = require('./Driver');
-        const Ride = require('./Ride');
-        const Vehicle_Type = require('./Vehicle_Type');
         return {
             drivers: {
                 relation: Model.ManyToManyRelation,

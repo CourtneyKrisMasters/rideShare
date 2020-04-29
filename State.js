@@ -20,7 +20,6 @@ class State extends Model {
     */
     
     static get relationMappings() {
-        const Location = require('./Location');
         return {
             locations: {
                 relation: Model.HasManyRelation,

@@ -11,7 +11,6 @@ class Passenger extends Model {
 
     
     static get relationMappings() {
-        const Ride = require('./Ride');
         return {
             rides: {
                 relation: Model.ManyToManyRelation,

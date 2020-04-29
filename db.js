@@ -14,7 +14,7 @@ const knex = require("knex")({
     client: "pg",
     connection: {
         host: 'faraday.cse.taylor.edu',
-        user: 'readonly',
+        user: 'julia_hofmeister',
         password: 'vijivali',
         database: "julia_hofmeister",
         },

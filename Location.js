@@ -20,8 +20,6 @@ class Location extends Model {
     */
     
     static get relationMappings() {
-        const State = require('./State');
-        const Ride = require('./Ride');
         return {
             states: {
                 relation: Model.BelongsToOneRelation,

@@ -10,10 +10,6 @@ class Ride extends Model {
     }
     
     static get relationMappings() {
-        const Location = require('./Location');
-        const Passenger = require('./Passenger');
-        const Driver = require('./Driver');
-        const Vehicle = require('./Vehicle');
         return {
             locations: {
                 relation: Model.BelongsToOneRelation,
