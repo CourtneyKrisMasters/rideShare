@@ -2,7 +2,7 @@ const { Model } = require('objection');
 
 class Driver extends Model {
     static get tableName() {
-        return 'driver';
+        return 'Driver';
     }
 
     static get idColumn() {
@@ -11,20 +11,18 @@ class Driver extends Model {
 
     
     static get relationMappings() {
-        const Ride = require('./Ride');
-        const Vehicle = require('./Vehicle');
         return {
             rides: {
                 relation: Model.ManyToManyRelation,
                 modelClass: __dirname + "/Ride",
                 join: {
-                    from: 'driver.id',
+                    from: 'Driver.id',
                     through: {
                         //drivers is the join table
-                        from: 'drivers.driverId',
-                        to: 'drivers.rideId'
+                        from: 'Drivers.driverId',
+                        to: 'Drivers.rideId'
                     },
-                    to: 'ride.id'
+                    to: 'Ride.id'
                 }
             },
 
@@ -32,13 +30,13 @@ class Driver extends Model {
                 relation: Model.ManyToManyRelation,
                 modelClass: __dirname + "/Vehicle",
                 join: {
-                    from: 'driver.id',
+                    from: 'Driver.id',
                     through: {
                         //authorization is the join table
-                        from: 'authorization.driverId',
-                        to: 'authorization.vehicleId'
+                        from: 'Authorization.driverId',
+                        to: 'Authorization.vehicleId'
                     },
-                    to: 'vehicle.id'
+                    to: 'Vehicle.id'
                 }
             }
         }
