@@ -8,6 +8,16 @@ create table if not exists "Authorization"
 			references "Vehicle"
 );
 
+create table "Admin"
+(
+    id         integer not null
+        constraint "Admin_pkey"
+            primary key,
+    first_name varchar not null,
+    last_name  varchar not null,
+    phone      varchar not null
+);
+
 create table if not exists "Drivers"
 (
 	driverid integer not null
