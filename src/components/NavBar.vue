@@ -2,19 +2,21 @@
   <v-app-bar app dark color="primary">
     <router-link v-bind:to="{ name: 'home-page' }">
       <v-toolbar-title class="white--text">
-        Hello, this is the Three Musketeer's app!
+        Ride Share
       </v-toolbar-title>
     </router-link>
 
     <v-spacer></v-spacer>
 
-    <v-btn v-if="!isLoggedIn" text v-bind:to="{ name: 'sign-up' }">
-      Sign Up
+    <v-btn text v-bind:to="{ name: 'admin' }">
+      Admin
     </v-btn>
-    <v-btn v-if="!isLoggedIn" text v-bind:to="{ name: 'sign-in' }">
-      Sign In
+    <v-btn text v-bind:to="{ name: 'driver' }">
+      Driver
     </v-btn>
-    <v-btn text v-bind:to="{ name: 'about-us' }">About Us</v-btn>
+    <v-btn text v-bind:to="{ name: 'passenger' }">
+      Passenger
+    </v-btn>
 
     <v-menu v-if="isLoggedIn" offset-y>
       <template v-slot:activator="{ on }">
