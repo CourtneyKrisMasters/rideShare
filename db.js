@@ -20,6 +20,16 @@ const knex = require("knex")({
         },
     });
     
+<<<<<<< HEAD
+    // Configure Objection.
+    const { Model } = require("objection");
+    Model.knex(knex);
+
+    
+    // add and update a vehicle
+    
+=======
 // Configure Objection.
 const { Model } = require("objection");
 Model.knex(knex);
+>>>>>>> 50d2e4aa286b7f2fb49f58f2f4f4b2b691707ee3
