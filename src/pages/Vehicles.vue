@@ -97,13 +97,13 @@
 
 
 <script>
-import Instructions from "../components/Instructions.vue";
+// import Instructions from "../components/Instructions.vue";
 
 export default {
   name: "ResetPasswordPage",
-  components: {
-    Instructions, // Use the Instructions component we just imported
-  },
+  // components: {
+  //   Instructions, // Use the Instructions component we just imported
+  // },
   data: function () {
     return {
       valid: false, // Are all the fields in the form valid?
