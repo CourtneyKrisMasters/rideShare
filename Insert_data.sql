@@ -18,6 +18,7 @@ VALUES (2, 'Scrappy', 'Doo', '111-222-3333');
 --insert state information to State table--
 -- Nurk suggests using these to put in a drop down for people to choose from
 -- that means we should never have to add to the State table after this initial insert
+-- Do we think this will be easiest??
 INSERT INTO "State"(abbreviation, name)
 VALUES('AL','Alabama');
 
