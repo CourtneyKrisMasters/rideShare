@@ -132,19 +132,16 @@ export default {
       // containing an error message indicating why the field doesn't pass validation.
       rules: {
         required: [(val) => val.length > 0 || "Required"],
-        email: [
-          (val) => /\w{3,}@\w{3,}(?:.\w{3,})+$/.test(val) || "Invalid e-mail",
-        ],
-        password: [
-          (val) => /[A-Z]/.test(val) || "Need upper case letter",
-          (val) => /[a-z]/.test(val) || "Need lower case letter",
-          (val) => /\d/.test(val) || "Need digit",
-          (val) => val.length >= 8 || "Minimum 8 characters",
-        ],
-        matchingPassword: [
-            (val) => val == this.memberResetInfo.newPassword || "Does not match",  //not sure if this is the correct code, Maybe try this.newPassword
-        ],
       },
+      vehicleTypeId: [
+        (val) => /^[0-9]*$/.test(val) || "Requires digits",
+      ],
+      capacity: [
+        (val) => /^[0-9]*$/.test(val) || "Requires digits",
+      ],
+      mpg: [
+        (val) => /[+-]?([0-9]*[.])?[0-9]+/.test(val) || "Requires a decimal number",
+      ],
     };
   },
   methods: {
