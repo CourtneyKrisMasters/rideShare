@@ -24,7 +24,7 @@
                 v-model="memberResetInfo.color"
                 v-bind:rules="rules.color"
                 error-count="10"
-                type="color"
+                type="color-text"
                 label="Color"
                 required
                 ></v-text-field>
