@@ -68,7 +68,7 @@ export default {
         date: account.date,
         time: account.time,
         fromLocation: account.fromLocation,
-        toLocation: account.toLocation
+        toLocationgit : account.toLocation
       }));
     });
   },
