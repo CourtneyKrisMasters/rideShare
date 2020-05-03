@@ -65,10 +65,10 @@ export default {
   mounted: function() {
     this.$axios.get("/accounts").then(response => {
       this.accounts = response.data.map(account => ({
-        id: account.date,
-        email: account.time,
-        firstName: account.fromLocation,
-        lastName: account.toLocation
+        date: account.date,
+        time: account.time,
+        fromLocation: account.fromLocation,
+        toLocation: account.toLocation
       }));
     });
   },
