@@ -6,14 +6,14 @@
         <h4 class="display-1">Add a vehicle</h4> <!-- make, model, color, vehicleTypeId(int), capacity(int), mpg(float), license state, liscence number -->
           <v-form v-model="valid">
                 <v-text-field
-                v-model="memberResetInfo.make"  
+                v-model="vehicleInfo.make"  
                 v-bind:rules="rules.make"
                 error-count="10"
                 type="make"
                 label="Make"
                 ></v-text-field>
                 <v-text-field
-                v-model="memberResetInfo.model"
+                v-model="vehicleInfo.model"
                 v-bind:rules="rules.model"
                 error-count="10"
                 type="model"
@@ -21,7 +21,7 @@
                 required
                 ></v-text-field>
                 <v-text-field
-                v-model="memberResetInfo.color"
+                v-model="vehicleInfo.color"
                 v-bind:rules="rules.color"
                 error-count="10"
                 type="color-text"
@@ -29,7 +29,7 @@
                 required
                 ></v-text-field>
                 <v-text-field
-                v-model="memberResetInfo.vehicleTypeId"
+                v-model="vehicleInfo.vehicleTypeId"
                 v-bind:rules="rules.vehicleTypeId"
                 error-count="10"
                 type="vehicleTypeId"
@@ -37,14 +37,14 @@
                 required
                 ></v-text-field>
                 <v-text-field
-                v-model="memberResetInfo.capacity"  
+                v-model="vehicleInfo.capacity"  
                 v-bind:rules="rules.capacity"
                 error-count="10"
                 type="capacity"
                 label="How many people can it hold?"
                 ></v-text-field>
                 <v-text-field
-                v-model="memberResetInfo.mpg"
+                v-model="vehicleInfo.mpg"
                 v-bind:rules="rules.mpg"
                 error-count="10"
                 type="mpg"
@@ -52,7 +52,7 @@
                 required
                 ></v-text-field>
                 <v-text-field
-                v-model="memberResetInfo.licenseState"
+                v-model="vehicleInfo.licenseState"
                 v-bind:rules="rules.licenseState"
                 error-count="10"
                 type="licenseState"
@@ -60,14 +60,14 @@
                 required
                 ></v-text-field>
                 <v-text-field
-                v-model="memberResetInfo.licenseNumber"
+                v-model="vehicleInfo.licenseNumber"
                 v-bind:rules="rules.licenseNumber"
                 error-count="10"
                 type="licenseNumber"
                 label="License Number"
                 required
                 ></v-text-field>
-            <v-btn v-bind:disabled="!valid" v-on:click="handleReset"
+            <v-btn v-bind:disabled="!valid" v-on:click="addVehicle"
               >Add Vehicle
             </v-btn>
           </v-form>
@@ -100,7 +100,7 @@
 // import Instructions from "../components/Instructions.vue";
 
 export default {
-  name: "ResetPasswordPage",
+  name: "AddVehiclePage",
   // components: {
   //   Instructions, // Use the Instructions component we just imported
   // },
@@ -109,15 +109,19 @@ export default {
       valid: false, // Are all the fields in the form valid?
 
       // Object to collect account data
-      memberResetInfo: {
-        email: "",
-        password: "",
-        newPassword: "",
-        confirmedPassword: "",
+      vehicleInfo: {
+        make: "",
+        model: "",
+        color: "",
+        vehicleTypeId: "",
+        capacity: "",
+        mpg: "",
+        licenseState: "",
+        licenseNumber: "",
       },
 
       // Was the account reset successfully?
-      accountReset: false,
+      vehicleAdd: false,
 
       // Data to be displayed by the dialog.
       dialogHeader: "<no dialogHeader>",
@@ -146,24 +150,29 @@ export default {
   },
   methods: {
     // Invoked when the user clicks the 'Reset Password' button.
-    handleReset: function () {
+    addVehicle: function () {
       // Haven't been successful yet.
-      this.accountReset = false;
+      this.vehicleAdd = false;
 
       // Patch the content of the form to the Hapi server.
       this.$axios
-        .patch("/reset-password", {
+        .post("/accounts", {
           //password: this.newPassword,
-          email: this.memberResetInfo.email,
-          password: this.memberResetInfo.password,
-          newPassword: this.memberResetInfo.newPassword
+          make: this.vehicleInfo.make,
+          model: this.vehicleInfo.model,
+          color: this.vehicleInfo.color,
+          vehicleTypeId: this.vehicleInfo.vehicleTypeId,
+          capacity: this.vehicleInfo.capacity,
+          mpg: this.vehicleInfo.mpg,
+          licenseState: this.vehicleInfo.licenseState,
+          licenseNumber: this.vehicleInfo.licenseNumber,
         })
         .then((result) => {
           // Based on whether things worked or not, show the
           // appropriate dialog.
           if (result.data.ok) {
             this.showDialog("Success", result.data.msge);
-            this.accountReset = true;
+            this.vehicleAdd = true;
           } else {
             this.showDialog("Sorry", result.data.msge);
           }
@@ -182,9 +191,9 @@ export default {
     // and navigate to the home page.
     hideDialog: function () {
       this.dialogVisible = false;
-      if (this.accountReset) {
+      if (this.vehicleAdd) {
         // Only navigate away from the reset page if we were successful.
-        this.$router.push({ name: "home-page" });
+        this.$router.push({ name: "admin" });
       }
     },
   },

@@ -1,9 +1,8 @@
 <template>
   <v-container>
     <div>
-      <h4 class="display-1">Welcome, Single-Page App User</h4>
+      <h4 class="display-1">Admin</h4>
 
-      <p class="body-1">This is the admin page.</p>
           <v-btn  text v-bind:to="{ name: 'vehicles' }">
             Add or Update Vehicles
           </v-btn>
