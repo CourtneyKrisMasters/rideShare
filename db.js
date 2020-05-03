@@ -23,3 +23,45 @@ const knex = require("knex")({
 // Configure Objection.
 const { Model } = require("objection");
 Model.knex(knex);
+
+// Hapi
+const Joi = require("@hapi/joi"); // Input validation
+const Hapi = require("@hapi/hapi"); // Server
+
+const server = Hapi.server({
+  host: "localhost",
+  port: 3000,
+  routes: {
+    cors: true,
+  },
+});
+
+async function init() {
+  // Show routes at startup.
+  await server.register(require("blipp"));
+
+  // Output logging information.
+  await server.register({
+    plugin: require("hapi-pino"),
+    options: {
+      prettyPrint: true,
+    },
+  });
+}
+
+// Configure routes.
+server.route([
+    {
+        method: "GET",
+        path: "/admin",
+        config: {
+          description: "Retrieve all accounts",
+        },
+        handler: (request, h) => {
+          return Ride.query();
+        },
+    },
+])
+
+// Go!
+init();
