@@ -65,25 +65,19 @@ async function init() {
 server.route([
     {
         method: "GET",
-        path: "/rides",
+        path: "/admin",
         config: {
           description: "Retrieve all current rides",
         },
         handler: async (request, h) => {
           const rideInfo = await Ride.query()
-          .select("Ride.*", "FromLocation.city AS fromcity", "ToLocation.city AS tocity",
-                   "FromState.name AS fromstate", "ToState.name AS tostate", "Vehicle.licensenumber AS vehicleid")
-          //how do we do this with the .withGraphFetched?? 
-          .innerJoin('Location AS FromLocation', 'Ride.fromlocationid', 'FromLocation.id')
-          .innerJoin('Location AS ToLocation', 'Ride.tolocationid', 'ToLocation.id')
-          .innerJoin('State AS FromState', 'FromLocation.state', 'FromState.abbreviation')
-          .innerJoin('State AS ToState', 'ToLocation.state', 'ToState.abbreviation')
-          .innerJoin('Vehicle', 'Ride.vehicleid', 'Vehicle.id')
-
-          //how to we get the first and last names from each passenger and driver after using the .withGraphFetched?
+          .select()
+          .withGraphFetched('fromlocations.states')
+          .withGraphFetched('tolocations.states')
+          .withGraphFetched('vehicles')
           .withGraphFetched('passengers')
           .withGraphFetched('drivers');
-          return rideInfo;
+          return rideInfo; 
     }
   }
 ])

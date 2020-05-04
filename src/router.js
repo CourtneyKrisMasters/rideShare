@@ -16,7 +16,7 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     { name: "home-page", path: "/", component: Home },
-    { name: "admin", path: "/admin", component: Admin },
+    { name: "admin", path: "/admin", component: Admin, Rides },
     { name: "driver", path: "/driver", component: Driver },
     { name: "passenger", path: "/passenger", component: Passenger },
     { name: "accounts", path: "/accounts", component: Accounts },

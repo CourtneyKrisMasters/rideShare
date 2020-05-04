@@ -11,19 +11,22 @@ class Ride extends Model {
     
     static get relationMappings() {
         return {
-            locations: {
+            fromlocations: {
                 relation: Model.BelongsToOneRelation,
                 modelClass: __dirname + "/Location",
                 join: {
                     from: 'Ride.fromlocationid',
                     to: 'Location.id'
-                },
+                }   
+            },
+            tolocations: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: __dirname + "/Location",
                 join :{
                     from: 'Ride.tolocationid',
                     to: 'Location.id'
                 }
             },
-
             passengers: {
                 relation: Model.ManyToManyRelation,
                 modelClass: __dirname + "/Passenger",

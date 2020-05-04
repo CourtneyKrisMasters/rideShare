@@ -78,14 +78,18 @@ export default {
         distance: ride.distance + " mi",
         fuelprice: "$" + ride.fuelprice,
         fee: "$" + ride.fee,
-        vehicleid: ride.vehicleid,
-        fromlocation: ride.fromcity + ", " + ride.fromstate,
-        tolocation: ride.tocity +", " + ride.tostate,
-        passengers: ride.passengers,
-        drivers: ride.drivers 
+        vehicleid: ride.vehicles.licensenumber
+        ,
+        fromlocation: ride.fromlocations.city + ", " + ride.fromlocations.states.name,
+        tolocation: ride.tolocations.city +", " + ride.tolocations.states.name,
+        passengers: ride.passengers.firstname + " " + ride.passengers.lastname,
+        drivers: ride.drivers.firstname + " " + ride.drivers.lastname
+        
       }));
     });
     console.log(this.rides.date);
+    
+
      
   },
   methods: {
