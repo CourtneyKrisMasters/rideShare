@@ -15,11 +15,11 @@ class Ride extends Model {
                 relation: Model.BelongsToOneRelation,
                 modelClass: __dirname + "/Location",
                 join: {
-                    from: 'Ride.fromLocationId',
+                    from: 'Ride.fromlocationid',
                     to: 'Location.id'
                 },
                 join :{
-                    from: 'Ride.toLocationId',
+                    from: 'Ride.tolocationid',
                     to: 'Location.id'
                 }
             },
@@ -31,8 +31,8 @@ class Ride extends Model {
                     from: 'Ride.id',
                     through: {
                         //passengers is the join table
-                        from: 'Passengers.rideId',
-                        to: 'Passengers.passengerId'
+                        from: 'Passengers.rideid',
+                        to: 'Passengers.passengerid'
                     },
                     to: 'Passenger.id'
                 }
@@ -45,8 +45,8 @@ class Ride extends Model {
                     from: 'Ride.id',
                     through: {
                         //drivers is the join table
-                        from: 'Drivers.rideId',
-                        to: 'Drivers.driverId'
+                        from: 'Drivers.rideid',
+                        to: 'Drivers.driverid'
                     },
                     to: 'Driver.id'
                 }
@@ -56,7 +56,7 @@ class Ride extends Model {
                 relation: Model.BelongsToOneRelation,
                 modelClass: __dirname + "/Vehicle",
                 join: {
-                    from: 'Ride.vehicleId',
+                    from: 'Ride.vehicleid',
                     to: 'Vehicle.id'
                 },
             }

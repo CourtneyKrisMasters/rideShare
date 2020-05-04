@@ -42,6 +42,16 @@ class Vehicle extends Model {
                     from: 'Vehicle.vehicleTypeId',
                     to: 'Vehicle_type.id'
                 }
+            },
+
+            //connects to the state table to get the list of all possible state abbreviations
+            licenseStates: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: __dirname + "/State",
+                join: {
+                    from: 'Vehicle.licenseState',
+                    to: 'State.abbreviation'
+                }
             }
         }
     }

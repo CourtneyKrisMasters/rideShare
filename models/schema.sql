@@ -115,7 +115,9 @@ create table if not exists "Vehicle"
 			references "VehicleType",
 	capacity integer not null,
 	mpg double precision not null,
-	licensestate varchar not null,
+	licensestate varchar not null
+		constraint "Vehicle_licensestate_fkey"
+			references "VehicleType",
 	licensenumber varchar not null
 );
 

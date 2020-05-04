@@ -1,19 +1,8 @@
 <template>
   <v-container>
     <div>
-      <h4 class="display-1">Admin</h4>
+      <h4 class="display-1">Current Rides</h4>
 
-          <v-btn  text v-bind:to="{ name: 'vehicles' }">
-            Add or Update Vehicles
-          </v-btn>
-          <v-spacer></v-spacer>
-         <!--trying to make this work by adding a button-->
-          <v-btn  text v-bind:to="{ name: 'rides' }">
-            Get a report of all rides
-          </v-btn>
-          <v-spacer></v-spacer>
-
-        <h4 class="display-1">Current Rides</h4>
       <v-data-table
         class="elevation-1"
         v-bind:headers="headers"
@@ -23,12 +12,18 @@
           <tr v-bind:class="itemClass(item)">
             <td>{{ item.date }}</td>
             <td>{{ item.time }}</td>
+            <td>{{ item.distance }}</td>
+            <td>{{ item.fuelprice }}</td>
+            <td>{{ item.fee }}</td>
+            <td>{{ item.vehicleid }}</td>
             <td>{{ item.fromlocation }}</td>
             <td>{{ item.tolocation }}</td>
+            <td>{{ item.passengers }}</td>
+            <td>{{ item.drivers }}</td>
             <td>
               <v-icon small @click="deleteAccount(item)">
                 mdi-delete
-              </v-icon>  <!--delete a ride if it is no longer happening-->
+              </v-icon>
               <v-icon small class="ml-2" @click="updateAccount(item)">
                 mdi-pencil
               </v-icon>
@@ -56,8 +51,14 @@ export default {
       headers: [
         { text: "Date", value: "date" },
         { text: "Time", value: "time" },
-        { text: "From Location", value: "fromLocation" },
-        { text: "To Location", value: "toLocation" }
+        { text: "Distance", value: "distance"},
+        { text: "Fuel Price", value: "fuelprice"},
+        { text: "Fee", value: "fee"},
+        { text: "Vehicle ID", value: "vehicleid"},
+        { text: "From Location", value: "fromlocation" },
+        { text: "To Location", value: "tolocation" },
+        { text: "Passengers", value: "passengers" },
+        { text: "Drivers", value: "drivers" }
       ],
       rides: [],
 
@@ -68,17 +69,25 @@ export default {
     };
   },
 
-  mounted: function() {
-    this.$axios.get("/ride").then(response => {
+    mounted: function() {
+    //prints out ride information 
+    this.$axios.get("/rides").then(response => {
       this.rides = response.data.map(ride => ({
         date: ride.date,
         time: ride.time,
-        fromLocation: ride.fromlocationid,
-        toLocationgit : ride.totocationid
+        distance: ride.distance + " mi",
+        fuelprice: "$" + ride.fuelprice,
+        fee: "$" + ride.fee,
+        vehicleid: ride.vehicleid,
+        fromlocation: ride.fromcity + ", " + ride.fromstate,
+        tolocation: ride.tocity +", " + ride.tostate,
+        passengers: ride.passengers,
+        drivers: ride.drivers 
       }));
     });
+    console.log(this.rides.date);
+     
   },
-
   methods: {
     // Display a snackbar message.
     showSnackbar(text) {
@@ -102,12 +111,12 @@ export default {
 
     // Delete an account.
     deleteAccount(item) {
-      this.$axios.delete(`/rides/${item.id}`).then(response => {
+      this.$axios.delete(`/accounts/${item.id}`).then(response => {
         if (response.data.ok) {
           // The delete operation worked on the server; delete the local account
-          // by filtering the deleted account from the list of rides.
-          this.rides = this.rides.filter(
-            ride => ride.id !== item.id
+          // by filtering the deleted account from the list of accounts.
+          this.accounts = this.accounts.filter(
+            account => account.id !== item.id
           );
         }
       });
