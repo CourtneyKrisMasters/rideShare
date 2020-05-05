@@ -63,7 +63,7 @@ async function init() {
 
     {
       method: "GET",
-      path: "/admin",
+      path: "/rides",
       config: {
         description: "Retrieve all current rides",
       },

@@ -3,6 +3,10 @@
     <div>
       <h4 class="display-1">Admin</h4>
 
+      <v-btn text v-bind:to="{ name: 'rides' }">
+        Report of Current Rides
+      </v-btn>
+
       <v-btn text v-bind:to="{ name: 'vehicles' }">
         Add or Update Vehicles
       </v-btn>
@@ -85,7 +89,7 @@ export default {
     //prints out ride information
     this.$axios.get("/admin").then((response) => {
       this.rides = response.data.map((ride) => ({
-        date: new Date(ride.date).toLocaleString(),
+        date: new Date(ride.date).toDateString(),
         time: ride.time,
         distance: `${ride.distance} mi`,
         fuelprice: `$ ${ride.fuelprice}`,
