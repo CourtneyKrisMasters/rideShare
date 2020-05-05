@@ -91,10 +91,10 @@ export default {
         fuelprice: `$ ${ride.fuelprice}`,
         fee: `$ ${ride.fee}`,
         vehicleid: ride.vehicles.licensenumber,
-        fromlocation: `${ride.fromlocations.city}, ${ride.fromlocations.states.name}`,
-        tolocation: `${ride.tolocations.city}, ${ride.tolocations.states.name}`,
-        passengers: `${ride.passengers.firstname}, ${ride.passengers.lastname}`,
-        drivers: `${ride.drivers.firstname} ${ride.drivers.lastname}`,
+        fromlocation: `${ride.fromlocation.city}, ${ride.fromlocation.state}`,
+        tolocation: `${ride.tolocation.city}, ${ride.tolocation.state}`,
+        passengers: ride.passengers.map(p => `${p.firstname} ${p.lastname}`),
+        drivers: ride.drivers.map(d => `${d.firstname} ${d.lastname}`),
       }));
       console.log(this.rides);
     });

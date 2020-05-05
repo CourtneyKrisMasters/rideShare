@@ -68,14 +68,12 @@ async function init() {
         description: "Retrieve all current rides",
       },
       handler: async (request, h) => {
-        const rideInfo = await Ride.query()
-          .select()
-          .withGraphFetched("fromlocations.states")
-          .withGraphFetched("tolocations.states")
+        return Ride.query()
+          .withGraphFetched("fromlocation")
+          .withGraphFetched("tolocation")
           .withGraphFetched("vehicles")
           .withGraphFetched("passengers")
           .withGraphFetched("drivers");
-        return rideInfo;
       },
     },
 
