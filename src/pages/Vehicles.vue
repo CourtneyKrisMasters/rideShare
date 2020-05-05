@@ -28,6 +28,9 @@
                 label="Color"
                 required
                 ></v-text-field>
+                <!--instead of having the user type an ID in this field, can we make it a 
+                    dropdown with all of the possible vehicle types that we have in the VehicleType table?
+                    This will change it from being a text-field to some other kind of field-->
                 <v-text-field
                 v-model="vehicleInfo.vehicleTypeId"
                 v-bind:rules="rules.vehicleTypeId"
@@ -51,6 +54,7 @@
                 label="MPG"
                 required
                 ></v-text-field>
+                <!--make a drop down here as well with all of the abbreviations from the State table-->
                 <v-text-field
                 v-model="vehicleInfo.licenseState"
                 v-bind:rules="rules.licenseState"

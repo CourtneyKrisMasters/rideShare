@@ -6,12 +6,12 @@
           <v-btn  text v-bind:to="{ name: 'vehicles' }">
             Add or Update Vehicles
           </v-btn>
-          <v-spacer></v-spacer>
-         <!--trying to make this work by adding a button
-          <v-btn  text v-bind:to="{ name: 'rides' }">
-            Get a report of all rides
+          <!--This button should make a popup form (or go to a new page) to add a new vehicletype to the VehicleTypes table.
+                Vehicle types will be used when adding new vehicles instead of having the user type in IDs-->      
+          <v-btn  text v-bind:to="{ name: 'vehicleTypes' }">
+            Add a Vehicle Type
           </v-btn>
-          <v-spacer></v-spacer>-->
+          <v-spacer></v-spacer>
 
       <h4 class="display-1">Current Rides</h4>
 

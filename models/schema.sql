@@ -10,7 +10,7 @@ create table if not exists "Authorization"
 
 create table "Admin"
 (
-    id         integer not null
+    id         serial not null
         constraint "Admin_pkey"
             primary key,
     first_name varchar not null,
@@ -30,7 +30,7 @@ create table if not exists "Drivers"
 
 create table if not exists "Driver"
 (
-	id integer not null
+	id serial not null
 		constraint "Driver_pkey"
 			primary key,
 	firstname varchar not null,
@@ -41,7 +41,7 @@ create table if not exists "Driver"
 
 create table if not exists "Location"
 (
-	id integer not null
+	id serial not null
 		constraint "Location_pkey"
 			primary key,
 	name varchar not null,
@@ -55,7 +55,7 @@ create table if not exists "Location"
 
 create table if not exists "Passenger"
 (
-	id integer not null
+	id serial not null
 		constraint "Passenger_pkey"
 			primary key,
 	firstname varchar not null,
@@ -75,7 +75,7 @@ create table if not exists "Passengers"
 
 create table if not exists "Ride"
 (
-	id integer not null
+	id serial not null
 		constraint "Ride_pkey"
 			primary key,
 	date date not null,
@@ -104,7 +104,7 @@ create table if not exists "State"
 
 create table if not exists "Vehicle"
 (
-	id integer not null
+	id serial not null
 		constraint "Vehicle_pkey"
 			primary key,
 	make varchar not null,
@@ -117,13 +117,13 @@ create table if not exists "Vehicle"
 	mpg double precision not null,
 	licensestate varchar not null
 		constraint "Vehicle_licensestate_fkey"
-			references "VehicleType",
+			references "State",
 	licensenumber varchar not null
 );
 
 create table if not exists "VehicleType"
 (
-	id integer not null
+	id serial not null
 		constraint "VehicleType_pkey"
 			primary key,
 	type varchar not null

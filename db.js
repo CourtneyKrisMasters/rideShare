@@ -6,7 +6,7 @@ const { Passenger } = require("./models/Passenger.js");
 const { Ride } = require("./models/Ride");
 const { State } = require("./models/State.js");
 const { Vehicle } = require("./models/Vehicle.js");
-const { VehicleType } = require("./models/VehicleType.js");
+const { VehicleType } = require("./models/VehicleType");
 
 // Configure Knex.
 // Knex
@@ -63,6 +63,19 @@ async function init() {
 
 // Configure routes.
 server.route([
+  {
+    method: "GET",
+    path: "/vehicleTypes",
+    config: {
+      description: "Retrieve all vehicle types",
+    },
+    handler: async (request, h) => {
+      const vehicletypesInfo = await VehicleType.query()
+      .select()
+      return vehicletypesInfo;
+    }
+  },
+  
     {
         method: "GET",
         path: "/admin",
@@ -79,7 +92,57 @@ server.route([
           .withGraphFetched('drivers');
           return rideInfo; 
     }
+  },
+  {
+    //method to add a new vehicle type to the database
+    method: "POST",
+      path: "/vehicleTypes",
+      config: {
+        description: "Add a new vehicle type",
+        validate: {
+          payload: Joi.object({
+            vehicleType: Joi.string().required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        try{
+        //check if there is already that type in the database
+         const existingType = await VehicleType.query()
+          .where("type", request.payload.vehicleType)
+          .first();
+        if (existingType) {
+          return {
+            ok: false,
+            msge: `Vehicle type '${request.payload.vehicleType}' is already defined`,
+          };
+        }
+        //if there is not already that type in the database, add new type
+        const newType = await VehicleType.query().insert({
+          type: request.payload.vehicleType,
+        });
+        //show results
+        if (newType) {
+          return {
+            ok: true,
+            msge: `Created type '${request.payload.vehicleType}'`,
+          };
+        } else {
+          return {
+            ok: false,
+            msge: `Couldn't create vehicle type '${request.payload.vehicleType}'`,
+          };
+      }
+    } catch(e) {
+      return {
+        ok: false,
+        msge: `Couldn't create vehicle type '${request.payload.vehicleType}'` + e.message,
+    };
+    }
   }
+  }
+
+
 ])
 await server.start();
 }
