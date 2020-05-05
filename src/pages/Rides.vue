@@ -51,47 +51,44 @@ export default {
       headers: [
         { text: "Date", value: "date" },
         { text: "Time", value: "time" },
-        { text: "Distance", value: "distance"},
-        { text: "Fuel Price", value: "fuelprice"},
-        { text: "Fee", value: "fee"},
-        { text: "Vehicle ID", value: "vehicleid"},
+        { text: "Distance", value: "distance" },
+        { text: "Fuel Price", value: "fuelprice" },
+        { text: "Fee", value: "fee" },
+        { text: "Vehicle ID", value: "vehicleid" },
         { text: "From Location", value: "fromlocation" },
         { text: "To Location", value: "tolocation" },
         { text: "Passengers", value: "passengers" },
-        { text: "Drivers", value: "drivers" }
+        { text: "Drivers", value: "drivers" },
       ],
       rides: [],
 
       snackbar: {
         show: false,
-        text: ""
-      }
+        text: "",
+      },
     };
   },
 
-    mounted: function() {
-    //prints out ride information 
-    this.$axios.get("/rides").then(response => {
-      this.rides = response.data.map(ride => ({
+  mounted: function() {
+    //prints out ride information
+    this.$axios.get("/rides").then((response) => {
+      this.rides = response.data.map((ride) => ({
         date: ride.date,
         time: ride.time,
         distance: ride.distance + " mi",
         fuelprice: "$" + ride.fuelprice,
         fee: "$" + ride.fee,
-        vehicleid: ride.vehicles.licensenumber
-        ,
-        fromlocation: ride.fromlocations.city + ", " + ride.fromlocations.states.name,
-        tolocation: ride.tolocations.city +", " + ride.tolocations.states.name,
+        vehicleid: ride.vehicles.licensenumber,
+        fromlocation:
+          ride.fromlocations.city + ", " + ride.fromlocations.states.name,
+        tolocation: ride.tolocations.city + ", " + ride.tolocations.states.name,
         passengers: ride.passengers.firstname + " " + ride.passengers.lastname,
-        drivers: ride.drivers.firstname + " " + ride.drivers.lastname
-        
+        drivers: ride.drivers.firstname + " " + ride.drivers.lastname,
       }));
     });
     console.log(this.rides.date);
-    
-
-     
   },
+  
   methods: {
     // Display a snackbar message.
     showSnackbar(text) {
@@ -115,17 +112,17 @@ export default {
 
     // Delete an account.
     deleteAccount(item) {
-      this.$axios.delete(`/accounts/${item.id}`).then(response => {
+      this.$axios.delete(`/accounts/${item.id}`).then((response) => {
         if (response.data.ok) {
           // The delete operation worked on the server; delete the local account
           // by filtering the deleted account from the list of accounts.
           this.accounts = this.accounts.filter(
-            account => account.id !== item.id
+            (account) => account.id !== item.id
           );
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
