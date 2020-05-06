@@ -159,7 +159,7 @@ async function init() {
               msge: `Vehicle with '${request.payload.vehicleType}' license number already exists`,
             };
           }
-          //if there is not already that type in the database, add new type
+          //if there is not a vehicle with that license number in the database, add new vehicle
           const newVehicle = await Vehicle.query().insert({
             make: request.payload.make,
             model: request.payload.model,
@@ -169,6 +169,8 @@ async function init() {
             vehicletypeid: request.payload.vehicleType,
             capacity: request.payload.capacity,
             mpg: request.payload.mpg,
+            //need to make sure that the ID is getting put in the database 
+            //make sure that when the user selects a state from the dropdown, it's ID gets saved
             licensestate: request.payload.licenseState,
             licensenumber: request.payload.licenseNumber,
           });
@@ -194,6 +196,7 @@ async function init() {
         }
       },
     },
+
   ]);
   await server.start();
 }
