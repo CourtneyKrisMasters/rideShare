@@ -102,11 +102,11 @@ async function init() {
             };
           }
           //if there is not already that type in the database, add new type
-          const newVehicle = await VehicleType.query().insert({
+          const newType = await VehicleType.query().insert({
             type: request.payload.vehicleType,
           });
           //show results
-          if (newVehicle) {
+          if (newType) {
             return {
               ok: true,
               msge: `Created type '${request.payload.vehicleType}'`,
