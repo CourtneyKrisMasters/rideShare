@@ -64,16 +64,6 @@
                 required
                 ></v-text-field>
                 <!--make a drop down here as well with all of the abbreviations from the State table-->
-                <v-row >
-                  <v-col class="d-flex">
-                    <v-select
-                      :items="items"
-                      item-text="type"
-                      item-value="id"
-                      label="Vehicle Type"
-                    ></v-select>
-                  </v-col>
-                </v-row>
                 <v-text-field
                 v-model="vehicleInfo.licenseState"
                 v-bind:rules="rules.licenseState"
