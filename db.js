@@ -60,6 +60,7 @@ async function init() {
         return VehicleType.query();
       },
     },
+    
 
     {
       method: "GET",

@@ -28,6 +28,9 @@
                 label="Color"
                 required
                 ></v-text-field>
+                <v-btn v-bind:disabled="!valid" v-on:click="getVehicleTypes"
+                   >Get vehicle types
+                </v-btn>
                 <!--instead of having the user type an ID in this field, can we make it a 
                     dropdown with all of the possible vehicle types that we have in the VehicleType table?
                     This will change it from being a text-field to some other kind of field-->
@@ -35,7 +38,9 @@
                   <v-col class="d-flex">
                     <v-select
                       :items="items"
-                      label="Vehicle Tyle"
+                      item-text="type"
+                      item-value="id"
+                      label="Vehicle Type"
                     >
                     </v-select>
                   </v-col>
@@ -134,7 +139,8 @@ export default {
         licenseNumber: "",
       },
 
-      items: ['Foo', 'Bar', 'Fizz', 'Buzz'],
+      items: [],
+      
 
       // Was the account reset successfully?
       vehicleAdd: false,
@@ -153,9 +159,6 @@ export default {
       rules: {
         required: [(val) => val.length > 0 || "Required"],
       },
-      vehicleTypeId: [
-        (val) => /^[0-9]*$/.test(val) || "Requires digits",
-      ],
       capacity: [
         (val) => /^[0-9]*$/.test(val) || "Requires digits",
       ],
@@ -165,7 +168,7 @@ export default {
     };
   },
   methods: {
-    // Invoked when the user clicks the 'Reset Password' button.
+    // Invoked when the user clicks the 'Add vehicles' button.
     addVehicle: function () {
       // Haven't been successful yet.
       this.vehicleAdd = false;
@@ -214,13 +217,13 @@ export default {
     },
 
     //TODO - get all vehicle types for dropdown
-    getVehicleTypes() {
-      this.$axios.get(`/vehicleType/`).then(response => {
-        if(response.data.ok) {
-          //somehow put items into array and return that array
-          console.log("this worked");
-        }
-      })
+    getVehicleTypes: function() {
+      this.$axios.get("/vehicleTypes").then(response => {
+        this.items = response.data.map(item => ({
+          id: item.id,
+          type: item.type,
+        }));
+      });
     },
   },
 };
