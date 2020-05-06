@@ -102,11 +102,11 @@ async function init() {
             };
           }
           //if there is not already that type in the database, add new type
-          const newType = await VehicleType.query().insert({
+          const newVehicle = await VehicleType.query().insert({
             type: request.payload.vehicleType,
           });
           //show results
-          if (newType) {
+          if (newVehicle) {
             return {
               ok: true,
               msge: `Created type '${request.payload.vehicleType}'`,
@@ -122,6 +122,73 @@ async function init() {
             ok: false,
             msge:
               `Couldn't create vehicle type '${request.payload.vehicleType}'` +
+              e.message,
+          };
+        }
+      },
+    },
+
+    {
+      //method to add a new Vehicle to the database
+      method: "POST",
+      path: "/vehicles",
+      config: {
+        description: "Add a new vehicle",
+        validate: {
+          payload: Joi.object({
+            make:Joi.string().required(),
+            model: Joi.string().required(),
+            color: Joi.string().required(),
+            vehicleType: Joi.string().required(),
+            capacity: Joi.number().required(),
+            mpg: Joi.number().required(),
+            licenseState: Joi.string().required(),
+            licenseNumber: Joi.string().required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        try {
+          //check if there is already that type in the database
+          const existingType = await VehicleType.query()
+            .where("licensenumber", request.payload.licenseNumber)
+            .first();
+          if (existingType) {
+            return {
+              ok: false,
+              msge: `Vehicle with '${request.payload.vehicleType}' license number already exists`,
+            };
+          }
+          //if there is not already that type in the database, add new type
+          const newVehicle = await Vehicle.query().insert({
+            make: request.payload.make,
+            model: request.payload.model,
+            color: request.payload.color,
+            //need to make sure that the ID is getting put in the database 
+            //make sure that when the user selects a type from the dropdown, it's ID gets saved
+            vehicletypeid: request.payload.vehicleType,
+            capacity: request.payload.capacity,
+            mpg: request.payload.mpg,
+            licensestate: request.payload.licenseState,
+            licensenumber: request.payload.licenseNumber,
+          });
+          //show results
+          if (newVehicle) {
+            return {
+              ok: true,
+              msge: `Created vehicle with license number '${request.payload.licenseNumber}'`,
+            };
+          } else {
+            return {
+              ok: false,
+              msge: `Couldn't create vehicle with license number '${request.payload.licenseNumber}'`,
+            };
+          }
+        } catch (e) {
+          return {
+            ok: false,
+            msge:
+              `Couldn't create vehicle with license number '${request.payload.licenseNumber}'` +
               e.message,
           };
         }
