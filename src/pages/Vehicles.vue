@@ -7,14 +7,14 @@
           <v-form v-model="valid">
                 <v-text-field
                 v-model="vehicleInfo.make"  
-                v-bind:rules="rules.make"
+                v-bind:rules="rules.required"
                 error-count="10"
                 type="make"
                 label="Make"
                 ></v-text-field>
                 <v-text-field
                 v-model="vehicleInfo.model"
-                v-bind:rules="rules.model"
+                v-bind:rules="rules.required"
                 error-count="10"
                 type="model"
                 label="Model"
@@ -22,7 +22,7 @@
                 ></v-text-field>
                 <v-text-field
                 v-model="vehicleInfo.color"
-                v-bind:rules="rules.color"
+                v-bind:rules="rules.required"
                 error-count="10"
                 type="color-text"
                 label="Color"
@@ -34,28 +34,22 @@
                 <v-row align="left">
                   <v-col class="d-flex">
                     <v-select
+                      v-model="vehicleInfo.vehicleTypeId"
                       :items="items"
                       item-text="type"
                       item-value="id"
                       label="Vehicle Type"
+                      required
                     ></v-select>
                   </v-col>
                 </v-row>
-                <!--...-->
-                <v-text-field
-                v-model="vehicleInfo.vehicleTypeId"
-                v-bind:rules="rules.vehicleTypeId"
-                error-count="10"
-                type="vehicleTypeId"
-                label="Vehicle Type ID"
-                required
-                ></v-text-field>
                 <v-text-field
                 v-model="vehicleInfo.capacity"  
                 v-bind:rules="rules.capacity"
                 error-count="10"
                 type="capacity"
                 label="How many people can it hold?"
+                required
                 ></v-text-field>
                 <v-text-field
                 v-model="vehicleInfo.mpg"
@@ -66,14 +60,18 @@
                 required
                 ></v-text-field>
                 <!--make a drop down here as well with all of the abbreviations from the State table-->
-                <v-text-field
-                v-model="vehicleInfo.licenseState"
-                v-bind:rules="rules.licenseState"
-                error-count="10"
-                type="licenseState"
-                label="License State"
-                required
-                ></v-text-field>
+                <v-row align="left">
+                  <v-col class="d-flex">
+                    <v-select
+                      v-model="vehicleInfo.licenseState"
+                      :items="abbreviations"
+                      item-text="name"
+                      item-value="abbreviation"
+                      label="State"
+                      required 
+                    ></v-select>
+                  </v-col>
+                </v-row>
                 <v-text-field
                 v-model="vehicleInfo.licenseNumber"
                 v-bind:rules="rules.licenseNumber"
@@ -136,6 +134,7 @@ export default {
       },
 
       items: [],
+      abbreviations: [],
       
 
       // Was the account reset successfully?
@@ -164,14 +163,20 @@ export default {
     };
   },
 
-  //gets all vehicle types for the dropdown
+  //gets all vehicle types and states for the dropdowns on load
   mounted: function() {
        this.$axios.get("/vehicleTypes").then(response => {
         this.items = response.data.map(item => ({
           id: item.id,
           type: item.type,
         }));
-      });
+      }),
+      this.$axios.get("/states").then(response => {
+        this.abbreviations = response.data.map(item => ({
+          abbreviation: item.abbreviation,
+          name: item.name,
+           }));
+      })
   },
 
   methods: {
@@ -182,7 +187,7 @@ export default {
 
       // Patch the content of the form to the Hapi server.
       this.$axios
-        .post("/accounts", {
+        .post("/vehicles", {
           //password: this.newPassword,
           make: this.vehicleInfo.make,
           model: this.vehicleInfo.model,
@@ -205,10 +210,10 @@ export default {
         })
         .catch((err) => this.showDialog("Failed", err));
     },
-
     // Helper method to display the dialog box with the appropriate content.
     showDialog: function (header, text) {
       this.dialogHeader = header;
+      console.log(text)
       this.dialogText = text;
       this.dialogVisible = true;
     },

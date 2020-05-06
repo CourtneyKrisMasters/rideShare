@@ -50,6 +50,8 @@ async function init() {
 
   // Configure routes.
   server.route([
+
+    //get all vehicle types
     {
       method: "GET",
       path: "/vehicleTypes",
@@ -61,7 +63,19 @@ async function init() {
       },
     },
     
-
+    //get all state information
+    {
+      method: "GET",
+      path: "/states",
+      config: {
+        description: "Retrieve all states",
+      },
+      handler: async (request, h) => {
+        return State.query();
+      },
+    },
+    
+    //get all ride information
     {
       method: "GET",
       path: "/rides",
@@ -140,7 +154,7 @@ async function init() {
             make:Joi.string().required(),
             model: Joi.string().required(),
             color: Joi.string().required(),
-            vehicleType: Joi.string().required(),
+            vehicleTypeId: Joi.number().required(),
             capacity: Joi.number().required(),
             mpg: Joi.number().required(),
             licenseState: Joi.string().required(),
@@ -151,13 +165,13 @@ async function init() {
       handler: async (request, h) => {
         try {
           //check if there is already that type in the database
-          const existingType = await VehicleType.query()
+          const existingVehicle = await Vehicle.query()
             .where("licensenumber", request.payload.licenseNumber)
             .first();
-          if (existingType) {
+          if (existingVehicle) {
             return {
               ok: false,
-              msge: `Vehicle with '${request.payload.vehicleType}' license number already exists`,
+              msge: `Vehicle with '${request.payload.licenseNumber}' license number already exists`,
             };
           }
           //if there is not a vehicle with that license number in the database, add new vehicle
@@ -167,7 +181,7 @@ async function init() {
             color: request.payload.color,
             //need to make sure that the ID is getting put in the database 
             //make sure that when the user selects a type from the dropdown, it's ID gets saved
-            vehicletypeid: request.payload.vehicleType,
+            vehicletypeid: request.payload.vehicleTypeId,
             capacity: request.payload.capacity,
             mpg: request.payload.mpg,
             //need to make sure that the ID is getting put in the database 
