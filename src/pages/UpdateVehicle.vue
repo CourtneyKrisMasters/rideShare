@@ -1,9 +1,7 @@
 <template>
   <v-container>
     <div>
-      <h4 class="display-1">Welcome, Single-Page App User</h4>
-        <p class="body-1">This is the vehicle page.</p>
-        <h4 class="display-1">Add a vehicle</h4> <!-- make, model, color, vehicleTypeId(int), capacity(int), mpg(float), license state, liscence number -->
+        <h4 class="display-1">Update a vehicle</h4> <!-- make, model, color, vehicleTypeId(int), capacity(int), mpg(float), license state, liscence number -->
           <v-form v-model="valid">
                 <v-text-field
                 v-model="vehicleInfo.make"  
@@ -40,7 +38,6 @@
                     </v-select>
                   </v-col>
                 </v-row>
-                <!--...-->
                 <v-text-field
                 v-model="vehicleInfo.vehicleTypeId"
                 v-bind:rules="rules.vehicleTypeId"
@@ -82,7 +79,7 @@
                 required
                 ></v-text-field>
             <v-btn v-bind:disabled="!valid" v-on:click="addVehicle"
-              >Add Vehicle
+              >Submit
             </v-btn>
           </v-form>
       <div class="text-xs-center">
@@ -123,6 +120,7 @@ export default {
       valid: false, // Are all the fields in the form valid?
 
       // Object to collect account data
+      //TODO - fill in form with stand-in info from current data
       vehicleInfo: {
         make: "",
         model: "",
@@ -135,6 +133,11 @@ export default {
       },
 
       items: ['Foo', 'Bar', 'Fizz', 'Buzz'],
+
+    //TODO - write function that grabs data from the vehicle table and fills in the form 
+      getCurrentVehicleInfo() {
+          
+      },
 
       // Was the account reset successfully?
       vehicleAdd: false,
@@ -172,7 +175,7 @@ export default {
 
       // Patch the content of the form to the Hapi server.
       this.$axios
-        .post("/accounts", {
+        .patch("/accounts", {
           //password: this.newPassword,
           make: this.vehicleInfo.make,
           model: this.vehicleInfo.model,
@@ -211,16 +214,6 @@ export default {
         // Only navigate away from the reset page if we were successful.
         this.$router.push({ name: "admin" });
       }
-    },
-
-    //TODO - get all vehicle types for dropdown
-    getVehicleTypes() {
-      this.$axios.get(`/vehicleType/`).then(response => {
-        if(response.data.ok) {
-          //somehow put items into array and return that array
-          console.log("this worked");
-        }
-      })
     },
   },
 };
