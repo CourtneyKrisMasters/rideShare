@@ -28,9 +28,6 @@
                 label="Color"
                 required
                 ></v-text-field>
-                <v-btn v-bind:disabled="!valid" v-on:click="getVehicleTypes"
-                   >Get vehicle types
-                </v-btn>
                 <!--instead of having the user type an ID in this field, can we make it a 
                     dropdown with all of the possible vehicle types that we have in the VehicleType table?
                     This will change it from being a text-field to some other kind of field-->
@@ -41,8 +38,7 @@
                       item-text="type"
                       item-value="id"
                       label="Vehicle Type"
-                    >
-                    </v-select>
+                    ></v-select>
                   </v-col>
                 </v-row>
                 <!--...-->
@@ -167,6 +163,17 @@ export default {
       ],
     };
   },
+
+  //gets all vehicle types for the dropdown
+  mounted: function() {
+       this.$axios.get("/vehicleTypes").then(response => {
+        this.items = response.data.map(item => ({
+          id: item.id,
+          type: item.type,
+        }));
+      });
+  },
+
   methods: {
     // Invoked when the user clicks the 'Add vehicles' button.
     addVehicle: function () {
@@ -214,16 +221,6 @@ export default {
         // Only navigate away from the reset page if we were successful.
         this.$router.push({ name: "admin" });
       }
-    },
-
-    //TODO - get all vehicle types for dropdown
-    getVehicleTypes: function() {
-      this.$axios.get("/vehicleTypes").then(response => {
-        this.items = response.data.map(item => ({
-          id: item.id,
-          type: item.type,
-        }));
-      });
     },
   },
 };
