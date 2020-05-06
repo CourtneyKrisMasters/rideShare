@@ -29,15 +29,17 @@
                 <!--instead of having the user type an ID in this field, can we make it a 
                     dropdown with all of the possible vehicle types that we have in the VehicleType table?
                     This will change it from being a text-field to some other kind of field-->
-                <v-row align="left">
+                <v-row >
                   <v-col class="d-flex">
                     <v-select
                       :items="items"
-                      label="Vehicle Tyle"
-                    >
-                    </v-select>
+                      item-text="type"
+                      item-value="id"
+                      label="Vehicle Type"
+                    ></v-select>
                   </v-col>
                 </v-row>
+                <!--...-->
                 <v-text-field
                 v-model="vehicleInfo.vehicleTypeId"
                 v-bind:rules="rules.vehicleTypeId"
@@ -62,6 +64,16 @@
                 required
                 ></v-text-field>
                 <!--make a drop down here as well with all of the abbreviations from the State table-->
+                <v-row >
+                  <v-col class="d-flex">
+                    <v-select
+                      :items="items"
+                      item-text="type"
+                      item-value="id"
+                      label="Vehicle Type"
+                    ></v-select>
+                  </v-col>
+                </v-row>
                 <v-text-field
                 v-model="vehicleInfo.licenseState"
                 v-bind:rules="rules.licenseState"
@@ -132,7 +144,7 @@ export default {
         licenseNumber: "",
       },
 
-      items: ['Foo', 'Bar', 'Fizz', 'Buzz'],
+      items: [],
 
     //TODO - write function that grabs data from the vehicle table and fills in the form 
       getCurrentVehicleInfo() {
@@ -167,6 +179,17 @@ export default {
       ],
     };
   },
+
+  //gets all vehicle types for the dropdown
+  mounted: function() {
+       this.$axios.get("/vehicleTypes").then(response => {
+        this.items = response.data.map(item => ({
+          id: item.id,
+          type: item.type,
+        }));
+      });
+  },
+
   methods: {
     // Invoked when the user clicks the 'Reset Password' button.
     addVehicle: function () {
