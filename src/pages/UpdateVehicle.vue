@@ -215,6 +215,15 @@ export default {
         this.$router.push({ name: "admin" });
       }
     },
+    //TODO - get all vehicle types for dropdown
+    getVehicleTypes() {
+      this.$axios.get(`/vehicleType/`).then(response => {
+        if(response.data.ok) {
+          //somehow put items into array and return that array
+          console.log("this worked");
+        }
+      })
+    },
   },
 };
 </script>
