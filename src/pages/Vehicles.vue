@@ -31,7 +31,7 @@
                 <!--instead of having the user type an ID in this field, can we make it a 
                     dropdown with all of the possible vehicle types that we have in the VehicleType table?
                     This will change it from being a text-field to some other kind of field-->
-                <v-row align="left">
+                <v-row >
                   <v-col class="d-flex">
                     <v-select
                       v-model="vehicleInfo.vehicleTypeId"
