@@ -242,25 +242,32 @@ async function init() {
         },
       },
       handler: async (request, h) => {
-        const updateVehicle = await Account.query().update({
-          make: request.payload.make,
-          model: request.payload.model,
-          color: request.payload.color,
-          vehicleTypeId: request.payload.vehicleTypeId, 
-          capacity: request.payload.capacity,
-          mpg: request.payload.mpg,
-          licenseState: request.payload.licenseState,
-          })
-          .where("licenseNumber", request.payload.licenseNumber);
-        if (updateVehicle) { //if update successful, then
-          return {
-            ok: true,
-            msge: `Vehicle updated successfully for car license '${request.payload.licenseNumber}'`,
-          };
-        } else {
-          return {
-            ok: false,
-            msge: "Invalid license number",
+        const vehicle = await Vehicle.query()
+          .where("licenseNumber", request.payload.licenseNumber)
+          //.first();
+        if (vehicle) {
+          console.log("The vehicle had been found");
+          const updateVehicle = await Account.query().update({
+            make: request.payload.make,
+            model: request.payload.model,
+            color: request.payload.color,
+            vehicleTypeId: request.payload.vehicleTypeId, 
+            capacity: request.payload.capacity,
+            mpg: request.payload.mpg,
+            licenseState: request.payload.licenseState,
+            })
+            .where("licenseNumber", request.payload.licenseNumber)
+
+          if (updateVehicle){
+            return {
+              ok: true,
+              msge: `Vehicle updated successfully for car license '${request.payload.licenseNumber}'`,
+            };
+          } else {
+            return {
+              ok: false,
+              msge: "Invalid license number",
+            }
           };
         }
       },
