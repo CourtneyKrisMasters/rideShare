@@ -62,6 +62,17 @@ async function init() {
         return VehicleType.query();
       },
     },
+
+    {
+      method: "GET",
+      path: "/vehicles",
+      config: {
+        description: "Retrieve all vehicles",
+      },
+      handler: async (request, h) => {
+        return Vehicle.query();
+      },
+    },
     
     //get all state information
     {
@@ -211,6 +222,145 @@ async function init() {
         }
       },
     },
+
+    {
+      //method to add new locations to the database working
+      method: "POST",
+      path: "/locations",
+      config: {
+        description: "Add new Locations",
+        validate: {
+          payload: Joi.object({
+            name: Joi.string().required(),
+            address: Joi.string().required(),
+            city: Joi.string().required(),
+            state: Joi.string().required(),
+            zipcode: Joi.string().required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        try{
+          //check if there is already a Location like this in the database
+          //--TODO might need to check this more thoroughly later--//
+          const existingFrom = await Location.query()
+            .where("name", request.payload.name)
+            .first();
+          if (existingFrom) {
+            return {
+              ok: false,
+              msge: `Location with name '${request.payload.name}' already exists`,
+            }
+          }
+            const newLocation = await Location.query().insert({
+              name: request.payload.name,
+              address: request.payload.address,
+              city: request.payload.city,
+              state: request.payload.state,
+              zipcode: request.payload.zipcode,
+            });
+            //show results
+            if (newLocation) {
+              return {
+                ok: true,
+                msge: `Created new location '${request.payload.name}'`,
+              };
+            } else {
+              return {
+                ok: false,
+                msge: `Couldn't create location '${request.payload.name}'`,
+              };
+            }
+           } catch (e){
+            return msge;
+            }
+          }
+      },
+
+    //get a Location
+    {
+      method: "GET",
+      path: "/locations",
+      config: {
+        description: "Retrieve a location",
+      },
+      handler: async (request, h) => {
+        return Location.query()
+        .where("name", request.payload.params.name);
+      },
+    },
+
+
+    {
+      //method to add a new Ride to the database
+      method: "POST",
+      path: "/rides",
+      config: {
+        description: "Add a new Ride",
+        validate: {
+          payload: Joi.object({
+            date:Joi.required(),
+            time: Joi.required(),
+            distance: Joi.string().required(),
+            fuelPrice: Joi.number().required(),
+            fee: Joi.number().required(),
+            vehicleId: Joi.number().required(),
+            fromLocation: Joi.number().required(),
+            toLocation: Joi.number().required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        try {
+          //check if there is already a ride like this in the database
+          //--TODO might need to check this more thoroughly later--//
+          const existingRide = await Ride.query()
+            .where("vehicleid", request.payload.vehicleId)
+            .andWhere("date", request.payload.date)
+            .andWhere("time", request.payload.time)
+            .first();
+          if (existingRide) {
+            return {
+              ok: false,
+              msge: `Ride with '${request.payload.vehicleId}' license number leaving on '${request.payload.date}' at '${request.payload.time}' already exists`,
+            };
+          }
+          //if there is not a vehicle with that license number doing a ride at that time in the database, add new ride
+          const newRide = await Ride.query().insert({
+            date: request.payload.date,
+            time: request.payload.time,
+            distance: request.payload.distance,
+            fuelprice: request.payload.fuelPrice,
+            fee: request.payload.fee,
+            //need to make sure that the ID is getting put in the database 
+            //make sure that when the user selects a type from the dropdown, it's ID gets saved
+            vehicleid: request.payload.vehicleId,
+            fromlocationid: request.payload.fromLocation,
+            tolocationid: request.payload.toLocation,
+          });
+          //show results
+          if (newRide) {
+            return {
+              ok: true,
+              msge: `Created ride with license number '${request.payload.licenseNumber}'`,
+            };
+          } else {
+            return {
+              ok: false,
+              msge: `Couldn't create ride with license number '${request.payload.licenseNumber}'`,
+            };
+          }
+        } catch (e) {
+          return {
+            ok: false,
+            msge:
+              `Couldn't create ride with license number '${request.payload.licenseNumber}'` +
+              e.message,
+          };
+        }
+      },
+    },
+
 
   ]);
   await server.start();

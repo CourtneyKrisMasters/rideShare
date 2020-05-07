@@ -19,6 +19,10 @@
       <v-btn text v-bind:to="{ name: 'vehicleTypes' }">
         Add a Vehicle Type
       </v-btn>
+
+      <v-btn text v-bind:to="{ name: 'addRides' }">
+        Add a New Ride
+      </v-btn>
       <v-spacer></v-spacer>
 
       <h4 class="display-1">Current Rides</h4>
