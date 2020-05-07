@@ -224,6 +224,49 @@ async function init() {
     },
 
     {
+      method: "PATCH",
+      path: "/vehicles",
+      config: {
+        description: "Update the vehicle information",
+        validate: {
+          payload: Joi.object({
+            make:Joi.string().required(),
+            model: Joi.string().required(),
+            color: Joi.string().required(),
+            vehicleTypeId: Joi.number().required(), 
+            capacity: Joi.number().required(),
+            mpg: Joi.number().required(),
+            licenseState: Joi.string().required(),
+            licenseNumber: Joi.string().required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        const updateVehicle = await Account.query().update({
+          make: request.payload.make,
+          model: request.payload.model,
+          color: request.payload.color,
+          vehicleTypeId: request.payload.vehicleTypeId, 
+          capacity: request.payload.capacity,
+          mpg: request.payload.mpg,
+          licenseState: request.payload.licenseState,
+          })
+          .where("licenseNumber", request.payload.licenseNumber);
+        if (updateVehicle) { //if update successful, then
+          return {
+            ok: true,
+            msge: `Vehicle updated successfully for car license '${request.payload.licenseNumber}'`,
+          };
+        } else {
+          return {
+            ok: false,
+            msge: "Invalid license number",
+          };
+        }
+      },
+    },
+
+    {
       //method to add new locations to the database working
       method: "POST",
       path: "/locations",

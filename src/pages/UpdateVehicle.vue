@@ -1,8 +1,21 @@
 <template>
   <v-container>
     <div>
-        <h4 class="display-1">Update a vehicle</h4> <!-- make, model, color, vehicleTypeId(int), capacity(int), mpg(float), license state, liscence number -->
+        <h4 class="display-1">Update a Vehicle</h4> 
+
+        <v-spacer></v-spacer>
+
+        <p class="body-1">First, what is the license number of the vehicle you're updating?</p>  
           <v-form v-model="valid">
+                <v-text-field
+                v-model="vehicleInfo.licenseNumber"
+                v-bind:rules="rules.licenseNumber"
+                error-count="10"
+                type="licenseNumber"
+                label="License Number"
+                required
+                ></v-text-field>
+                <p class="body-2">Now fill out the vehicle's new information.</p>
                 <v-text-field
                 v-model="vehicleInfo.make"  
                 v-bind:rules="rules.make"
@@ -70,14 +83,6 @@
                 error-count="10"
                 type="licenseState"
                 label="License State"
-                required
-                ></v-text-field>
-                <v-text-field
-                v-model="vehicleInfo.licenseNumber"
-                v-bind:rules="rules.licenseNumber"
-                error-count="10"
-                type="licenseNumber"
-                label="License Number"
                 required
                 ></v-text-field>
             <v-btn v-bind:disabled="!valid" v-on:click="addVehicle"
@@ -188,7 +193,7 @@ export default {
 
       // Patch the content of the form to the Hapi server.
       this.$axios
-        .patch("/accounts", {
+        .patch("/vehicles", {
           //password: this.newPassword,
           make: this.vehicleInfo.make,
           model: this.vehicleInfo.model,
