@@ -141,7 +141,7 @@ export default {
 
       items: [],
 
-    //TODO - write function that grabs data from the vehicle table and fills in the form 
+      //TODO - write function that grabs data from the vehicle table and fills in the form 
       getCurrentVehicleInfo() {
           
       },
