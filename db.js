@@ -266,7 +266,7 @@ async function init() {
           } else {
             return {
               ok: false,
-              msge: "Invalid license number",
+              msge: "Vehicle not updated",
             }
           };
         } else {
