@@ -243,7 +243,7 @@ async function init() {
       },
       handler: async (request, h) => {
         const vehicle = await Vehicle.query()
-          .where("licenseNumber", request.payload.licenseNumber)
+          .where("licensenumber", request.payload.licenseNumber)
           .first();
         if (vehicle) {
           console.log("The vehicle had been found");
@@ -251,12 +251,12 @@ async function init() {
             make: request.payload.make,
             model: request.payload.model,
             color: request.payload.color,
-            vehicleTypeId: request.payload.vehicleTypeId, 
+            vehicletypeid: request.payload.vehicleTypeId, 
             capacity: request.payload.capacity,
             mpg: request.payload.mpg,
-            licenseState: request.payload.licenseState,
+            licensestate: request.payload.licenseState,
             })
-            .where("licenseNumber", request.payload.licenseNumber)
+            .where("licensenumber", request.payload.licenseNumber)
 
           if (updateVehicle){
             return {
@@ -269,6 +269,11 @@ async function init() {
               msge: "Invalid license number",
             }
           };
+        } else {
+          return {
+            ok: false,
+            msge: "Invalid license number",
+          }
         }
       },
     },
