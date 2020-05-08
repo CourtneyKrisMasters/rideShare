@@ -27,7 +27,9 @@
       <v-btn text v-bind:to="{ name: 'addRides' }">
         Update a Ride
       </v-btn>
-
+      <v-btn text v-bind:to="{ name: 'authorization' }">
+        Authorize a Driver
+      </v-btn>
       <v-spacer></v-spacer>
 
       <h4 class="display-1">Current Rides</h4>

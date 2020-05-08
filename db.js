@@ -73,6 +73,18 @@ async function init() {
         return Vehicle.query();
       },
     },
+
+    //get all drivers
+    {
+      method: "GET",
+      path: "/drivers",
+      config: {
+        description: "Retrieve all drivers",
+      },
+      handler: async (request, h) => {
+        return Driver.query();
+      },
+    },
     
     //get all state information
     {
