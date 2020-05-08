@@ -11,7 +11,7 @@ import VehicleTypes from "./pages/VehicleTypes.vue";
 import Rides from "./pages/Rides.vue";
 import AddRides from "./pages/AddRides.vue";
 import UpdateVehicle from "./pages/UpdateVehicle.vue";
-
+import UpdateRide from "./pages/UpdateRide.vue";
 
 Vue.use(Router);
 
@@ -29,5 +29,6 @@ export default new Router({
     { name: "rides", path: "/rides", component: Rides },
     { name: "addRides", path: "/addRides", component: AddRides },
     { name: "updateVehicle", path: "/updateVehicle", component: UpdateVehicle },
+    { name: "updateRide", path: "/updateRide", component: UpdateRide },
   ]
 });
