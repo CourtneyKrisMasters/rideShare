@@ -74,6 +74,20 @@ async function init() {
       },
     },
 
+    //get specific vehicle information
+    {
+      method: "GET",
+      path: "/vehicles/{licenseNumber}",
+      config: {
+        description: "Retrieve the certain vehicle's information",
+      },
+      handler: async (request, h) => {
+        const vehicleLicenseId = request.params.licenseNumber; //do I need this?
+        return Vehicles.query()
+          .where("licenseNumber", vehicleLicenseId)
+        },
+    },
+
     //get all drivers
     {
       method: "GET",
