@@ -244,10 +244,10 @@ async function init() {
       handler: async (request, h) => {
         const vehicle = await Vehicle.query()
           .where("licenseNumber", request.payload.licenseNumber)
-          //.first();
+          .first();
         if (vehicle) {
           console.log("The vehicle had been found");
-          const updateVehicle = await Account.query().update({
+          const updateVehicle = await Vehicle.query().update({
             make: request.payload.make,
             model: request.payload.model,
             color: request.payload.color,
