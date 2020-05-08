@@ -141,7 +141,7 @@ export default {
 
       items: [],
 
-    //TODO - write function that grabs data from the vehicle table and fills in the form 
+      //TODO - write function that grabs data from the vehicle table and fills in the form 
       getCurrentVehicleInfo() {
           
       },
@@ -185,7 +185,8 @@ export default {
       });
   },
 
-  methods: {
+
+methods: {
     // Invoked when the user clicks the 'Reset Password' button.
     addVehicle: function () {
       // Haven't been successful yet.
