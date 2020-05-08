@@ -284,17 +284,6 @@ async function init() {
       },
       handler: async (request, h) => {
         try{
-          //check if there is already a Location like this in the database
-          //--TODO might need to check this more thoroughly later--//
-          const existingFrom = await Location.query()
-            .where("name", request.payload.name)
-            .first();
-          if (existingFrom) {
-            return {
-              ok: false,
-              msge: `Location with name '${request.payload.name}' already exists`,
-            }
-          }
             const newLocation = await Location.query().insert({
               name: request.payload.name,
               address: request.payload.address,
@@ -307,6 +296,7 @@ async function init() {
               return {
                 ok: true,
                 msge: `Created new location '${request.payload.name}'`,
+                newLocation
               };
             } else {
               return {
@@ -320,38 +310,24 @@ async function init() {
           }
       },
 
-    //get a Location
-    {
-      method: "GET",
-      path: "/locations",
-      config: {
-        description: "Retrieve a location",
-      },
-      handler: async (request, h) => {
-        return Location.query()
-        .where("name", request.payload.params.name);
-      },
-    },
-
-
     {
       //method to add a new Ride to the database
       method: "POST",
       path: "/rides",
       config: {
         description: "Add a new Ride",
-        validate: {
-          payload: Joi.object({
-            date:Joi.required(),
-            time: Joi.required(),
-            distance: Joi.string().required(),
-            fuelPrice: Joi.number().required(),
-            fee: Joi.number().required(),
-            vehicleId: Joi.number().required(),
-            fromLocation: Joi.number().required(),
-            toLocation: Joi.number().required(),
-          }),
-        },
+        // validate: {
+        //   payload: Joi.object({
+        //     date:Joi.required(),
+        //     time: Joi.required(),
+        //     distance: Joi.string().required(),
+        //     fuelPrice: Joi.number().required(),
+        //     fee: Joi.number().required(),
+        //     vehicleId: Joi.number().required(),
+        //     fromLocation: Joi.number().required(),
+        //     toLocation: Joi.number().required(),
+        //   }),
+        //},
       },
       handler: async (request, h) => {
         try {
@@ -375,8 +351,6 @@ async function init() {
             distance: request.payload.distance,
             fuelprice: request.payload.fuelPrice,
             fee: request.payload.fee,
-            //need to make sure that the ID is getting put in the database 
-            //make sure that when the user selects a type from the dropdown, it's ID gets saved
             vehicleid: request.payload.vehicleId,
             fromlocationid: request.payload.fromLocation,
             tolocationid: request.payload.toLocation,
@@ -385,19 +359,19 @@ async function init() {
           if (newRide) {
             return {
               ok: true,
-              msge: `Created ride with license number '${request.payload.licenseNumber}'`,
+              msge: `Created ride!`,
             };
           } else {
             return {
               ok: false,
-              msge: `Couldn't create ride with license number '${request.payload.licenseNumber}'`,
+              msge: `Couldn't create ride`,
             };
           }
         } catch (e) {
           return {
             ok: false,
             msge:
-              `Couldn't create ride with license number '${request.payload.licenseNumber}'` +
+              `Couldn't create ride with license number '${request.payload.vehicleId}'` +
               e.message,
           };
         }

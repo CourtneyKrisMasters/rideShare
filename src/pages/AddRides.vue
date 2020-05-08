@@ -269,6 +269,7 @@ export default {
   methods: {
     // Invoked when the user clicks the 'Add rides' button.
     addRide: function () {
+      try{
       // Haven't been successful yet.
       this.rideAdd = false;
 
@@ -281,81 +282,64 @@ export default {
           state: this.departureInfo.state,
           zipcode: this.departureInfo.zipcode,
         })
-        // .then((result) => {
-        //   // Based on whether things worked or not, show the
-        //   // appropriate dialog.
-        //   if (result.data.ok) {
-        //     this.showDialog("Success", result.data.msge);
-        //     this.rideAdd = true;
-        //   } else {
-        //     this.showDialog("Sorry", result.data.msge);
-        //   }
-        // })
-        ,
-
-     
-      //post to location
-      this.$axios
-        .post("/locations", {
-          name: this.arrivalInfo.name,
-          address: this.arrivalInfo.address,
-          city: this.arrivalInfo.city,
-          state: this.arrivalInfo.state,
-          zipcode: this.arrivalInfo.zipcode,
-        })
-        .catch((err) => this.showDialog("Couldn't make to location", err)),
-
-      //get back id of the from location to use in the ride post and store in fromLocationId
-      this.$axios
-        .get("/locations", {
-          params: {
-            name: this.departureInfo.name
-          }
-        })
-        .then((response) => {
-          this.fromLocationId = response.id; 
-        })
-        .catch((err) => this.showDialog("Couldn't get back from Id with error", err)),
-
-      //get back id of the to location to use in the ride post and store in toLocationId
-      this.$axios
-        .get("/locations", {
-          params: {
-            name: this.arrivalInfo.name
-          }
-        })
-        .then((response) => {
-          this.toLocationId = response.id; 
-        })
-        .catch((err) => this.showDialog("Couldn't get back to Id with error", err)),
-
-
-      this.$axios
-        .post("/rides", {
-          date: this.rideInfo.date,
-          time: this.rideInfo.time,
-          distance: this.rideInfo.distance,
-          fuelPrice: this.rideInfo.fuelPrice,
-          fee: this.rideInfo.fee,
-          vehicleId: this.rideInfo.vehicleId,
-          fromLocation: this.fromLocationId,
-          toLocation: this.toLocationId,
-        })
         .then((result) => {
           // Based on whether things worked or not, show the
           // appropriate dialog.
           if (result.data.ok) {
-            this.showDialog("Success", result.data.msge);
-            this.rideAdd = true;
-          } else {
-            this.showDialog("Sorry", result.data.msge);
+            this.fromLocationId = result.data.newLocation.id;
+            console.log(this.fromLocationId)
+
           }
-        })
+          //post to location
+              this.$axios
+                .post("/locations", {
+                name: this.arrivalInfo.name,
+                address: this.arrivalInfo.address,
+                city: this.arrivalInfo.city,
+                state: this.arrivalInfo.state,
+                zipcode: this.arrivalInfo.zipcode,
+              })
+              .then((result) => {
+                // Based on whether things worked or not, show the
+                // appropriate dialog.
+                if (result.data.ok) {
+                  this.toLocationId = result.data.newLocation.id
+                  console.log(this.toLocationId);
+                }
+                  this.$axios
+                    .post("/rides", {
+                      date: this.rideInfo.date,
+                      time: this.rideInfo.time,
+                      distance: this.rideInfo.distance,
+                      fuelPrice: this.rideInfo.fuelPrice,
+                      fee: this.rideInfo.fee,
+                      vehicleId: this.rideInfo.vehicleId,
+                      fromLocation: this.fromLocationId,
+                      toLocation: this.toLocationId,
+                    })
+                    .then((result) => {
+                      // Based on whether things worked or not, show the
+                      // appropriate dialog.
+                      if (result.data.ok) {
+                        this.showDialog("Success", result.data.msge);
+                        this.rideAdd = true;
+                      } else {
+                        this.showDialog("Sorry", result.data.msge);
+                      }
+                    })
+                  })
+            })
+   
         .catch((err) => this.showDialog("Failed", err));
+        } catch (e) {
+          console.log(e.message)
+          
+        }
     },
     // Helper method to display the dialog box with the appropriate content.
     showDialog: function (header, text) {
       this.dialogHeader = header;
+      console.log(this.rideInfo.vehicleId)
       console.log(text)
       this.dialogText = text;
       this.dialogVisible = true;
