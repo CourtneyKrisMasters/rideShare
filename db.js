@@ -476,18 +476,19 @@ async function init() {
       },
     },
 
-    {
-      method: "GET",
-      path: "/rides/{id}/fuelPrices",
-      config: {
-        description: "Retrieve all current rides fuel prices for this passenger",
-      },
-      handler: async (request, h) => {
-        return Ride.query()
-          .withGraphFetched("passengers")
-          .withGraphFetched("drivers")
-      },
-    },
+    //could use this later to get the fuel prices for each individual?
+    // {
+    //   method: "GET",
+    //   path: "/rides/{id}/fuelPrices",
+    //   config: {
+    //     description: "Retrieve all current rides fuel prices for this passenger",
+    //   },
+    //   handler: async (request, h) => {
+    //     return Ride.query()
+    //       .withGraphFetched("passengers")
+    //       .withGraphFetched("drivers")
+    //   },
+    // },
 
     {
       method: "GET",
