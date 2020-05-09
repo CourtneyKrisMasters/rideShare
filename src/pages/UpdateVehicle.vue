@@ -91,14 +91,18 @@
           required
         ></v-text-field>
         <!--make a drop down here as well with all of the abbreviations from the State table-->
-        <v-text-field
-          v-model="vehicleInfo.licenseState"
-          v-bind:rules="rules.licenseState"
-          error-count="10"
-          type="licenseState"
-          label="License State"
-          required
-        ></v-text-field>
+        <v-row align="left">
+          <v-col class="d-flex">
+            <v-select
+              v-model="vehicleInfo.licenseState"
+              :items="abbreviations"
+              item-text="name"
+              item-value="abbreviation"
+              label="State"
+              required 
+            ></v-select>
+          </v-col>
+        </v-row>
         <v-btn v-bind:disabled="!valid" v-on:click="updateVehicle"
           >Submit
         </v-btn>
@@ -159,6 +163,7 @@ export default {
       debouncedGetVehicle: null,
 
       items: [],
+      abbreviations: [],
 
       //TODO - write function that grabs data from the vehicle table and fills in the form
       getCurrentVehicleInfo() {},
@@ -200,6 +205,13 @@ export default {
         type: item.type,
       }));
     });
+
+    this.$axios.get("/states").then(response => {
+        this.abbreviations = response.data.map(item => ({
+          abbreviation: item.abbreviation,
+          name: item.name,
+           }));
+      })
   },
 
   watch: {
