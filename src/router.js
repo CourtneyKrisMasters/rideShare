@@ -5,6 +5,7 @@ import Home from "./pages/Home.vue";
 import Admin from "./pages/Admin.vue";
 import Driver from "./pages/Driver.vue";
 import Passenger from "./pages/Passenger.vue";
+import PassengerLogin from "./pages/PassengerLogin.vue";
 import Accounts from "./pages/Accounts.vue";
 import Vehicles from "./pages/Vehicles.vue";
 import VehicleTypes from "./pages/VehicleTypes.vue";
@@ -24,6 +25,7 @@ export default new Router({
     { name: "admin", path: "/admin", component: Admin, Rides },
     { name: "driver", path: "/driver", component: Driver },
     { name: "passenger", path: "/passenger", component: Passenger },
+    { name: "passengerLogin", path: "/passengerLogin", component: PassengerLogin },
     { name: "accounts", path: "/accounts", component: Accounts },
     { name: "vehicles", path: "/vehicles", component: Vehicles },
     { name: "vehicleTypes", path: "/vehicleTypes", component: VehicleTypes },

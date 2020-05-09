@@ -19,8 +19,8 @@ class Vehicle extends Model {
                     from: 'Vehicle.id',
                     through: {
                         //authorization is the join table
-                        from: 'Authorization.vehicleId',
-                        to: 'Authorization.driverId'
+                        from: 'Authorization.vehicleid',
+                        to: 'Authorization.driverid'
                     },
                     to: 'Driver.id'
                 }
@@ -31,16 +31,16 @@ class Vehicle extends Model {
                 modelClass: __dirname + "/Ride",
                 join: {
                     from: 'Vehicle.id',
-                    to: 'Ride.vehicleId'
+                    to: 'Ride.vehicleid'
                 },
             },
 
-            vehicle_types: {
+            vehicletypes: {
                 relation: Model.BelongsToOneRelation,
-                modelClass: __dirname + "/Vehicle_Type",
+                modelClass: __dirname + "/VehicleType",
                 join: {
-                    from: 'Vehicle.vehicleTypeId',
-                    to: 'Vehicle_type.id'
+                    from: 'Vehicle.vehicletypeid',
+                    to: 'VehicleType.id'
                 }
             },
 
@@ -49,7 +49,7 @@ class Vehicle extends Model {
                 relation: Model.BelongsToOneRelation,
                 modelClass: __dirname + "/State",
                 join: {
-                    from: 'Vehicle.licenseState',
+                    from: 'Vehicle.licensestate',
                     to: 'State.abbreviation'
                 }
             }

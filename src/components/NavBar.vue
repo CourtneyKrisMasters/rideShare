@@ -8,17 +8,21 @@
 
     <v-spacer></v-spacer>
 
-    <v-btn text v-bind:to="{ name: 'admin' }">
+    <v-btn text v-if="!isLoggedIn" v-bind:to="{ name: 'admin' }">
       Admin
     </v-btn>
-    <v-btn text v-bind:to="{ name: 'driver' }">
+    <v-btn text v-if="!isLoggedIn" v-bind:to="{ name: 'driver' }">
       Driver
     </v-btn>
-    <v-btn text v-bind:to="{ name: 'passenger' }">
+    <v-btn text v-if="!isLoggedIn" v-bind:to="{ name: 'passengerLogin' }">
       Passenger
     </v-btn>
 
-    <v-menu v-if="isLoggedIn" offset-y>
+    <v-btn text v-if="isLoggedIn" @click="signOut" v-bind:to="{ name: 'home-page' }">
+      Log Out
+    </v-btn>
+
+    <!-- <v-menu v-if="isLoggedIn" offset-y>
       <template v-slot:activator="{ on }">
         <v-btn text v-on="on">
           <v-icon dark>mdi-account</v-icon>
@@ -38,7 +42,7 @@
           <v-list-item-title>Sign Out</v-list-item-title>
         </v-list-item>
       </v-list>
-    </v-menu>
+    </v-menu> -->
   </v-app-bar>
 </template>
 

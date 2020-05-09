@@ -402,6 +402,76 @@ async function init() {
       },
     },
 
+    //-------------------These are the passenger routes--------------//
+
+    {
+      method: "POST",
+      path: "/passenger",
+      config: {
+        description: "Log in",
+        validate: {
+          payload: Joi.object({
+            firstName: Joi.string().required(),
+            lastName: Joi.string().required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        const account = await Passenger.query()
+          .where("firstname", request.payload.firstName)
+          .andWhere("lastname", request.payload.lastName)
+          .first();
+        if (account) {
+          return {
+            ok: true,
+            msge: `Logged in successfully as '${request.payload.firstName}' '${request.payload.lastName}'`,
+            details: {
+              id: account.id,
+              firstName: account.firstname,
+              lastName: account.lastname,
+              phone: account.phone,
+            },
+          };
+        } else {
+          return {
+            ok: false,
+            msge: "Invalid name",
+          };
+        }
+      },
+    },
+
+    {
+      method: "GET",
+      path: "/rides/{id}/fuelPrices",
+      config: {
+        description: "Retrieve all current rides fuel prices for this passenger",
+      },
+      handler: async (request, h) => {
+        return Ride.query()
+          .withGraphFetched("passengers")
+          .withGraphFetched("drivers")
+      },
+    },
+
+    {
+      method: "GET",
+      path: "/passengers/{id}/rides",
+      config: {
+        description: "Retrieve all current rides for this passenger",
+      },
+      handler: async (request, h) => {
+        try{
+        return Passenger.query()
+          .where("id", request.params.id)
+          .withGraphFetched("rides.[fromlocation, tolocation, vehicles.vehicletypes]")
+          .first()
+        } catch (e){
+          return request
+        }
+      },
+    },
+
 
   ]);
   await server.start();

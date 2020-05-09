@@ -18,8 +18,8 @@ class Passenger extends Model {
           from: "Passenger.id",
           through: {
             //passengers is the join table
-            from: "Passengers.passengerId",
-            to: "Passengers.rideId",
+            from: "Passengers.passengerid",
+            to: "Passengers.rideid",
           },
           to: "Ride.id",
         },

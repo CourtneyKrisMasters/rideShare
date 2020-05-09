@@ -16,7 +16,7 @@ export default new Vuex.Store({
   // Cannot update state directly; use a `mutation` (below).
   // Access in components as `this.$store.state.currentAccount`
   state: {
-    currentAccount: !null
+    currentAccount: null
   },
 
   // A "getter" returns a computed property from the store, similar
