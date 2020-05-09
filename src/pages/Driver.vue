@@ -6,6 +6,11 @@
           <v-btn  text v-bind:to="{ name: 'vehicles' }">
             Add or Update Vehicles
           </v-btn>
+
+          <v-btn text v-bind:to="{ name: 'electToDrive' }">
+            Sign Up to Drive
+          </v-btn>
+
           <v-spacer></v-spacer>
         <h4 class="display-1">Current Rides</h4>
       <v-data-table

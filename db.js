@@ -94,7 +94,7 @@ async function init() {
       },
     },
 
-    //get specific vehicle information
+    //get specific vehicle information, use for update vehicle
     {
       method: "GET",
       path: "/vehicles/{licenseNumber}",
@@ -147,6 +147,22 @@ async function init() {
           .withGraphFetched("passengers")
           .withGraphFetched("drivers");
       },
+    },
+
+    //get specific ride information, use for update ride
+    {
+      method: "GET",
+      path: "/rides/{vehicleId}",
+      config: {
+        description: "Retrieve the certain ride's information",
+      },
+      handler: async (request, h) => {
+        return Ride.query()
+          .where("vehicleid", request.payload.vehicleId)
+          .andWhere("date", request.payload.date)
+          .andWhere("time", request.payload.time)
+          .first();
+        },
     },
 
     {
@@ -313,6 +329,7 @@ async function init() {
       },
     },
 
+    //method to update a certain vehicle
     {
       method: "PATCH",
       path: "/vehicles",
@@ -369,6 +386,68 @@ async function init() {
       },
     },
 
+    //method to update a certain ride
+    {
+      method: "PATCH",
+      path: "/rides",
+      config: {
+        description: "Update a Ride",
+        // validate: {
+        //   payload: Joi.object({
+        //     date:Joi.required(),
+        //     time: Joi.required(),
+        //     distance: Joi.string().required(),
+        //     fuelPrice: Joi.number().required(),
+        //     fee: Joi.number().required(),
+        //     vehicleId: Joi.number().required(),
+        //     fromLocation: Joi.number().required(),
+        //     toLocation: Joi.number().required(),
+        //   }),
+        //},
+      },
+      handler: async (request, h) => {
+          const existingRide = await Ride.query()
+            .where("vehicleid", request.payload.vehicleId)
+            .andWhere("date", request.payload.date)
+            .andWhere("time", request.payload.time)
+            .first();
+            if (existingRide) {
+              console.log("The ride had been found");
+              const updateRide = await Vehicle.query()
+                .update({
+                  date: request.payload.date,
+                  time: request.payload.time,
+                  distance: request.payload.distance,
+                  fuelprice: request.payload.fuelPrice,
+                  fee: request.payload.fee,
+                  vehicleid: request.payload.vehicleId,
+                  fromlocationid: request.payload.fromLocation,
+                  tolocationid: request.payload.toLocation,
+                })
+                .where("licensenumber", request.payload.licenseNumber)
+                .andWhere("date", request.payload.date)
+                .andWhere("time", request.payload.time);
+          //show results
+          if (updateRide) {
+            return {
+              ok: true,
+              msge: `Ride updated successfully for car license '${request.payload.licenseNumber}'`,
+            };
+          } else {
+            return {
+              ok: false,
+              msge: "Ride not updated",
+            };
+          }
+        } else {
+          return {
+            ok: false,
+            msge: "Invalid license number",
+          };
+        }
+      },
+    },
+    
     {
       //method to add new locations to the database working
       method: "POST",

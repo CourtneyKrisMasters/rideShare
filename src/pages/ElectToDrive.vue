@@ -1,44 +1,38 @@
-<!--pop up form to add a new Authorization Driver/Vehicle Pair-->
 <template>
   <v-container>
-    <v-row justify="center">
-      <v-col cols="12" sm="8" md="6">
-        <v-card class="elevation-12">
-          <v-toolbar color="primary" dark flat>
-            <v-toolbar-title>Authorize a Driver</v-toolbar-title>
-          </v-toolbar>
-          <v-card-text>
-            <v-form>
-              <v-row >
-                <v-col class="d-flex">
-                  <v-select
-                    :items="driverItems"
-                    item-text="name"
-                    item-value="id"
-                    label="Select Driver"
-                  ></v-select>
-                </v-col>
-              </v-row>
-              <v-row >
-                <v-col class="d-flex">
-                  <v-select
-                    :items="vehicleItems"
-                    item-text="licensenumber"
-                    item-value="id"
-                    label="Select Vehicle"
-                  ></v-select>
-                </v-col>
-              </v-row>
-            </v-form>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn v-on:click="handleSubmit" color="primary">Authorize Driver</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
+    <div>
+      <h4 class="display-1">Sign Up to Drive</h4>
 
+      <p class="body-1">Chose which ride you want to drive.</p>
+
+        <v-row justify="center">
+            <v-col cols="12" sm="8" md="6">
+                <v-card class="elevation-12">
+                <v-toolbar color="primary" dark flat>
+                    <v-toolbar-title>Authorized Rides</v-toolbar-title>
+                </v-toolbar>
+                <v-card-text>
+                    <v-form>
+                    <v-row >
+                        <v-col class="d-flex">
+                        <v-select
+                            :items="rideItems"
+                            item-text="name"
+                            item-value="id"
+                            label="Select Ride"
+                        ></v-select>
+                        </v-col>
+                    </v-row>
+                    </v-form>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn v-on:click="handleSubmit" color="primary">Sign Up</v-btn>
+                </v-card-actions>
+                </v-card>
+            </v-col>
+            </v-row>
+        </div>
     <div class="text-xs-center">
         <v-dialog v-model="dialogVisible" width="500">
           <v-card>
@@ -67,13 +61,7 @@
 export default {
   data: function() {
     return {
-        authorizationObject: {
-            driverId: "",
-            vehicleId: "",
-        },
-
-        driverItems: [],
-        vehicleItems: [],
+        rideItems: [],
 
         // Was an account created successfully?
         newauthorizationObjectCreated: false,
@@ -82,27 +70,25 @@ export default {
         dialogHeader: "<no dialogHeader>",
         dialogText: "<no dialogText>",
         dialogVisible: false,
-
-        rules: {
-            required: [(val) => val.length > 0 || "Required"]
-        }
     };
   },
 
   //gets all drivers for the dropdown
   mounted: function() {
-       this.$axios.get("/drivers").then(response => {
-        this.driverItems = response.data.map(item => ({
-          id: item.id,
-          firstname: item.firstname,
-          lastname: item.lastname,
-          name: item.firstname + " " + item.lastname,
-        }));
-      });
-      this.$axios.get("/vehicles").then(response => {
-        this.vehicleItems = response.data.map(item => ({
-          id: item.id,
-          licensenumber: item.licensenumber,
+       this.$axios.get("/rides")
+       .where(this.)
+       .then(response => {
+        this.rideItems = response.data.map(item => ({
+            date: item.date,
+            time: item.time,
+            distance: item.distance,
+            fuelprice: item.fuelPrice,
+            fee: item.fee,
+            vehicleid: item.vehicleId,
+            fromlocation: item.fromLoaction,
+            tolocation: item.toLocation,
+            passengers: item.passengers,
+            drivers: item.drivers,
         }));
       });
   },
@@ -112,15 +98,11 @@ export default {
     handleSubmit: function () {
       // Haven't been successful yet.
       this.newauthorizationObjectCreated = false;
-      console.log("driver id: " + this.driverId.id);
-      console.log("vehicle id: " + this.vehicleId.id);
-      console.log("object driver id: " + this.authorizationObject.driverId);
-      console.log("object vehicle id: " + this.authorizationObject.id);
+
       this.$axios //this probably needs to be fixed 
         .post("/authorization", {
           //TODO - send the id to the db
-          driverId: this.driver.id, //this is wrong
-          vehicleId: this.vehicle.id,
+          driverId: this.driver.id,
         })
         .then((result) => {
           // Based on whether things worked or not, show the
@@ -138,7 +120,6 @@ export default {
     // Helper method to display the dialog box with the appropriate content.
     showDialog: function (header, text) {
       this.dialogHeader = header;
-      console.log(text);
       this.dialogText = text;
       this.dialogVisible = true;
     },

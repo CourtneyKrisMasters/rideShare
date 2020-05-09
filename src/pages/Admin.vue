@@ -24,7 +24,7 @@
         Add a New Ride
       </v-btn>
 
-      <v-btn text v-bind:to="{ name: 'addRides' }">
+      <v-btn text v-bind:to="{ name: 'updateRide' }">
         Update a Ride
       </v-btn>
       <v-btn text v-bind:to="{ name: 'authorization' }">

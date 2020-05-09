@@ -1,10 +1,47 @@
 <template>
   <v-container>
     <div>
-      <h4 class="display-1">Welcome, Single-Page App User</h4>
-        <p class="body-1">This is the update vehicle page.</p>
-        <h4 class="display-1">Updated Vehicle Information</h4> <!-- make, model, color, vehicleTypeId(int), capacity(int), mpg(float), license state, liscence number -->
-          <v-form v-model="valid">
+      <h4 class="display-1">Update a ride</h4>
+        <p class="body-1">Fill in your ride's documented license number, date, and time to show current it's information.</p>
+                <v-form v-model="valid">
+
+                <!--verify vehicleId, date, and time --> 
+                <v-text-field
+                v-model="confirmedVehicleId"
+                v-bind:rules="rules.vehicleId"
+                error-count="10"
+                type="vehicleId"
+                label="Vehicle Id"
+                required
+                ></v-text-field>
+                
+                <v-text-field
+                v-model="confirmedDate" 
+                type="date"
+                label="Date"
+                required
+                ></v-text-field>
+
+                <v-text-field
+                v-model="confirmedTime"
+                type="time"
+                label="Time"
+                hint="Example input: 05:30 PM"
+                required
+                ></v-text-field>
+
+                <v-alert v-if="showPrompt" type="info">
+                  Please fill out the vehicle's license number, registered date, and registered time.
+                </v-alert>
+
+                <v-alert v-if="showInvalid" type="warning">
+                  Not all of your fields are valid.
+                </v-alert>
+
+                <v-alert v-if="showValid" type="success">
+                  Great! Update the ride's information.
+                </v-alert>
+              <h4 class="display-1">Trip Information</h4>
                 <v-text-field
                 v-model="rideInfo.date" 
                 type="date"
@@ -47,7 +84,7 @@
                     <v-select
                       v-model="rideInfo.vehicleId"
                       :items="items"
-                      item-text="licensenumber"
+                      item-text="vehicleId"
                       item-value="id"
                       label="Vehicle's License Plate Number"
                       required
@@ -171,10 +208,10 @@
 
 
 <script>
-// import Instructions from "../components/Instructions.vue";
+import debounce from "lodash/debounce";
 
 export default {
-  name: "AddRidePage",
+  name: "UpdateRide",
   // components: {
   //   Instructions, // Use the Instructions component we just imported
   // },
@@ -207,6 +244,14 @@ export default {
           state: "",
           zipcode: "",
       },
+
+      // Break this out from `vehicleInfo`.
+      confirmedVehicleId: "",
+      confirmedDate: "",
+      confirmedTime: "",
+      queryResponseReceived: false,
+      rideInfoValid: false,
+      debouncedGetRide: null,
 
       items: [],
       abbreviations: [],
@@ -252,27 +297,139 @@ export default {
 
   //gets all vehicle types and states for the dropdowns on load
   mounted: function() {
-       this.$axios.get("/vehicles").then(response => {
-        this.items = response.data.map(item => ({
-          id: item.id,
-          licensenumber: item.licensenumber,
-        }));
-      }),
-      this.$axios.get("/states").then(response => {
-        this.abbreviations = response.data.map(item => ({
-          abbreviation: item.abbreviation,
-          name: item.name,
-           }));
-      })
+    // Create the debounce function for the query-by-license field.
+    this.debouncedGetRide = debounce(this.addRide, 2000);
+
+    // Get all vehicle types for the dropdown.
+    this.$axios.get("/vehicles").then(response => {
+      this.items = response.data.map(item => ({
+        id: item.id,
+        vehicleId: item.vehicleId,
+      }));
+    }),
+    this.$axios.get("/states").then(response => {
+      this.abbreviations = response.data.map(item => ({
+        abbreviation: item.abbreviation,
+        name: item.name,
+      }));
+    })
   },
 
-  methods: {
-    // Invoked when the user clicks the 'Add rides' button.
+  watch: {  //program is not catching these as functions
+    confirmedVehicleId: function () {
+      this.debouncedgetRide();
+    },
+    confirmedDate: function () {
+      this.debouncedgetRide();
+    },
+    confirmedTime: function () {
+      this.debouncedgetRide();
+    },
+  },
+
+  computed: {
+    showPrompt() {
+      return (
+        this.confirmedVehicleId === "" ||
+        this.confirmedDate === "" ||
+        this.confirmedTime === "" || !this.queryResponseReceived
+      );
+    },
+
+    showInvalid() {
+      return (
+        this.confirmedVehicleId !== "" &&
+        this.confirmedDate !== "" &&
+        this.confirmedTime !== "" &&
+        this.queryResponseReceived &&
+        !this.rideInfoValid
+      );
+    },
+
+    showValid() {
+      return this.rideInfoValid;
+    },
+  },
+
+   methods: {
     addRide: function () {
+      this.$axios
+        .get("/rides", {
+          params: {
+            vehicleId: this.confirmedVehicleId,
+            //date: this.confirmedDate,
+            //time: this.confirmedTime
+          },
+        })
+        .then((result) => {
+          this.queryResponseReceived = true;
+
+          if (result.data.ok) {
+            const details = result.data.details;
+            // This could be simplified if the database columns and the properties
+            // of vehicleInfo were named identically.
+            this.rideInfo = {
+              date: details.date,
+              time: details.time,
+              distance: details.distance,
+              fuelPrice: details.fuelPrice,
+              fee: details.fee,
+              vehicleId: details.vehicleId
+            };
+            this.departureInfo = {
+              name: details.name,
+              address: details.address,
+              city: details.city,
+              state: details.state,
+              zipcode: details.zipcode,
+            };
+            this.arrivalInfo = {
+              name: details.name,
+              address: details.address,
+              city: details.city,
+              state: details.state,
+              zipcode: details.zipcode,
+            };
+
+            this.rideInfoValid = true;
+          } else {
+            // Clear the form in the case the user changes the license number
+            // to an invalid one.
+            this.rideInfo = {
+              date: "",
+              time: "",
+              distance: "",
+              fuelPrice: "",
+              fee: "",
+              vehicleId: "",
+            },
+
+            this.departureInfo = {
+              name: "",
+              address: "",
+              city: "",
+              state: "",
+              zipcode: "",
+            },
+
+            this.arrivalInfo = {
+              name: "",
+              address: "",
+              city: "",
+              state: "",
+              zipcode: "",
+            },
+            this.rideInfoValid = false;
+          }
+        });
+    },
+
+    // Invoked when the user clicks the 'Reset Password' button.
+    UpdateRide: function () {
       // Haven't been successful yet.
       this.rideAdd = false;
 
-      // post from location.
+      // Patch from location to the Hapi server.
       this.$axios
         .patch("/locations", {
           name: this.departureInfo.name,
@@ -281,82 +438,58 @@ export default {
           state: this.departureInfo.state,
           zipcode: this.departureInfo.zipcode,
         })
-        // .then((result) => {
-        //   // Based on whether things worked or not, show the
-        //   // appropriate dialog.
-        //   if (result.data.ok) {
-        //     this.showDialog("Success", result.data.msge);
-        //     this.rideAdd = true;
-        //   } else {
-        //     this.showDialog("Sorry", result.data.msge);
-        //   }
-        // })
-        ,
-
-     
-      //post to location
-      this.$axios
-        .patch("/locations", {
-          name: this.arrivalInfo.name,
-          address: this.arrivalInfo.address,
-          city: this.arrivalInfo.city,
-          state: this.arrivalInfo.state,
-          zipcode: this.arrivalInfo.zipcode,
-        })
-        .catch((err) => this.showDialog("Couldn't make to location", err)),
-
-      //get back id of the from location to use in the ride post and store in fromLocationId
-      this.$axios
-        .get("/locations", {
-          params: {
-            name: this.departureInfo.name
-          }
-        })
-        .then((response) => {
-          this.fromLocationId = response.id; 
-        })
-        .catch((err) => this.showDialog("Couldn't get back from Id with error", err)),
-
-      //get back id of the to location to use in the ride post and store in toLocationId
-      this.$axios
-        .get("/locations", {
-          params: {
-            name: this.arrivalInfo.name
-          }
-        })
-        .then((response) => {
-          this.toLocationId = response.id; 
-        })
-        .catch((err) => this.showDialog("Couldn't get back to Id with error", err)),
-
-
-      this.$axios
-        .patch("/rides", {
-          date: this.rideInfo.date,
-          time: this.rideInfo.time,
-          distance: this.rideInfo.distance,
-          fuelPrice: this.rideInfo.fuelPrice,
-          fee: this.rideInfo.fee,
-          vehicleId: this.rideInfo.vehicleId,
-          fromLocation: this.fromLocationId,
-          toLocation: this.toLocationId,
-        })
         .then((result) => {
-          // Based on whether things worked or not, show the
-          // appropriate dialog.
           if (result.data.ok) {
-            this.showDialog("Success", result.data.msge);
-            this.rideAdd = true;
-          } else {
-            this.showDialog("Sorry", result.data.msge);
+            this.fromLocationId = result.data.newLocation.id;
+            console.log(this.fromLocationId)
+
           }
-        })
+          //patch to location
+              this.$axios
+                .patch("/locations", {
+                name: this.arrivalInfo.name,
+                address: this.arrivalInfo.address,
+                city: this.arrivalInfo.city,
+                state: this.arrivalInfo.state,
+                zipcode: this.arrivalInfo.zipcode,
+              })
+              .then((result) => {
+                // Based on whether things worked or not, show the
+                // appropriate dialog.
+                if (result.data.ok) {
+                  this.toLocationId = result.data.newLocation.id
+                  console.log(this.toLocationId);
+                }
+                  this.$axios
+                    .patch("/rides", {
+                      date: this.rideInfo.date,
+                      time: this.rideInfo.time,
+                      distance: this.rideInfo.distance,
+                      fuelPrice: this.rideInfo.fuelPrice,
+                      fee: this.rideInfo.fee,
+                      vehicleId: this.rideInfo.vehicleId,
+                      fromLocation: this.fromLocationId,
+                      toLocation: this.toLocationId,
+                    })
+                    .then((result) => {
+                      // Based on whether things worked or not, show the
+                      // appropriate dialog.
+                      if (result.data.ok) {
+                        this.showDialog("Success", result.data.msge);
+                        this.rideAdd = true;
+                      } else {
+                        this.showDialog("Sorry", result.data.msge);
+                      }
+                    })
+                  })
+            })
         .catch((err) => this.showDialog("Failed", err));
+        
     },
+
     // Helper method to display the dialog box with the appropriate content.
     showDialog: function (header, text) {
       this.dialogHeader = header;
-      console.log(text)
       this.dialogText = text;
       this.dialogVisible = true;
     },
@@ -369,6 +502,16 @@ export default {
         // Only navigate away from the reset page if we were successful.
         this.$router.push({ name: "admin" });
       }
+    },
+
+    //TODO - get all vehicle types for dropdown
+    getVehicleTypes() {
+      this.$axios.get(`/vehicleType/`).then((response) => {
+        if (response.data.ok) {
+          //somehow put items into array and return that array
+          console.log("this worked");
+        }
+      });
     },
   },
 };

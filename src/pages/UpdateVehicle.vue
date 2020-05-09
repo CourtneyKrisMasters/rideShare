@@ -165,9 +165,6 @@ export default {
       items: [],
       abbreviations: [],
 
-      //TODO - write function that grabs data from the vehicle table and fills in the form
-      getCurrentVehicleInfo() {},
-
       // Was the account reset successfully?
       vehicleAdd: false,
 
@@ -315,31 +312,6 @@ export default {
         .catch((err) => this.showDialog("Failed", err));
         
     },
-
-    getAnswer: function () {
-      if (this.question.length < 3) {
-        this.answer = 'Invalid license'
-        return
-      }
-      this.answer = 'Thinking...'
-      var vm = this.$axios.get('/vehicles/{licenseNumber}')
-        .then(function (response) {
-          vm.answer = 'Confirmed vehicle'
-          this.vehicleInfo = response.data.map(vehicleInfo => ({
-          make: vehicleInfo.make,
-          model: vehicleInfo.model,
-          color: vehicleInfo.color,
-          vehicleTypeId: vehicleInfo.vehicleTypeId,
-          capacity: vehicleInfo.capacity,
-          mpg: vehicleInfo.mpg,
-          licenseState: vehicleInfo.licenseState,
-          }));
-        })
-        .catch(function (error) {
-          vm.answer = 'Error! That is not registered as a liscense number' + error
-        })
-    },
-  
 
     // Helper method to display the dialog box with the appropriate content.
     showDialog: function (header, text) {

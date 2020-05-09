@@ -14,7 +14,11 @@ import AddRides from "./pages/AddRides.vue";
 import UpdateVehicle from "./pages/UpdateVehicle.vue";
 import UpdateRide from "./pages/UpdateRide.vue";
 import Authorization from "./pages/Authorization.vue";
+<<<<<<< HEAD
 import PassengerSignUp from "./pages/PassengerSignUp.vue";
+=======
+import ElectToDrive from "./pages/ElectToDrive.vue";
+>>>>>>> 3415c6a28a188b4b28bcd45d0b03b3e3fb801658
 
 Vue.use(Router);
 
@@ -36,5 +40,6 @@ export default new Router({
     { name: "updateRide", path: "/updateRide", component: UpdateRide },
     { name: "authorization", path: "/authorization", component: Authorization },
     { name: "passengerSignUp", path: "/passengerSignUp", component: PassengerSignUp },
+    { name: "electToDrive", path: "/electToDrive", component: ElectToDrive }
   ]
 });
