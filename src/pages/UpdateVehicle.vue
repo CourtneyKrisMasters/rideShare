@@ -1,94 +1,108 @@
 <template>
   <v-container>
     <div>
-        <h4 class="display-1">Update a Vehicle</h4> 
+      <h4 class="display-1">Update a Vehicle</h4>
 
-        <v-spacer></v-spacer>
+      <v-spacer></v-spacer>
 
-        <p class="body-1">First, what is the license number of the vehicle you're updating?</p>  
-          <v-form v-model="valid">
-                <v-text-field
-                v-model="vehicleInfo.licenseNumber"
-                v-bind:rules="rules.licenseNumber"
-                error-count="10"
-                type="licenseNumber"
-                label="License Number"
-                required
-                ></v-text-field>
-                <p class="body-2">Now fill out the vehicle's new information.</p>
-                <v-text-field
-                v-model="vehicleInfo.make"  
-                v-bind:rules="rules.make"
-                error-count="10"
-                type="make"
-                label="Make"
-                ></v-text-field>
-                <v-text-field
-                v-model="vehicleInfo.model"
-                v-bind:rules="rules.model"
-                error-count="10"
-                type="model"
-                label="Model"
-                required
-                ></v-text-field>
-                <v-text-field
-                v-model="vehicleInfo.color"
-                v-bind:rules="rules.color"
-                error-count="10"
-                type="color-text"
-                label="Color"
-                required
-                ></v-text-field>
-                <!--instead of having the user type an ID in this field, can we make it a 
+      <p class="body-1">
+        First, what is the license number of the vehicle you're updating?
+      </p>
+      <v-form v-model="valid">
+        <v-text-field
+          v-model="licenseNumberQuery"
+          v-bind:rules="rules.licenseNumber"
+          error-count="10"
+          type="licenseNumber"
+          label="License Number"
+          required
+        ></v-text-field>
+
+        <v-alert v-if="showPrompt" type="info">
+          Please fill out the vehicle's license number.
+        </v-alert>
+
+        <v-alert v-if="showInvalid" type="warning">
+          That license number is not valid.
+        </v-alert>
+
+        <v-alert v-if="showValid" type="success">
+          Great! Update the vehicle's information.
+        </v-alert>
+
+        <v-text-field
+          v-model="vehicleInfo.make"
+          v-bind:rules="rules.make"
+          error-count="10"
+          type="make"
+          label="Make"
+        ></v-text-field>
+        <v-text-field
+          v-model="vehicleInfo.model"
+          v-bind:rules="rules.model"
+          error-count="10"
+          type="model"
+          label="Model"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="vehicleInfo.color"
+          v-bind:rules="rules.color"
+          error-count="10"
+          type="color-text"
+          label="Color"
+          required
+        ></v-text-field>
+        <!--instead of having the user type an ID in this field, can we make it a 
                     dropdown with all of the possible vehicle types that we have in the VehicleType table?
                     This will change it from being a text-field to some other kind of field-->
-                <v-row >
-                  <v-col class="d-flex">
-                    <v-select
-                      :items="items"
-                      item-text="type"
-                      item-value="id"
-                      label="Vehicle Type"
-                    ></v-select>
-                  </v-col>
-                </v-row>
-                <!--...-->
-                <v-text-field
-                v-model="vehicleInfo.vehicleTypeId"
-                v-bind:rules="rules.vehicleTypeId"
-                error-count="10"
-                type="vehicleTypeId"
-                label="Vehicle Type ID"
-                required
-                ></v-text-field>
-                <v-text-field
-                v-model="vehicleInfo.capacity"  
-                v-bind:rules="rules.capacity"
-                error-count="10"
-                type="capacity"
-                label="How many people can it hold?"
-                ></v-text-field>
-                <v-text-field
-                v-model="vehicleInfo.mpg"
-                v-bind:rules="rules.mpg"
-                error-count="10"
-                type="mpg"
-                label="MPG"
-                required
-                ></v-text-field>
-                <!--make a drop down here as well with all of the abbreviations from the State table-->
-                <v-text-field
-                v-model="vehicleInfo.licenseState"
-                v-bind:rules="rules.licenseState"
-                error-count="10"
-                type="licenseState"
-                label="License State"
-                required
-                ></v-text-field>
-            <v-btn v-bind:disabled="!valid" v-on:click="addVehicle"
-              >Submit
-            </v-btn>
-          </v-form>
+        <v-row>
+          <v-col class="d-flex">
+            <v-select
+              :items="items"
+              item-text="type"
+              item-value="id"
+              label="Vehicle Type"
+            ></v-select>
+          </v-col>
+        </v-row>
+        <!--...-->
+        <v-text-field
+          v-model="vehicleInfo.vehicleTypeId"
+          v-bind:rules="rules.vehicleTypeId"
+          error-count="10"
+          type="vehicleTypeId"
+          label="Vehicle Type ID"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="vehicleInfo.capacity"
+          v-bind:rules="rules.capacity"
+          error-count="10"
+          type="capacity"
+          label="How many people can it hold?"
+        ></v-text-field>
+        <v-text-field
+          v-model="vehicleInfo.mpg"
+          v-bind:rules="rules.mpg"
+          error-count="10"
+          type="mpg"
+          label="MPG"
+          required
+        ></v-text-field>
+        <!--make a drop down here as well with all of the abbreviations from the State table-->
+        <v-text-field
+          v-model="vehicleInfo.licenseState"
+          v-bind:rules="rules.licenseState"
+          error-count="10"
+          type="licenseState"
+          label="License State"
+          required
+        ></v-text-field>
+        <v-btn v-bind:disabled="!valid" v-on:click="updateVehicle"
+          >Submit
+        </v-btn>
+      </v-form>
       <div class="text-xs-center">
         <v-dialog v-model="dialogVisible" width="500">
           <v-card>
@@ -113,12 +127,11 @@
   </v-container>
 </template>
 
-
 <script>
-// import Instructions from "../components/Instructions.vue";
+import debounce from "lodash/debounce";
 
 export default {
-  name: "AddVehiclePage",
+  name: "UpdateVehicle",
   // components: {
   //   Instructions, // Use the Instructions component we just imported
   // },
@@ -139,12 +152,16 @@ export default {
         licenseNumber: "",
       },
 
+      // Break this out from `vehicleInfo`.
+      licenseNumberQuery: "",
+      licenseNumberResponseReceived: false,
+      licenseNumberValid: false,
+      debouncedGetVehicle: null,
+
       items: [],
 
-      //TODO - write function that grabs data from the vehicle table and fills in the form 
-      getCurrentVehicleInfo() {
-          
-      },
+      //TODO - write function that grabs data from the vehicle table and fills in the form
+      getCurrentVehicleInfo() {},
 
       // Was the account reset successfully?
       vehicleAdd: false,
@@ -163,32 +180,100 @@ export default {
       rules: {
         required: [(val) => val.length > 0 || "Required"],
       },
-      vehicleTypeId: [
-        (val) => /^[0-9]*$/.test(val) || "Requires digits",
-      ],
-      capacity: [
-        (val) => /^[0-9]*$/.test(val) || "Requires digits",
-      ],
+      vehicleTypeId: [(val) => /^[0-9]*$/.test(val) || "Requires digits"],
+      capacity: [(val) => /^[0-9]*$/.test(val) || "Requires digits"],
       mpg: [
-        (val) => /[+-]?([0-9]*[.])?[0-9]+/.test(val) || "Requires a decimal number",
+        (val) =>
+          /[+-]?([0-9]*[.])?[0-9]+/.test(val) || "Requires a decimal number",
       ],
     };
   },
 
-  //gets all vehicle types for the dropdown
-  mounted: function() {
-       this.$axios.get("/vehicleTypes").then(response => {
-        this.items = response.data.map(item => ({
-          id: item.id,
-          type: item.type,
-        }));
-      });
+  mounted: function () {
+    // Create the debounce function for the query-by-license field.
+    this.debouncedGetVehicle = debounce(this.getVehicle, 2000);
+
+    // Get all vehicle types for the dropdown.
+    this.$axios.get("/vehicleTypes").then((response) => {
+      this.items = response.data.map((item) => ({
+        id: item.id,
+        type: item.type,
+      }));
+    });
   },
 
+  watch: {
+    licenseNumberQuery: function () {
+      this.debouncedGetVehicle();
+    },
+  },
 
-methods: {
+  computed: {
+    showPrompt() {
+      return (
+        this.licenseNumberQuery === "" || !this.licenseNumberResponseReceived
+      );
+    },
+
+    showInvalid() {
+      return (
+        this.licenseNumberQuery !== "" &&
+        this.licenseNumberResponseReceived &&
+        !this.licenseNumberValid
+      );
+    },
+
+    showValid() {
+      return this.licenseNumberValid;
+    },
+  },
+
+  methods: {
+    getVehicle: function () {
+      this.$axios
+        .get("/vehicles", {
+          params: {
+            licenseNumber: this.licenseNumberQuery,
+          },
+        })
+        .then((result) => {
+          this.licenseNumberResponseReceived = true;
+
+          if (result.data.ok) {
+            const details = result.data.details;
+            // This could be simplified if the database columns and the properties
+            // of vehicleInfo were named identically.
+            this.vehicleInfo = {
+              make: details.make,
+              model: details.model,
+              color: details.color,
+              vehicleTypeId: details.vehicletypeid,
+              capacity: details.capacity,
+              mpg: details.mpg,
+              licenseState: details.licensestate,
+              licenseNumber: details.licensenumber,
+            };
+            this.licenseNumberValid = true;
+          } else {
+            // Clear the form in the case the user changes the license number
+            // to an invalid one.
+            this.vehicleInfo = {
+              make: "",
+              model: "",
+              color: "",
+              vehicleTypeId: "",
+              capacity: "",
+              mpg: "",
+              licenseState: "",
+              licenseNumber: "",
+            };
+            this.licenseNumberValid = false;
+          }
+        });
+    },
+
     // Invoked when the user clicks the 'Reset Password' button.
-    addVehicle: function () {
+    updateVehicle: function () {
       // Haven't been successful yet.
       this.vehicleAdd = false;
 
@@ -234,16 +319,16 @@ methods: {
         this.$router.push({ name: "admin" });
       }
     },
+
     //TODO - get all vehicle types for dropdown
     getVehicleTypes() {
-      this.$axios.get(`/vehicleType/`).then(response => {
-        if(response.data.ok) {
+      this.$axios.get(`/vehicleType/`).then((response) => {
+        if (response.data.ok) {
           //somehow put items into array and return that array
           console.log("this worked");
         }
-      })
+      });
     },
   },
 };
 </script>
-

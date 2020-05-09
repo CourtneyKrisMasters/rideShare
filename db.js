@@ -50,7 +50,6 @@ async function init() {
 
   // Configure routes.
   server.route([
-
     //get all vehicle types
     {
       method: "GET",
@@ -70,6 +69,27 @@ async function init() {
         description: "Retrieve all vehicles",
       },
       handler: async (request, h) => {
+        if (request.query.licenseNumber) {
+          // Have a query parameter giving a license number; look for that vehicle.
+          const vehicle = await Vehicle.query()
+            .where("licensenumber", request.query.licenseNumber)
+            .first();
+
+          if (vehicle) {
+            return {
+              ok: true,
+              msge: "Vehicle retrieved successfully",
+              details: vehicle,
+            };
+          } else {
+            return {
+              ok: false,
+              msge: `No vehicle with license number '${request.query.licenseNumber}'`,
+            };
+          }
+        }
+
+        // Default (no query parameter): return all vehicles.
         return Vehicle.query();
       },
     },
@@ -85,7 +105,7 @@ async function init() {
         return Driver.query();
       },
     },
-    
+
     //get all state information
     {
       method: "GET",
@@ -97,7 +117,7 @@ async function init() {
         return State.query();
       },
     },
-    
+
     //get all ride information
     {
       method: "GET",
@@ -174,7 +194,7 @@ async function init() {
         description: "Add a new vehicle",
         validate: {
           payload: Joi.object({
-            make:Joi.string().required(),
+            make: Joi.string().required(),
             model: Joi.string().required(),
             color: Joi.string().required(),
             vehicleTypeId: Joi.number().required(),
@@ -202,12 +222,12 @@ async function init() {
             make: request.payload.make,
             model: request.payload.model,
             color: request.payload.color,
-            //need to make sure that the ID is getting put in the database 
+            //need to make sure that the ID is getting put in the database
             //make sure that when the user selects a type from the dropdown, it's ID gets saved
             vehicletypeid: request.payload.vehicleTypeId,
             capacity: request.payload.capacity,
             mpg: request.payload.mpg,
-            //need to make sure that the ID is getting put in the database 
+            //need to make sure that the ID is getting put in the database
             //make sure that when the user selects a state from the dropdown, it's ID gets saved
             licensestate: request.payload.licenseState,
             licensenumber: request.payload.licenseNumber,
@@ -242,10 +262,10 @@ async function init() {
         description: "Update the vehicle information",
         validate: {
           payload: Joi.object({
-            make:Joi.string().required(),
+            make: Joi.string().required(),
             model: Joi.string().required(),
             color: Joi.string().required(),
-            vehicleTypeId: Joi.number().required(), 
+            vehicleTypeId: Joi.number().required(),
             capacity: Joi.number().required(),
             mpg: Joi.number().required(),
             licenseState: Joi.string().required(),
@@ -259,18 +279,19 @@ async function init() {
           .first();
         if (vehicle) {
           console.log("The vehicle had been found");
-          const updateVehicle = await Vehicle.query().update({
-            make: request.payload.make,
-            model: request.payload.model,
-            color: request.payload.color,
-            vehicletypeid: request.payload.vehicleTypeId, 
-            capacity: request.payload.capacity,
-            mpg: request.payload.mpg,
-            licensestate: request.payload.licenseState,
+          const updateVehicle = await Vehicle.query()
+            .update({
+              make: request.payload.make,
+              model: request.payload.model,
+              color: request.payload.color,
+              vehicletypeid: request.payload.vehicleTypeId,
+              capacity: request.payload.capacity,
+              mpg: request.payload.mpg,
+              licensestate: request.payload.licenseState,
             })
-            .where("licensenumber", request.payload.licenseNumber)
+            .where("licensenumber", request.payload.licenseNumber);
 
-          if (updateVehicle){
+          if (updateVehicle) {
             return {
               ok: true,
               msge: `Vehicle updated successfully for car license '${request.payload.licenseNumber}'`,
@@ -279,13 +300,13 @@ async function init() {
             return {
               ok: false,
               msge: "Vehicle not updated",
-            }
-          };
+            };
+          }
         } else {
           return {
             ok: false,
             msge: "Invalid license number",
-          }
+          };
         }
       },
     },
@@ -307,32 +328,32 @@ async function init() {
         },
       },
       handler: async (request, h) => {
-        try{
-            const newLocation = await Location.query().insert({
-              name: request.payload.name,
-              address: request.payload.address,
-              city: request.payload.city,
-              state: request.payload.state,
-              zipcode: request.payload.zipcode,
-            });
-            //show results
-            if (newLocation) {
-              return {
-                ok: true,
-                msge: `Created new location '${request.payload.name}'`,
-                newLocation
-              };
-            } else {
-              return {
-                ok: false,
-                msge: `Couldn't create location '${request.payload.name}'`,
-              };
-            }
-           } catch (e){
-            return msge;
-            }
+        try {
+          const newLocation = await Location.query().insert({
+            name: request.payload.name,
+            address: request.payload.address,
+            city: request.payload.city,
+            state: request.payload.state,
+            zipcode: request.payload.zipcode,
+          });
+          //show results
+          if (newLocation) {
+            return {
+              ok: true,
+              msge: `Created new location '${request.payload.name}'`,
+              newLocation,
+            };
+          } else {
+            return {
+              ok: false,
+              msge: `Couldn't create location '${request.payload.name}'`,
+            };
           }
+        } catch (e) {
+          return msge;
+        }
       },
+    },
 
     {
       //method to add a new Ride to the database
@@ -401,8 +422,6 @@ async function init() {
         }
       },
     },
-
-
   ]);
   await server.start();
 }
