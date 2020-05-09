@@ -14,6 +14,7 @@ import AddRides from "./pages/AddRides.vue";
 import UpdateVehicle from "./pages/UpdateVehicle.vue";
 import UpdateRide from "./pages/UpdateRide.vue";
 import Authorization from "./pages/Authorization.vue";
+import PassengerSignUp from "./pages/PassengerSignUp.vue";
 
 Vue.use(Router);
 
@@ -34,5 +35,6 @@ export default new Router({
     { name: "updateVehicle", path: "/updateVehicle", component: UpdateVehicle },
     { name: "updateRide", path: "/updateRide", component: UpdateRide },
     { name: "authorization", path: "/authorization", component: Authorization },
+    { name: "passengerSignUp", path: "/passengerSignUp", component: PassengerSignUp },
   ]
 });

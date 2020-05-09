@@ -24,6 +24,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
+            <v-btn v-bind:to="{ name: 'passengerSignUp' }" color="white">Don't have an account? Sign up!</v-btn>
             <v-btn v-on:click="logIn" color="primary">Log In</v-btn>
           </v-card-actions>
         </v-card>
