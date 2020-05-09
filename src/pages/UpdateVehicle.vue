@@ -3,106 +3,104 @@
     <div>
         <h4 class="display-1">Update a Vehicle</h4> 
 
-        <v-spacer></v-spacer>
-
         <p class="body-1">First, what is the license number of the vehicle you're updating?</p>  
           <v-form v-model="valid">
-                <v-text-field
-                v-model="vehicleInfo.licenseNumber"
-                v-bind:rules="rules.licenseNumber"
-                error-count="10"
-                type="licenseNumber"
-                label="License Number"
-                required
-                ></v-text-field>
-                <p class="body-2">Now fill out the vehicle's new information.</p>
-                <v-text-field
-                v-model="vehicleInfo.make"  
-                v-bind:rules="rules.make"
-                error-count="10"
-                type="make"
-                label="Make"
-                ></v-text-field>
-                <v-text-field
-                v-model="vehicleInfo.model"
-                v-bind:rules="rules.model"
-                error-count="10"
-                type="model"
-                label="Model"
-                required
-                ></v-text-field>
-                <v-text-field
-                v-model="vehicleInfo.color"
-                v-bind:rules="rules.color"
-                error-count="10"
-                type="color-text"
-                label="Color"
-                required
-                ></v-text-field>
+            <v-text-field
+            v-model="vehicleInfo.licenseNumber"
+            v-bind:rules="rules.licenseNumber"
+            error-count="10"
+            type="licenseNumber"
+            label="License Number"
+            required
+            ></v-text-field>
+            <p class="body-2">Now fill out the vehicle's new information.</p>
+            <v-text-field
+            v-model="vehicleInfo.make"  
+            v-bind:rules="rules.make"
+            error-count="10"
+            type="make"
+            label="Make"
+            ></v-text-field>
+            <v-text-field
+            v-model="vehicleInfo.model"
+            v-bind:rules="rules.model"
+            error-count="10"
+            type="model"
+            label="Model"
+            required
+            ></v-text-field>
+            <v-text-field
+            v-model="vehicleInfo.color"
+            v-bind:rules="rules.color"
+            error-count="10"
+            type="color-text"
+            label="Color"
+            required
+            ></v-text-field>
                 <!--instead of having the user type an ID in this field, can we make it a 
                     dropdown with all of the possible vehicle types that we have in the VehicleType table?
                     This will change it from being a text-field to some other kind of field-->
-                <v-row >
-                  <v-col class="d-flex">
-                    <v-select
-                      :items="items"
-                      item-text="type"
-                      item-value="id"
-                      label="Vehicle Type"
-                    ></v-select>
-                  </v-col>
-                </v-row>
-                <!--...-->
-                <v-text-field
-                v-model="vehicleInfo.vehicleTypeId"
-                v-bind:rules="rules.vehicleTypeId"
-                error-count="10"
-                type="vehicleTypeId"
-                label="Vehicle Type ID"
-                required
-                ></v-text-field>
-                <v-text-field
-                v-model="vehicleInfo.capacity"  
-                v-bind:rules="rules.capacity"
-                error-count="10"
-                type="capacity"
-                label="How many people can it hold?"
-                ></v-text-field>
-                <v-text-field
-                v-model="vehicleInfo.mpg"
-                v-bind:rules="rules.mpg"
-                error-count="10"
-                type="mpg"
-                label="MPG"
-                required
-                ></v-text-field>
-                <!--make a drop down here as well with all of the abbreviations from the State table-->
-                <v-text-field
-                v-model="vehicleInfo.licenseState"
-                v-bind:rules="rules.licenseState"
-                error-count="10"
-                type="licenseState"
-                label="License State"
-                required
-                ></v-text-field>
+            <v-row >
+              <v-col class="d-flex">
+                <v-select
+                  :items="items"
+                  item-text="type"
+                  item-value="id"
+                  label="Vehicle Type"
+                ></v-select>
+              </v-col>
+            </v-row>
+            <!--...-->
+            <v-text-field
+            v-model="vehicleInfo.vehicleTypeId"
+            v-bind:rules="rules.vehicleTypeId"
+            error-count="10"
+            type="vehicleTypeId"
+            label="Vehicle Type ID"
+            required
+            ></v-text-field>
+            <v-text-field
+            v-model="vehicleInfo.capacity"  
+            v-bind:rules="rules.capacity"
+            error-count="10"
+            type="capacity"
+            label="How many people can it hold?"
+            ></v-text-field>
+            <v-text-field
+            v-model="vehicleInfo.mpg"
+            v-bind:rules="rules.mpg"
+            error-count="10"
+            type="mpg"
+            label="MPG"
+            required
+            ></v-text-field>
+            <!--make a drop down here as well with all of the abbreviations from the State table-->
+            <v-text-field
+            v-model="vehicleInfo.licenseState"
+            v-bind:rules="rules.licenseState"
+            error-count="10"
+            type="licenseState"
+            label="License State"
+            required
+            ></v-text-field>
             <v-btn v-bind:disabled="!valid" v-on:click="addVehicle"
               >Submit
             </v-btn>
           </v-form>
-      <div class="text-xs-center">
-        <v-dialog v-model="dialogVisible" width="500">
-          <v-card>
-            <v-card-title primary-title>
-              {{ dialogHeader }}
-            </v-card-title>
+        <div class="text-xs-center">
+          <v-dialog v-model="dialogVisible" width="500">
+            <v-card>
+              <v-card-title primary-title>
+                {{ dialogHeader }}
+              </v-card-title>
 
-            <v-card-text>
-              {{ dialogText }}
-            </v-card-text>
+              <v-card-text>
+                {{ dialogText }}
+              </v-card-text>
 
-            <v-divider></v-divider>
+              <v-divider></v-divider>
 
-            <v-card-actions>
+              <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="primary" text v-on:click="hideDialog">Okay</v-btn>
             </v-card-actions>
@@ -119,9 +117,25 @@
 
 export default {
   name: "AddVehiclePage",
-  // components: {
-  //   Instructions, // Use the Instructions component we just imported
-  // },
+
+  watch: {
+    // whenever question changes, this function will run
+    question: function () {
+      this.answer = 'Waiting for you to stop typing...'
+      this.debouncedGetAnswer()
+    }
+  },
+  created: function () {
+    // _.debounce is a function provided by lodash to limit how
+    // often a particularly expensive operation can be run.
+    // In this case, we want to limit how often we access
+    // yesno.wtf/api, waiting until the user has completely
+    // finished typing before making the ajax request. To learn
+    // more about the _.debounce function (and its cousin
+    // _.throttle), visit: https://lodash.com/docs#debounce
+    this.debouncedGetAnswer = _.debounce(this.getAnswer, 2000)
+  },
+
   data: function () {
     return {
       valid: false, // Are all the fields in the form valid?
@@ -175,6 +189,7 @@ export default {
     };
   },
 
+
   //gets all vehicle types for the dropdown
   mounted: function() {
        this.$axios.get("/vehicleTypes").then(response => {
@@ -216,7 +231,33 @@ methods: {
           }
         })
         .catch((err) => this.showDialog("Failed", err));
+        
     },
+
+    getAnswer: function () {
+      if (this.question.length < 3) {
+        this.answer = 'Invalid license'
+        return
+      }
+      this.answer = 'Thinking...'
+      var vm = this.$axios.get('/vehicles/{licenseNumber}')
+        .then(function (response) {
+          vm.answer = 'Confirmed vehicle'
+          this.vehicleInfo = response.data.map(vehicleInfo => ({
+          make: vehicleInfo.make,
+          model: vehicleInfo.model,
+          color: vehicleInfo.color,
+          vehicleTypeId: vehicleInfo.vehicleTypeId,
+          capacity: vehicleInfo.capacity,
+          mpg: vehicleInfo.mpg,
+          licenseState: vehicleInfo.licenseState,
+          }));
+        })
+        .catch(function (error) {
+          vm.answer = 'Error! That is not registered as a liscense number' + error
+        })
+    },
+  
 
     // Helper method to display the dialog box with the appropriate content.
     showDialog: function (header, text) {
