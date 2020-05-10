@@ -1,9 +1,9 @@
 <template>
   <v-container>
     <div>
-      <h4 class="display-1">Welcome, Single-Page App User</h4>
-        <p class="body-1">This is the vehicle page.</p>
-        <h4 class="display-1">New Vehicle Information</h4> <!-- make, model, color, vehicleTypeId(int), capacity(int), mpg(float), license state, liscence number -->
+      <h4 class="display-1">Make a New Ride!</h4>
+        <p class="body-1">All fields are required.</p>
+        <h4 class="display-1">New Ride Information</h4> <!-- make, model, color, vehicleTypeId(int), capacity(int), mpg(float), license state, liscence number -->
           <v-form v-model="valid">
                 <v-text-field
                 v-model="rideInfo.date" 

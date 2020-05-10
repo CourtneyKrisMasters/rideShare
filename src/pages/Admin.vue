@@ -1,7 +1,8 @@
 <template>
   <v-container>
     <div>
-      <h4 class="display-1">Admin</h4>
+      <h4 class="display-1">Welcome, Admin!</h4>
+      <p class="body-1">Do some cool admin stuff here.</p>
 
       <v-btn text v-bind:to="{ name: 'rides' }">
         Report of Current Rides
