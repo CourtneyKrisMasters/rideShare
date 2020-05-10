@@ -17,8 +17,8 @@
           label="Last name"
         ></v-text-field>
         <v-text-field
-          v-model="newMember.email"
-          v-bind:rules="rules.email"
+          v-model="newMember.phone"
+          v-bind:rules="rules.phone"
           error-count="10"
           type="phone"
           label="Your phone number"
@@ -88,10 +88,8 @@ export default {
       // containing an error message indicating why the field doesn't pass validation.
       rules: {
         required: [(val) => val.length > 0 || "Required"],
-        // this needs tweaked
         phone: [
-          (val) => /\d/.test(val) || "Need digit",
-          (val) => val.length >= 10 || "Minimum 8 characters",
+          (val) => /^[2-9]\d{2}-\d{3}-\d{4}$/.test(val) || "phone",
         ],
       },
     };

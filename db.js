@@ -165,49 +165,49 @@ async function init() {
         },
     },
 
-    // {
-    //   method: "POST",
-    //   path: "/passengers",
-    //   config: {
-    //     description: "Sign up for an passenger account",
-    //     validate: {
-    //       payload: Joi.object({
-    //         firstName: Joi.string().required(),
-    //         lastName: Joi.string().required(),
-    //         phone: Joi.string().phone().required(),
-    //       }),
-    //     },
-    //   },
-    //   handler: async (request, h) => {
-    //     const existingAccount = await Passenger.query()
-    //       .where("phone", request.payload.phone)
-    //       .first();
-    //     if (existingAccount) {
-    //       return {
-    //         ok: false,
-    //         msge: `Passenger with phone '${request.payload.phone}' is already in use`,
-    //       };
-    //     }
+    {
+      method: "POST",
+      path: "/passengers",
+      config: {
+        description: "Sign up for an passenger account",
+        validate: {
+          payload: Joi.object({
+            firstName: Joi.string().required(),
+            lastName: Joi.string().required(),
+            phone: Joi.string().required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        const existingAccount = await Passenger.query()
+          .where("phone", request.payload.phone)
+          .first();
+        if (existingAccount) {
+          return {
+            ok: false,
+            msge: `Passenger with phone '${request.payload.phone}' is already in use`,
+          };
+        }
 
-    //     const newAccount = await Passenger.query().insert({
-    //       firstname: request.payload.firstName,
-    //       lastname: request.payload.lastName,
-    //       phone: request.payload.phone,
-    //     });
+        const newAccount = await Passenger.query().insert({
+          firstname: request.payload.firstName,
+          lastname: request.payload.lastName,
+          phone: request.payload.phone,
+        });
 
-    //     if (newAccount) {
-    //       return {
-    //         ok: true,
-    //         msge: `Created passenger '${request.payload.phone}'`,
-    //       };
-    //     } else {
-    //       return {
-    //         ok: false,
-    //         msge: `Couldn't create passenger with phone '${request.payload.phone}'`,
-    //       };
-    //     }
-    //   },
-    // },
+        if (newAccount) {
+          return {
+            ok: true,
+            msge: `Created passenger '${request.payload.phone}'`,
+          };
+        } else {
+          return {
+            ok: false,
+            msge: `Couldn't create passenger with phone '${request.payload.phone}'`,
+          };
+        }
+      },
+    },
 
     {
       //method to add a new vehicle type to the database

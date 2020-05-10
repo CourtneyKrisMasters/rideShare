@@ -76,7 +76,7 @@ export default {
   //gets all drivers for the dropdown
   mounted: function() {
        this.$axios.get("/rides")
-       .where(this.)
+      //  .where(this.)
        .then(response => {
         this.rideItems = response.data.map(item => ({
             date: item.date,
