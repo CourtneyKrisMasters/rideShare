@@ -4,6 +4,7 @@ import Router from "vue-router";
 import Home from "./pages/Home.vue";
 import Admin from "./pages/Admin.vue";
 import Driver from "./pages/Driver.vue";
+import DriverLogin from "./pages/DriverLogin.vue"
 import Passenger from "./pages/Passenger.vue";
 import PassengerLogin from "./pages/PassengerLogin.vue";
 import Accounts from "./pages/Accounts.vue";
@@ -14,11 +15,8 @@ import AddRides from "./pages/AddRides.vue";
 import UpdateVehicle from "./pages/UpdateVehicle.vue";
 import UpdateRide from "./pages/UpdateRide.vue";
 import Authorization from "./pages/Authorization.vue";
-<<<<<<< HEAD
 import PassengerSignUp from "./pages/PassengerSignUp.vue";
-=======
 import ElectToDrive from "./pages/ElectToDrive.vue";
->>>>>>> 3415c6a28a188b4b28bcd45d0b03b3e3fb801658
 
 Vue.use(Router);
 
@@ -29,6 +27,7 @@ export default new Router({
     { name: "home-page", path: "/", component: Home },
     { name: "admin", path: "/admin", component: Admin, Rides },
     { name: "driver", path: "/driver", component: Driver },
+    { name: "driverLogin", path: "/driverLogin", component: DriverLogin},
     { name: "passenger", path: "/passenger", component: Passenger },
     { name: "passengerLogin", path: "/passengerLogin", component: PassengerLogin },
     { name: "accounts", path: "/accounts", component: Accounts },

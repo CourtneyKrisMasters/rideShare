@@ -4,7 +4,7 @@
       <v-col cols="12" sm="8" md="6">
         <v-card class="elevation-12">
           <v-toolbar color="primary" dark flat>
-            <v-toolbar-title>Passenger Log in</v-toolbar-title>
+            <v-toolbar-title>Driver Log in</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
             <v-form>
@@ -24,7 +24,6 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn v-bind:to="{ name: 'passengerSignUp' }" color="white">Don't have an account? Sign up!</v-btn>
             <v-btn v-on:click="logIn" color="primary">Log In</v-btn>
           </v-card-actions>
         </v-card>
@@ -55,7 +54,7 @@ export default {
   methods: {
     logIn() {
       this.$axios
-        .post("/passenger", {
+        .post("/driver", {
           firstName: this.firstName,
           lastName: this.lastName,
         })
@@ -64,7 +63,7 @@ export default {
           console.log(result.data.msge);
           if (result.data.ok) {
             this.$store.commit("logIn", result.data.details);
-            this.$router.push({ name: "passenger" });
+            this.$router.push({ name: "driver" });
           }
         })
         .catch((err) => this.showSnackbar(err));

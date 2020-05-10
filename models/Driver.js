@@ -19,8 +19,8 @@ class Driver extends Model {
                     from: 'Driver.id',
                     through: {
                         //drivers is the join table
-                        from: 'Drivers.driverId',
-                        to: 'Drivers.rideId'
+                        from: 'Drivers.driverid',
+                        to: 'Drivers.rideid'
                     },
                     to: 'Ride.id'
                 }
@@ -33,8 +33,8 @@ class Driver extends Model {
                     from: 'Driver.id',
                     through: {
                         //authorization is the join table
-                        from: 'Authorization.driverId',
-                        to: 'Authorization.vehicleId'
+                        from: 'Authorization.driverid',
+                        to: 'Authorization.vehicleid'
                     },
                     to: 'Vehicle.id'
                 }

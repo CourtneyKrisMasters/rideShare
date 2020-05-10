@@ -1,22 +1,20 @@
 <template>
   <v-container>
     <div>
-      <h4 class="display-1">Driver</h4>
-
-          <v-btn  text v-bind:to="{ name: 'vehicles' }">
-            Add or Update Vehicles
-          </v-btn>
+      <h4 class="display-1">Welcome, Driver!</h4>
+      <p class="body-1">Hey, there's some pretty cool driving stuff you can do here.</p>
 
           <v-btn text v-bind:to="{ name: 'electToDrive' }">
             Sign Up to Drive
           </v-btn>
 
-          <v-spacer></v-spacer>
-        <h4 class="display-1">Current Rides</h4>
+ <v-spacer></v-spacer>
+     <h4 class="display-1">Current Rides</h4>
+
       <v-data-table
         class="elevation-1"
         v-bind:headers="headers"
-        v-bind:items="accounts"
+        v-bind:items="currentRides"
       >
         <template v-slot:item="{ item }">
           <tr v-bind:class="itemClass(item)">
@@ -24,14 +22,24 @@
             <td>{{ item.time }}</td>
             <td>{{ item.fromLocation }}</td>
             <td>{{ item.toLocation }}</td>
-            <td>
+            <!--
+            does our driver really need to see these numbers?
+            <td>{{ item.fuelPrice }}</td>
+            <td>{{ item.fee }}</td>
+            -->
+            <td>{{ item.licenseNumber }}</td>
+            <td>{{ item.vehicleType }}</td>
+            <td>{{ item.make }}</td>
+            <td>{{ item.model }}</td>
+            <td>{{ item.color }}</td>
+            <!-- <td>
               <v-icon small @click="deleteAccount(item)">
                 mdi-delete
-              </v-icon>  <!--delete a ride if it is no longer happening-->
+              </v-icon>
               <v-icon small class="ml-2" @click="updateAccount(item)">
                 mdi-pencil
               </v-icon>
-            </td>
+            </td> -->
           </tr>
         </template>
       </v-data-table>
@@ -48,7 +56,7 @@
 
 <script>
 export default {
-  name: "Accounts",
+  name: "Rides",
 
   data: function() {
     return {
@@ -56,29 +64,56 @@ export default {
         { text: "Date", value: "date" },
         { text: "Time", value: "time" },
         { text: "From Location", value: "fromLocation" },
-        { text: "To Location", value: "toLocation" }
+        { text: "To Location", value: "toLocation" },
+        // { text: "Fuel Price", value: "fuelPrice" },
+        // { text: "Fee", value: "fee" },
+        { text: "Vehicle's License Plate Number", value: "licenseNumber" },
+        { text: "Vehicle Type", value: "type" },
+        { text: "Vehicle Make", value: "make" },
+        { text: "Vehicle Model", value: "model" },
+        { text: "Vehicle Color", value: "color" },
       ],
-      accounts: [],
+      currentRides: [],
 
       snackbar: {
         show: false,
-        text: ""
-      }
+        text: "",
+      },
     };
   },
 
-  mounted: function() {
-    this.$axios.get("/accounts").then(response => {
-      this.accounts = response.data.map(account => ({
-        id: account.date,
-        email: account.time,
-        firstName: account.fromLocation,
-        lastName: account.toLocation
+ mounted: function() {
+    //prints out ride information
+    this.$axios.get(`/drivers/${this.$store.state.currentAccount.id}/drives`).then((response) => {
+      this.currentRides = response.data.rides.map((currentRide) => ({
+        date: new Date(currentRide.date).toDateString(),
+        time: currentRide.time,
+        fromLocation: `${currentRide.fromlocation.city}, ${currentRide.fromlocation.state}`,
+        toLocation: `${currentRide.tolocation.city}, ${currentRide.tolocation.state}`,
+        //fuelPrice: `$${currentRide.fuelprice}`,
+        //fee: `$${currentRide.fee}`,
+        licenseNumber: currentRide.vehicles.licensenumber,
+        vehicleType: currentRide.vehicles.vehicletypes.type,
+        make: currentRide.vehicles.make,
+        model: currentRide.vehicles.model,
+        color: currentRide.vehicles.color,
       }));
-    });
+      console.log(this.$store.state.currentAccount.id)
+      console.log(this.currentRides);
+      
+    })
+    .catch((err) => this.showDialog("Failed", err));
   },
 
+  
   methods: {
+    showDialog: function (header, text) {
+      this.dialogHeader = header;
+      console.log(text)
+      console.log(this.$store.state.currentAccount.id)
+      this.dialogText = text;
+      this.dialogVisible = true;
+    },
     // Display a snackbar message.
     showSnackbar(text) {
       this.snackbar.text = text;
@@ -93,25 +128,25 @@ export default {
       }
     },
 
-    // Update account information.
-    updateAccount(item) {
-      console.log("UPDATE", JSON.stringify(item, null, 2));
-      this.showSnackbar("Sorry, update is not yet implemented.");
-    },
+    // // Update account information.
+    // updateAccount(item) {
+    //   console.log("UPDATE", JSON.stringify(item, null, 2));
+    //   this.showSnackbar("Sorry, update is not yet implemented.");
+    // },
 
-    // Delete an account.
-    deleteAccount(item) {
-      this.$axios.delete(`/accounts/${item.id}`).then(response => {
-        if (response.data.ok) {
-          // The delete operation worked on the server; delete the local account
-          // by filtering the deleted account from the list of accounts.
-          this.accounts = this.accounts.filter(
-            account => account.id !== item.id
-          );
-        }
-      });
-    }
-  }
+    // // Delete an account.
+    // deleteAccount(item) {
+    //   this.$axios.delete(`/accounts/${item.id}`).then((response) => {
+    //     if (response.data.ok) {
+    //       // The delete operation worked on the server; delete the local account
+    //       // by filtering the deleted account from the list of accounts.
+    //       this.accounts = this.accounts.filter(
+    //         (account) => account.id !== item.id
+    //       );
+    //     }
+    //   });
+    //},
+  },
 };
 </script>
 

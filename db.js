@@ -630,6 +630,64 @@ async function init() {
         }
       },
     },
+
+    //-------------------These are the driver routes--------------//
+
+    {
+      method: "POST",
+      path: "/driver",
+      config: {
+        description: "Log in",
+        validate: {
+          payload: Joi.object({
+            firstName: Joi.string().required(),
+            lastName: Joi.string().required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        const account = await Driver.query()
+          .where("firstname", request.payload.firstName)
+          .andWhere("lastname", request.payload.lastName)
+          .first();
+        if (account) {
+          return {
+            ok: true,
+            msge: `Logged in successfully as '${request.payload.firstName}' '${request.payload.lastName}'`,
+            details: {
+              id: account.id,
+              firstName: account.firstname,
+              lastName: account.lastname,
+              phone: account.phone,
+              licenseNumber: account.licensenumber
+            },
+          };
+        } else {
+          return {
+            ok: false,
+            msge: "Invalid name",
+          };
+        }
+      },
+    },
+
+    {
+      method: "GET",
+      path: "/drivers/{id}/drives",
+      config: {
+        description: "Retrieve all current drives for this driver",
+      },
+      handler: async (request, h) => {
+        try{
+        return Driver.query()
+          .where("id", request.params.id)
+          .withGraphFetched("rides.[fromlocation, tolocation, vehicles.vehicletypes]")
+          .first()
+        } catch (e){
+          return request
+        }
+      },
+    },
   ]);
   await server.start();
 }
