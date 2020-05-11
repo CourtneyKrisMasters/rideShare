@@ -25,14 +25,14 @@
             <td>{{ item.make }}</td>
             <td>{{ item.model }}</td>
             <td>{{ item.color }}</td>
-            <!-- <td>
-              <v-icon small @click="deleteAccount(item)">
+            <td>
+              <v-icon small @click="cancelRide(item)">
                 mdi-delete
               </v-icon>
-              <v-icon small class="ml-2" @click="updateAccount(item)">
+            <!--<v-icon small class="ml-2" @click="updateAccount(item)">
                 mdi-pencil
-              </v-icon>
-            </td> -->
+              </v-icon>-->
+            </td>
           </tr>
         </template>
       </v-data-table>
@@ -67,7 +67,8 @@ export default {
         { text: "Vehicle Color", value: "color" },
       ],
       currentRides: [],
-      singlePassengerFuelPrice: 0,
+      //rideId: 0,
+      //singlePassengerFuelPrice: 0,
 
       snackbar: {
         show: false,
@@ -80,6 +81,7 @@ export default {
     //prints out ride information
     this.$axios.get(`/passengers/${this.$store.state.currentAccount.id}/rides`).then((response) => {
       this.currentRides = response.data.rides.map((currentRide) => ({
+        id: currentRide.id,
         date: new Date(currentRide.date).toDateString(),
         time: currentRide.time,
         fromLocation: `${currentRide.fromlocation.city}, ${currentRide.fromlocation.state}`,
@@ -93,8 +95,10 @@ export default {
         model: currentRide.vehicles.model,
         color: currentRide.vehicles.color,
       }));
-      console.log(this.$store.state.currentAccount.id)
-      console.log(this.currentRides);
+      //console.log(this.$store.state.currentAccount.id)
+      //console.log(this.currentRides);
+      //this.rideId = response.data.rides.id
+      //console.log(response.data.rides.map.id)
       
     })
     .catch((err) => this.showDialog("Failed", err));
@@ -129,18 +133,24 @@ export default {
     //   this.showSnackbar("Sorry, update is not yet implemented.");
     // },
 
-    // // Delete an account.
-    // deleteAccount(item) {
-    //   this.$axios.delete(`/accounts/${item.id}`).then((response) => {
-    //     if (response.data.ok) {
-    //       // The delete operation worked on the server; delete the local account
-    //       // by filtering the deleted account from the list of accounts.
-    //       this.accounts = this.accounts.filter(
-    //         (account) => account.id !== item.id
-    //       );
-    //     }
-    //   });
-    //},
+    // Delete an account.
+    cancelRide(item) {
+      this.$axios.delete(`/passengers/${this.$store.state.currentAccount.id}/rides/${item.id}`).then((response) => {
+        try{
+        if (response.data.ok) {
+          // The delete operation worked on the server; delete the local account
+          // by filtering the deleted account from the list of accounts.
+          this.currentRides = this.currentRides.filter(
+            (currentRide) => currentRide.id !== item.id
+          );
+          console.log("YAY it worked");
+        }
+        console.log(response);
+        } catch (e){
+          console.log(e.message);
+        }
+      });
+    },
   },
 };
 </script>

@@ -3,6 +3,7 @@
 const { Driver } = require("./models/Driver.js");
 const { Location } = require("./models/Location.js");
 const { Passenger } = require("./models/Passenger.js");
+const { Passengers } = require("./models/Passengers.js");
 const { Ride } = require("./models/Ride");
 const { State } = require("./models/State.js");
 const { Vehicle } = require("./models/Vehicle.js");
@@ -296,13 +297,9 @@ async function init() {
             make: request.payload.make,
             model: request.payload.model,
             color: request.payload.color,
-            //need to make sure that the ID is getting put in the database
-            //make sure that when the user selects a type from the dropdown, it's ID gets saved
             vehicletypeid: request.payload.vehicleTypeId,
             capacity: request.payload.capacity,
             mpg: request.payload.mpg,
-            //need to make sure that the ID is getting put in the database
-            //make sure that when the user selects a state from the dropdown, it's ID gets saved
             licensestate: request.payload.licenseState,
             licensenumber: request.payload.licenseNumber,
           });
@@ -561,7 +558,7 @@ async function init() {
     },
 
      //-------------------These are the passenger routes--------------//
-
+    //Passenger log in
      {
       method: "POST",
       path: "/passenger",
@@ -613,6 +610,7 @@ async function init() {
     //   },
     // },
 
+    //passenger current rides
     {
       method: "GET",
       path: "/passengers/{id}/rides",
@@ -631,8 +629,41 @@ async function init() {
       },
     },
 
+    //remove a ride from a passenger's current rides
+    {
+      method: "DELETE",
+      path: "/passengers/{passenger_id}/rides/{ride_id}",
+      config: {
+        description: "Delete a ride from a passenger's current rides",
+      },
+      handler: (request, h) => {
+        try{
+        return Passengers.query()
+          .delete()
+          .where("passengerid", request.params.passenger_id)
+          .andWhere("rideid", request.params.ride_id)
+          .then((rowsDeleted) => {
+            if (rowsDeleted === 1) {
+              return {
+                ok: true,
+                msge: "Canceled ride!",
+              };
+            } else {
+              return {
+                ok: false,
+                msge: "Couldn't cancel ride",
+              };
+            }
+         });
+        } catch(e){
+          return e.message;
+        }
+      }
+    },
+
     //-------------------These are the driver routes--------------//
 
+    //Driver log in
     {
       method: "POST",
       path: "/driver",
@@ -670,7 +701,7 @@ async function init() {
         }
       },
     },
-
+    //Driver current rides
     {
       method: "GET",
       path: "/drivers/{id}/drives",
