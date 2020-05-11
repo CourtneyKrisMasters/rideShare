@@ -17,6 +17,7 @@ import UpdateRide from "./pages/UpdateRide.vue";
 import Authorization from "./pages/Authorization.vue";
 import PassengerSignUp from "./pages/PassengerSignUp.vue";
 import ElectToDrive from "./pages/ElectToDrive.vue";
+import DriverSignUp from "./pages/DriverSignUp.vue";
 
 Vue.use(Router);
 
@@ -39,6 +40,7 @@ export default new Router({
     { name: "updateRide", path: "/updateRide", component: UpdateRide },
     { name: "authorization", path: "/authorization", component: Authorization },
     { name: "passengerSignUp", path: "/passengerSignUp", component: PassengerSignUp },
-    { name: "electToDrive", path: "/electToDrive", component: ElectToDrive }
+    { name: "electToDrive", path: "/electToDrive", component: ElectToDrive },
+    { name: "driverSignUp", path: "/driverSignUp", component: DriverSignUp },
   ]
 });

@@ -208,6 +208,51 @@ async function init() {
         }
       },
     },
+    {
+      method: "POST",
+      path: "/drivers",
+      config: {
+        description: "Sign up for a driver account",
+        validate: {
+          payload: Joi.object({
+            firstName: Joi.string().required(),
+            lastName: Joi.string().required(),
+            phone: Joi.string().required(),
+            licenseNumber: Joi.string().required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        const existingAccount = await Driver.query()
+          .where("phone", request.payload.phone)
+          .first();
+        if (existingAccount) {
+          return {
+            ok: false,
+            msge: `Driver with phone '${request.payload.phone}' is already in use`,
+          };
+        }
+
+        const newAccount = await Driver.query().insert({
+          firstname: request.payload.firstName,
+          lastname: request.payload.lastName,
+          phone: request.payload.phone,
+          licenseNumber: request.payload.licenseNumber,
+        });
+
+        if (newAccount) {
+          return {
+            ok: true,
+            msge: `Created Driver '${request.payload.phone}'`,
+          };
+        } else {
+          return {
+            ok: false,
+            msge: `Couldn't create driver with phone '${request.payload.phone}'`,
+          };
+        }
+      },
+    },
 
     {
       //method to add a new vehicle type to the database

@@ -119,8 +119,8 @@ export default {
       this.$axios //this probably needs to be fixed 
         .post("/authorization", {
           //TODO - send the id to the db
-          driverId: this.driver.id, //this is wrong
-          vehicleId: this.vehicle.id,
+          driverId: this.driverId, //this is wrong
+          vehicleId: this.vehicleId,
         })
         .then((result) => {
           // Based on whether things worked or not, show the
