@@ -209,6 +209,112 @@ async function init() {
         }
       },
     },
+    {
+      method: "POST",
+      path: "/drivers",
+      config: {
+        description: "Sign up for a driver account",
+        validate: {
+          payload: Joi.object({
+            firstName: Joi.string().required(),
+            lastName: Joi.string().required(),
+            phone: Joi.string().required(),
+            licenseNumber: Joi.string().required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        const existingAccount = await Driver.query()
+          .where("phone", request.payload.phone)
+          .first();
+        if (existingAccount) {
+          return {
+            ok: false,
+            msge: `Driver with phone '${request.payload.phone}' is already in use`,
+          };
+        }
+
+        const newAccount = await Driver.query().insert({
+          firstname: request.payload.firstName,
+          lastname: request.payload.lastName,
+          phone: request.payload.phone,
+          licenseNumber: request.payload.licenseNumber,
+        });
+
+        if (newAccount) {
+          return {
+            ok: true,
+            msge: `Created Driver '${request.payload.phone}'`,
+          };
+        } else {
+          return {
+            ok: false,
+            msge: `Couldn't create driver with phone '${request.payload.phone}'`,
+          };
+        }
+      },
+    },
+
+    {
+      method: "POST",
+      path: "/authorization",
+      config: {
+        description: "Authorize a driver for a vehicle",
+        validate: {
+          payload: Joi.object({
+            driverId: Joi.number().integer().min(1).required(),
+            vehicleId: Joi.number().integer().min(1).required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        // Find the driver.
+        const driver = await Driver.query().findById(request.payload.driverId);
+        if (!driver) {
+          return {
+            ok: false,
+            msge: `No driver with ID ${request.payload.driverId}`,
+          };
+        }
+
+        // Find the vehicle.
+        const vehicle = await Vehicle.query().findById(
+          request.payload.vehicleId
+        );
+        if (!vehicle) {
+          return {
+            ok: false,
+            msge: `No vehicle with ID ${request.payload.vehicleId}`,
+          };
+        }
+
+        // Make sure the driver is not already authorized for the vehicle.
+        const existingAuth = await driver
+          .$relatedQuery("vehicles")
+          .where("id", vehicle.id)
+          .first();
+        if (existingAuth) {
+          return {
+            ok: false,
+            msge: "Driver already authorized for that vehicle",
+          };
+        }
+
+        // Authorize the driver for the vehicle.
+        const affected = await driver.$relatedQuery("vehicles").relate(vehicle);
+        if (affected === 1) {
+          return {
+            ok: true,
+            msge: "Driver successfully authorized for vehicle",
+          };
+        } else {
+          return {
+            ok: false,
+            msge: "Couldn't authorize driver for vehicle",
+          };
+        }
+      },
+    },
 
     {
       //method to add a new vehicle type to the database
