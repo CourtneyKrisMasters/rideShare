@@ -106,6 +106,67 @@ async function init() {
       },
     },
 
+    {
+      method: "POST",
+      path: "/authorization",
+      config: {
+        description: "Authorize a driver for a vehicle",
+        validate: {
+          payload: Joi.object({
+            driverId: Joi.number().integer().min(1).required(),
+            vehicleId: Joi.number().integer().min(1).required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        // Find the driver.
+        const driver = await Driver.query().findById(request.payload.driverId);
+        if (!driver) {
+          return {
+            ok: false,
+            msge: `No driver with ID ${request.payload.driverId}`,
+          };
+        }
+
+        // Find the vehicle.
+        const vehicle = await Vehicle.query().findById(
+          request.payload.vehicleId
+        );
+        if (!vehicle) {
+          return {
+            ok: false,
+            msge: `No vehicle with ID ${request.payload.vehicleId}`,
+          };
+        }
+
+        // Make sure the driver is not already authorized for the vehicle.
+        const existingAuth = await driver
+          .$relatedQuery("vehicles")
+          .where("id", vehicle.id)
+          .first();
+        if (existingAuth) {
+          return {
+            ok: false,
+            msge: "Driver already authorized for that vehicle",
+          };
+        }
+
+        // Authorize the driver for the vehicle.
+        const affected = await driver.$relatedQuery("vehicles").relate(vehicle);
+        if (affected === 1) {
+          return {
+            ok: true,
+            msge: "Driver successfully authorized for vehicle",
+          };
+        } else {
+          return {
+            ok: false,
+            msge: "Couldn't authorize driver for vehicle",
+          };
+        }
+      },
+    },
+
     //get all state information
     {
       method: "GET",
