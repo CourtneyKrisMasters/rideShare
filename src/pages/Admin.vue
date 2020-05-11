@@ -3,66 +3,45 @@
     <div>
       <h4 class="display-1">Welcome, Admin!</h4>
       <p class="body-1">Do some cool admin stuff here.</p>
-
-      <v-btn text v-bind:to="{ name: 'rides' }">
+      <br>
+      <h4 class="display-1">Ride Information</h4>
+      <br>
+      <v-btn color = "primary" v-bind:to="{ name: 'rides' }">
         Report of Current Rides
       </v-btn>
-
-      <v-btn text v-bind:to="{ name: 'vehicles' }">
-        Add  A Vehicle
+       <v-btn color = "primary" v-bind:to="{ name: 'addRides' }">
+        Add a New Ride
       </v-btn>
-
-      <v-btn text v-bind:to="{ name: 'updateVehicle' }">
-        Update A Vehicle
+      <v-btn color = "primary" v-bind:to="{ name: 'updateRide' }">
+        Update a Ride
       </v-btn>
-      <!--This button should make a popup form (or go to a new page) to add a new vehicletype to the VehicleTypes table.
-                Vehicle types will be used when adding new vehicles instead of having the user type in IDs-->
-      <v-btn text v-bind:to="{ name: 'vehicleTypes' }">
+      <br>
+      <br>
+
+      <h4 class="display-1" display: inline>Vehicle Information</h4>
+      <br>
+
+      <v-btn color = "primary" v-bind:to="{ name: 'vehicleTypes' }">
         Add a Vehicle Type
       </v-btn>
 
-      <v-btn text v-bind:to="{ name: 'addRides' }">
-        Add a New Ride
+      <v-btn  color = "primary" v-bind:to="{ name: 'vehicles' }">
+        Add  A Vehicle
       </v-btn>
 
-      <v-btn text v-bind:to="{ name: 'updateRide' }">
-        Update a Ride
+      <v-btn  color = "primary" v-bind:to="{ name: 'updateVehicle' }">
+        Update A Vehicle
       </v-btn>
-      <v-btn text v-bind:to="{ name: 'authorization' }">
+      <br>
+      <br>
+  
+       <h4 class="display-1" display: inline>Driver Authorization</h4>
+       <br>
+
+      <v-btn  color = "primary" v-bind:to="{ name: 'authorization' }">
         Authorize a Driver
       </v-btn>
       <v-spacer></v-spacer>
-
-      <h4 class="display-1">Current Rides</h4>
-
-      <v-data-table
-        class="elevation-1"
-        v-bind:headers="headers"
-        v-bind:items="rides"
-      >
-        <template v-slot:item="{ item }">
-          <tr v-bind:class="itemClass(item)">
-            <td>{{ item.date }}</td>
-            <td>{{ item.time }}</td>
-            <td>{{ item.distance }}</td>
-            <td>{{ item.fuelprice }}</td>
-            <td>{{ item.fee }}</td>
-            <td>{{ item.vehicleid }}</td>
-            <td>{{ item.fromlocation }}</td>
-            <td>{{ item.tolocation }}</td>
-            <td>{{ item.passengers }}</td>
-            <td>{{ item.drivers }}</td>
-            <td>
-              <v-icon small @click="deleteAccount(item)">
-                mdi-delete
-              </v-icon>
-              <v-icon small class="ml-2" @click="updateAccount(item)">
-                mdi-pencil
-              </v-icon>
-            </td>
-          </tr>
-        </template>
-      </v-data-table>
 
       <v-snackbar v-model="snackbar.show">
         {{ snackbar.text }}

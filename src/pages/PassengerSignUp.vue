@@ -89,7 +89,7 @@ export default {
       rules: {
         required: [(val) => val.length > 0 || "Required"],
         phone: [
-          (val) => /^[2-9]\d{2}-\d{3}-\d{4}$/.test(val) || "phone",
+          (val) => /^[0-9]\d{2}-\d{3}-\d{4}$/.test(val) || "phone",
         ],
       },
     };
