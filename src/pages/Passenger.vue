@@ -36,7 +36,7 @@
         <v-card>
           <v-card-title class="headline">Cancel a Ride</v-card-title>
           <v-card-text>
-            Are you sure you want to cancel this ride? ID={{ dialog.rideId }}
+            Are you sure you want to cancel this ride? <!--ID={{ dialog.rideId }}-->
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
