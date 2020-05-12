@@ -3,7 +3,6 @@
 const { Driver } = require("./models/Driver.js");
 const { Location } = require("./models/Location.js");
 const { Passenger } = require("./models/Passenger.js");
-const { Passengers } = require("./models/Passengers.js");
 const { Ride } = require("./models/Ride");
 const { State } = require("./models/State.js");
 const { Vehicle } = require("./models/Vehicle.js");
@@ -275,7 +274,7 @@ async function init() {
             ok: false,
             msge: `No driver with ID ${request.payload.driverId}`,
           };
-        }
+        }``
 
         // Find the vehicle.
         const vehicle = await Vehicle.query().findById(
@@ -742,29 +741,29 @@ async function init() {
       config: {
         description: "Delete a ride from a passenger's current rides",
       },
-      handler: (request, h) => {
+      handler: async (request, h) => {
         try{
-        return Passengers.query()
-          .delete()
-          .where("passengerid", request.params.passenger_id)
-          .andWhere("rideid", request.params.ride_id)
-          .then((rowsDeleted) => {
-            if (rowsDeleted === 1) {
-              return {
-                ok: true,
-                msge: "Canceled ride!",
-              };
-            } else {
-              return {
-                ok: false,
-                msge: "Couldn't cancel ride",
-              };
-            }
-         });
-        } catch(e){
-          return e.message;
+        // Find the passenger.
+        const passenger = await Passenger.query().findById(request.params.passenger_id);
+        // Find the vehicle.
+        // Make sure the driver is not already authorized for the vehicle.
+        const deleteRide = await passenger
+          .$relatedQuery("rides")
+          .where("id", request.params.ride_id)
+          .unrelate();
+        if (deleteRide) {
+          return {
+            ok: true,
+            msge: "Removed ride from Passenger's current rides",
+          };
+        }
+      } catch (e){
+        return {
+          ok: true,
+          msge: e.message
         }
       }
+      },
     },
 
     //-------------------These are the driver routes--------------//
