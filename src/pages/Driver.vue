@@ -32,14 +32,40 @@
             <td>{{ item.make }}</td>
             <td>{{ item.model }}</td>
             <td>{{ item.color }}</td>
-            <!-- <td>
-              <v-icon small @click="deleteAccount(item)">
+             <td>
+              <v-icon small @click.stop="dialog = true"> 
                 mdi-delete
               </v-icon>
-              <v-icon small class="ml-2" @click="updateAccount(item)">
+               <v-dialog
+                v-model="dialog"
+                max-width="400"
+              >
+                <v-card>
+                  <v-card-title class="headline">Cancel a Ride</v-card-title>
+                  <v-card-text>
+                    Are you sure you want to cancel this ride?
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="primary"
+                      @click="cancelDrive(item), dialog = false "
+                    >
+                      Yes
+                    </v-btn>
+                    <v-btn
+                      color="primary"
+                      @click="dialog = false"
+                    >
+                      No
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            <!--<v-icon small class="ml-2" @click="updateAccount(item)">
                 mdi-pencil
-              </v-icon>
-            </td> -->
+              </v-icon>-->
+            </td>
           </tr>
         </template>
       </v-data-table>
@@ -79,6 +105,7 @@ export default {
         show: false,
         text: "",
       },
+      dialog: false
     };
   },
 
@@ -86,6 +113,7 @@ export default {
     //prints out ride information
     this.$axios.get(`/drivers/${this.$store.state.currentAccount.id}/drives`).then((response) => {
       this.currentRides = response.data.rides.map((currentRide) => ({
+        id: currentRide.id,
         date: new Date(currentRide.date).toDateString(),
         time: currentRide.time,
         fromLocation: `${currentRide.fromlocation.city}, ${currentRide.fromlocation.state}`,
@@ -134,18 +162,23 @@ export default {
     //   this.showSnackbar("Sorry, update is not yet implemented.");
     // },
 
-    // // Delete an account.
-    // deleteAccount(item) {
-    //   this.$axios.delete(`/accounts/${item.id}`).then((response) => {
-    //     if (response.data.ok) {
-    //       // The delete operation worked on the server; delete the local account
-    //       // by filtering the deleted account from the list of accounts.
-    //       this.accounts = this.accounts.filter(
-    //         (account) => account.id !== item.id
-    //       );
-    //     }
-    //   });
-    //},
+    cancelDrive(item) {
+      this.$axios.delete(`/drivers/${this.$store.state.currentAccount.id}/rides/${item.id}`).then((response) => {
+        try{
+        if (response.data.ok) {
+          // The delete operation worked on the server; delete the local account
+          // by filtering the deleted account from the list of accounts.
+          this.currentRides = this.currentRides.filter(
+            (currentRide) => currentRide.id !== item.id
+          );
+          console.log("YAY it worked");
+        }
+        console.log(response);
+        } catch (e){
+          console.log(e.message);
+        }
+      });
+    },
   },
 };
 </script>

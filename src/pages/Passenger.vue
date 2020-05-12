@@ -26,9 +26,35 @@
             <td>{{ item.model }}</td>
             <td>{{ item.color }}</td>
             <td>
-              <v-icon small @click="cancelRide(item)">
+              <v-icon small @click.stop="dialog = true"> 
                 mdi-delete
               </v-icon>
+               <v-dialog
+                v-model="dialog"
+                max-width="400"
+              >
+                <v-card>
+                  <v-card-title class="headline">Cancel a Ride</v-card-title>
+                  <v-card-text>
+                    Are you sure you want to cancel this ride?
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="primary"
+                      @click="cancelRide(item), dialog = false "
+                    >
+                      Yes
+                    </v-btn>
+                    <v-btn
+                      color="primary"
+                      @click="dialog = false"
+                    >
+                      No
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
             <!--<v-icon small class="ml-2" @click="updateAccount(item)">
                 mdi-pencil
               </v-icon>-->
@@ -67,13 +93,13 @@ export default {
         { text: "Vehicle Color", value: "color" },
       ],
       currentRides: [],
-      //rideId: 0,
       //singlePassengerFuelPrice: 0,
 
       snackbar: {
         show: false,
         text: "",
       },
+      dialog: false
     };
   },
 
@@ -97,8 +123,6 @@ export default {
       }));
       //console.log(this.$store.state.currentAccount.id)
       //console.log(this.currentRides);
-      //this.rideId = response.data.rides.id
-      //console.log(response.data.rides.map.id)
       
     })
     .catch((err) => this.showDialog("Failed", err));

@@ -824,6 +824,38 @@ async function init() {
         }
       },
     },
+
+    //delete a ride from a driver's current drives
+    {
+      method: "DELETE",
+      path: "/drivers/{driver_id}/rides/{ride_id}",
+      config: {
+        description: "Delete a ride from a driver's current rides",
+      },
+      handler: async (request, h) => {
+        try{
+        // Find the passenger.
+        const driver = await Driver.query().findById(request.params.driver_id);
+        // Find the vehicle.
+        // Make sure the driver is not already authorized for the vehicle.
+        const deleteRide = await driver
+          .$relatedQuery("rides")
+          .where("id", request.params.ride_id)
+          .unrelate();
+        if (deleteRide) {
+          return {
+            ok: true,
+            msge: "Removed ride from Passenger's current rides",
+          };
+        }
+      } catch (e){
+        return {
+          ok: true,
+          msge: e.message
+        }
+      }
+      },
+    },
   ]);
   await server.start();
 }
