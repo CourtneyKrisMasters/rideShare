@@ -100,7 +100,7 @@ mounted: function() {
       // Haven't been successful yet.
       this.newauthorizationObjectCreated = false;
       this.$axios 
-        .post("/drivers", {
+        .post("/drivers", { //  Look on line 290 in db.js to find this code
           rideId: this.authorizationObject.rideId,
           driverId: this.$store.state.currentAccount.id,
         })

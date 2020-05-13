@@ -251,7 +251,7 @@ export default {
       confirmedTime: "",
       queryResponseReceived: false,
       rideInfoValid: false,
-      debouncedGetRide: null,
+      debouncedValidation: null,
 
       items: [],
       abbreviations: [],
@@ -298,7 +298,7 @@ export default {
   //gets all vehicle types and states for the dropdowns on load
   mounted: function() {
     // Create the debounce function for the query-by-license field.
-    this.debouncedGetRide = debounce(this.addRide, 2000);
+    this.debouncedValidation = debounce(this.checkAllValidation, 2000);
 
     // Get all vehicle types for the dropdown.
     this.$axios.get("/vehicles").then(response => {
@@ -317,15 +317,15 @@ export default {
 
   watch: {  //program is not catching these as functions
     //if(confirmedVehicleId && confirmedDate && confirmedTime){function ()}
-    //['confirmedVehicleId', 'confirmedDate', 'confirmedTime'], function (){this.debouncedgetRide();},
-    confirmedVehicleId: function () {
-      this.debouncedgetRide();
+    //['confirmedVehicleId', 'confirmedDate', 'confirmedTime'], function (){this.debouncedValidation();},
+    confirmedVehicleId: function () { //add some console.log statements
+      this.debouncedValidation();
     },
     confirmedDate: function () {
-      this.debouncedgetRide();
+      this.debouncedValidation();
     },
     confirmedTime: function () {
-      this.debouncedgetRide();
+      this.debouncedValidation();
     },
 
   },
@@ -355,8 +355,14 @@ export default {
   },
 
    methods: {
+     checkAllValidation() { //add some console.log statements
+       if (this.confirmedVehicleId && this.confirmedDate && this.confirmedTime){
+             this.addRide();
+       }},
+
     addRide: function () {
       this.$axios
+        //console.log("CHECK FOR SLASHES... confirmedDate is:" + this.confirmedDate)
         .get("/rides", {
           params: {
             vehicleId: this.confirmedVehicleId,
@@ -364,11 +370,15 @@ export default {
             time: this.confirmedTime
           },
         })
+        
         .then((result) => {
           this.queryResponseReceived = true;
+          console.log("Getting rides")
 
+          
           if (result.data.ok) {
             const details = result.data.details;
+            //console.log("Result data worked")
             // This could be simplified if the database columns and the properties
             // of vehicleInfo were named identically.
             this.rideInfo = {
@@ -398,6 +408,7 @@ export default {
           } else {
             // Clear the form in the case the user changes the license number
             // to an invalid one.
+            console.log("Result data DID NOT work")
             this.rideInfo = {
               date: "",
               time: "",
@@ -519,3 +530,5 @@ export default {
   },
 };
 </script>
+
+

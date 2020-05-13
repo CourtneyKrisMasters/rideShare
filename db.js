@@ -149,18 +149,44 @@ async function init() {
       },
     },
 
+    //get specific ride information, use for ElectToDrive
+    {
+      method: "GET",
+      path: "/drivers/{driverId}",
+      config: {
+        description: "Retrieve the certain ride's information that lines up with the driver's authorization",
+      },
+      handler: async (request, h) => {
+        const rideId = request.params.driverId; 
+        return Driver.query()
+          .withGraphFetched('[vehicles.rides]');
+
+
+        /*
+        const rideId = request.params.driverId; 
+        return Driver.query()
+          .withGraphFetched(['vehicles','rides']);
+
+          .select('*')
+          .from('rides')
+          .where('ride.vehicleId', 'driverId', 'authorization')
+          .withGraphFetched('vehicles') //help
+          */
+        },
+    },
+
     //get specific ride information, use for update ride
     {
       method: "GET",
-      path: "/rides/{vehicleId}",
+      path: "/rides/{vehicleId}/{date}/{time}", //make sure date doesn't have slashes in it
       config: {
         description: "Retrieve the certain ride's information",
       },
       handler: async (request, h) => {
         return Ride.query()
-          .where("vehicleid", request.payload.vehicleId)
-          .andWhere("date", request.payload.date)
-          .andWhere("time", request.payload.time)
+          .where("vehicleid", request.params.vehicleId)
+          .andWhere("date", request.params.date)
+          .andWhere("time", request.params.time)
           .first();
         },
     },
@@ -253,6 +279,40 @@ async function init() {
         }
       },
     },
+
+    {
+      method: "POST",
+      path: "/drivers",
+      config: {
+        description: "Authorize a driver for a ride",
+        validate: {
+          payload: Joi.object({
+            rideId: Joi.number().integer().min(1).required(),
+            driverId: Joi.number().integer().min(1).required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        //find the driver
+        const driver = await Driver.query().findById(request.payload.driverId);
+        //find the ride
+        const driver = await Ride.query().findById(request.payload.rideId);
+        //relate the two
+        const affected = await driver.$relatedQuery("rides").relate(ride);
+        if (affected === 1) {
+          return {
+            ok: true,
+            msge: "Driver successfully authorized for ride",
+          };
+        } else {
+          return {
+            ok: false,
+            msge: "Couldn't authorize driver for ride",
+          };
+        } 
+      }
+    },
+
 
     {
       method: "POST",
