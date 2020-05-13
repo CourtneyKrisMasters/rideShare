@@ -5,7 +5,7 @@
       <p class="body-1">Hey, there's some pretty cool stuff you can do here.</p>
 
       <v-spacer></v-spacer>
-     <h4 class="display-1">Current Rides</h4>
+      <h4 class="display-1">Current Rides</h4>
 
       <v-data-table
         class="elevation-1"
@@ -26,20 +26,33 @@
             <td>{{ item.model }}</td>
             <td>{{ item.color }}</td>
             <td>
-              <v-icon small @click="cancelRide(item)">
-                mdi-delete
-              </v-icon>
-            <!--<v-icon small class="ml-2" @click="updateAccount(item)">
-                mdi-pencil
-              </v-icon>-->
+              <v-icon small @click="showDialog(item.id)">mdi-delete</v-icon>
             </td>
           </tr>
         </template>
       </v-data-table>
 
-      <v-snackbar v-model="snackbar.show">
+      <v-dialog v-model="dialog.visible" max-width="400">
+        <v-card>
+          <v-card-title class="headline">Cancel a Ride</v-card-title>
+          <v-card-text>
+            Are you sure you want to cancel this ride? <!--ID={{ dialog.rideId }}-->
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" @click="cancelRide(dialog.rideId)">
+              Yes
+            </v-btn>
+            <v-btn color="primary" @click="hideDialog()">
+              No
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-snackbar v-model="snackbar.visible">
         {{ snackbar.text }}
-        <v-btn color="blue" text @click="snackbar.show = false">
+        <v-btn color="blue" text @click="snackbar.visible = false">
           Close
         </v-btn>
       </v-snackbar>
@@ -49,9 +62,9 @@
 
 <script>
 export default {
-  name: "Rides",
+  name: "Passenger",
 
-  data: function() {
+  data: function () {
     return {
       headers: [
         { text: "Date", value: "date" },
@@ -67,56 +80,60 @@ export default {
         { text: "Vehicle Color", value: "color" },
       ],
       currentRides: [],
-      //rideId: 0,
       //singlePassengerFuelPrice: 0,
 
       snackbar: {
-        show: false,
+        visible: false,
         text: "",
+      },
+
+      dialog: {
+        visible: false,
+        rideId: NaN,
       },
     };
   },
 
- mounted: function() {
+  mounted: function () {
     //prints out ride information
-    this.$axios.get(`/passengers/${this.$store.state.currentAccount.id}/rides`).then((response) => {
-      this.currentRides = response.data.rides.map((currentRide) => ({
-        id: currentRide.id,
-        date: new Date(currentRide.date).toDateString(),
-        time: currentRide.time,
-        fromLocation: `${currentRide.fromlocation.city}, ${currentRide.fromlocation.state}`,
-        toLocation: `${currentRide.tolocation.city}, ${currentRide.tolocation.state}`,
-        //could do math here to divide the fuel price by the number of passengers and add to the total fee
-        fuelPrice: `$${currentRide.fuelprice}`,
-        fee: `$${currentRide.fee}`,
-        licenseNumber: currentRide.vehicles.licensenumber,
-        vehicleType: currentRide.vehicles.vehicletypes.type,
-        make: currentRide.vehicles.make,
-        model: currentRide.vehicles.model,
-        color: currentRide.vehicles.color,
-      }));
-      //console.log(this.$store.state.currentAccount.id)
-      //console.log(this.currentRides);
-      //this.rideId = response.data.rides.id
-      //console.log(response.data.rides.map.id)
-      
-    })
-    .catch((err) => this.showDialog("Failed", err));
+    this.$axios
+      .get(`/passengers/${this.$store.state.currentAccount.id}/rides`)
+      .then((response) => {
+        this.currentRides = response.data.rides.map((currentRide) => ({
+          id: currentRide.id,
+          date: new Date(currentRide.date).toDateString(),
+          time: currentRide.time,
+          fromLocation: `${currentRide.fromlocation.city}, ${currentRide.fromlocation.state}`,
+          toLocation: `${currentRide.tolocation.city}, ${currentRide.tolocation.state}`,
+          //could do math here to divide the fuel price by the number of passengers and add to the total fee
+          fuelPrice: `$${currentRide.fuelprice}`,
+          fee: `$${currentRide.fee}`,
+          licenseNumber: currentRide.vehicles.licensenumber,
+          vehicleType: currentRide.vehicles.vehicletypes.type,
+          make: currentRide.vehicles.make,
+          model: currentRide.vehicles.model,
+          color: currentRide.vehicles.color,
+        }));
+        //console.log(this.$store.state.currentAccount.id)
+        //console.log(this.currentRides);
+      })
+      .catch((err) => this.showSnackbar(err));
   },
 
-  
   methods: {
-    showDialog: function (header, text) {
-      this.dialogHeader = header;
-      console.log(text)
-      console.log(this.$store.state.currentAccount.id)
-      this.dialogText = text;
-      this.dialogVisible = true;
+    showDialog: function (rideId) {
+      this.dialog.rideId = rideId;
+      this.dialog.visible = true;
     },
+
+    hideDialog: function () {
+      this.dialog.visible = false;
+    },
+
     // Display a snackbar message.
     showSnackbar(text) {
       this.snackbar.text = text;
-      this.snackbar.show = true;
+      this.snackbar.visible = true;
     },
 
     // Calculate the CSS class for an item
@@ -134,22 +151,27 @@ export default {
     // },
 
     // Delete an account.
-    cancelRide(item) {
-      this.$axios.delete(`/passengers/${this.$store.state.currentAccount.id}/rides/${item.id}`).then((response) => {
-        try{
-        if (response.data.ok) {
-          // The delete operation worked on the server; delete the local account
-          // by filtering the deleted account from the list of accounts.
-          this.currentRides = this.currentRides.filter(
-            (currentRide) => currentRide.id !== item.id
-          );
-          console.log("YAY it worked");
-        }
-        console.log(response);
-        } catch (e){
-          console.log(e.message);
-        }
-      });
+    cancelRide(rideId) {
+      this.$axios
+        .delete(
+          `/passengers/${this.$store.state.currentAccount.id}/rides/${rideId}`
+        )
+        .then((response) => {
+          try {
+            if (response.data.ok) {
+              // The delete operation worked on the server; delete the local account
+              // by filtering the deleted account from the list of accounts.
+              this.currentRides = this.currentRides.filter(
+                (currentRide) => currentRide.id !== rideId
+              );
+              console.log("YAY it worked");
+            }
+            console.log(response);
+          } catch (e) {
+            console.log(e.message);
+          }
+          this.hideDialog();
+        });
     },
   },
 };
