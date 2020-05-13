@@ -204,6 +204,7 @@ export default {
     });
 
     this.$axios.get("/states").then(response => {
+        //this.abbreviations = response.data
         this.abbreviations = response.data.map(item => ({
           abbreviation: item.abbreviation,
           name: item.name,

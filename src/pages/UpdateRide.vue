@@ -316,6 +316,8 @@ export default {
   },
 
   watch: {  //program is not catching these as functions
+    //if(confirmedVehicleId && confirmedDate && confirmedTime){function ()}
+    //['confirmedVehicleId', 'confirmedDate', 'confirmedTime'], function (){this.debouncedgetRide();},
     confirmedVehicleId: function () {
       this.debouncedgetRide();
     },
@@ -325,6 +327,7 @@ export default {
     confirmedTime: function () {
       this.debouncedgetRide();
     },
+
   },
 
   computed: {
@@ -357,8 +360,8 @@ export default {
         .get("/rides", {
           params: {
             vehicleId: this.confirmedVehicleId,
-            //date: this.confirmedDate,
-            //time: this.confirmedTime
+            date: this.confirmedDate,
+            time: this.confirmedTime
           },
         })
         .then((result) => {
