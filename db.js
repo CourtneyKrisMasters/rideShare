@@ -280,38 +280,38 @@ async function init() {
       },
     },
 
-    {
-      method: "POST",
-      path: "/drivers",
-      config: {
-        description: "Authorize a driver for a ride",
-        validate: {
-          payload: Joi.object({
-            rideId: Joi.number().integer().min(1).required(),
-            driverId: Joi.number().integer().min(1).required(),
-          }),
-        },
-      },
-      handler: async (request, h) => {
-        //find the driver
-        const driver = await Driver.query().findById(request.payload.driverId);
-        //find the ride
-        const driver = await Ride.query().findById(request.payload.rideId);
-        //relate the two
-        const affected = await driver.$relatedQuery("rides").relate(ride);
-        if (affected === 1) {
-          return {
-            ok: true,
-            msge: "Driver successfully authorized for ride",
-          };
-        } else {
-          return {
-            ok: false,
-            msge: "Couldn't authorize driver for ride",
-          };
-        } 
-      }
-    },
+    // {
+    //   method: "POST",
+    //   path: "/drivers",
+    //   config: {
+    //     description: "Authorize a driver for a ride",
+    //     validate: {
+    //       payload: Joi.object({
+    //         rideId: Joi.number().integer().min(1).required(),
+    //         driverId: Joi.number().integer().min(1).required(),
+    //       }),
+    //     },
+    //   },
+    //   handler: async (request, h) => {
+    //     //find the driver
+    //     const driver = await Driver.query().findById(request.payload.driverId);
+    //     //find the ride
+    //     const ride = await Ride.query().findById(request.payload.rideId);
+    //     //relate the two
+    //     const affected = await driver.$relatedQuery("rides").relate(ride);
+    //     if (affected === 1) {
+    //       return {
+    //         ok: true,
+    //         msge: "Driver successfully authorized for ride",
+    //       };
+    //     } else {
+    //       return {
+    //         ok: false,
+    //         msge: "Couldn't authorize driver for ride",
+    //       };
+    //     } 
+    //   }
+    // },
 
 
     {
@@ -722,6 +722,56 @@ async function init() {
       },
     },
 
+    //Admin delete a ride from the database
+     {
+      method: "DELETE",
+      path: "/rides/{ride_id}",
+      config: {
+        description: "Delete a ride from current rides",
+      },
+      handler: async (request, h) => {
+        try{
+        // Find the ride.
+        const ride = await Ride.query().findById(request.params.ride_id);
+        // Unrelate ride from passengers table.
+        const deleteRideFromPassengers = await ride
+          .$relatedQuery("passengers")
+          .where("rideid", request.params.ride_id)
+          .unrelate();
+        if (deleteRideFromPassengers) {
+          return {
+            ok: true,
+            msge: "Removed ride from Passenger's current rides",
+          };
+        }
+        // Unrelate ride from drivers table.
+        const deleteRideFromDrivers = await ride
+          .$relatedQuery("drivers")
+          .where("rideid", request.params.ride_id)
+          .unrelate();
+        if (deleteRideFromDrivers) {
+          return {
+            ok: true,
+            msge: "Removed ride from Drivers's current rides",
+          };
+        }
+        // Delete ride from ride table.
+        const deleteRide = await ride.delete();
+        if (deleteRide) {
+          return {
+            ok: true,
+            msge: "Removed ride from database",
+          };
+        }
+      } catch (e){
+        return {
+          ok: true,
+          msge: e.message
+        }
+      }
+      },
+    },
+
      //-------------------These are the passenger routes--------------//
     //Passenger log in
      {
@@ -805,8 +855,7 @@ async function init() {
         try{
         // Find the passenger.
         const passenger = await Passenger.query().findById(request.params.passenger_id);
-        // Find the vehicle.
-        // Make sure the driver is not already authorized for the vehicle.
+        // delete the ride 
         const deleteRide = await passenger
           .$relatedQuery("rides")
           .where("id", request.params.ride_id)
@@ -896,8 +945,7 @@ async function init() {
         try{
         // Find the passenger.
         const driver = await Driver.query().findById(request.params.driver_id);
-        // Find the vehicle.
-        // Make sure the driver is not already authorized for the vehicle.
+       //delete the ride
         const deleteRide = await driver
           .$relatedQuery("rides")
           .where("id", request.params.ride_id)

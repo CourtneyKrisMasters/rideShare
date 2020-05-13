@@ -60,7 +60,7 @@
                 required
                 ></v-text-field>
                 <!--make a drop down here as well with all of the abbreviations from the State table-->
-                <v-row align="left">
+                <v-row>
                   <v-col class="d-flex">
                     <v-select
                       v-model="vehicleInfo.licenseState"

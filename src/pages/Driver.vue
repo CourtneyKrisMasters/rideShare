@@ -11,10 +11,19 @@
  <v-spacer></v-spacer>
      <h4 class="display-1">Current Rides</h4>
 
-      <v-data-table
+     <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search for a ride with a specific license number, location, or date"
+        single-line
+        hide-details
+      ></v-text-field>
+
+       <v-data-table
         class="elevation-1"
         v-bind:headers="headers"
         v-bind:items="currentRides"
+        v-bind:search="search"
       >
         <template v-slot:item="{ item }">
           <tr v-bind:class="itemClass(item)">
@@ -73,6 +82,7 @@ export default {
 
   data: function() {
     return {
+      search: '',
       headers: [
         { text: "Date", value: "date" },
         { text: "Time", value: "time" },
