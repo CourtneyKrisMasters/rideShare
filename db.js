@@ -294,6 +294,7 @@ async function init() {
           return {
             ok: true,
             msge: `Created Driver '${request.payload.phone}'`,
+            details: newAccount
           };
         } else {
           return {
