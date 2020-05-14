@@ -856,7 +856,7 @@ async function init() {
           return Passenger.query()
             .where("id", request.params.id)
             .withGraphFetched(
-              "rides.[fromlocation, tolocation, vehicles.vehicletypes]"
+              "rides.[fromlocation, tolocation, vehicle.vehicletypes]"
             )
             .first();
         } catch (e) {
