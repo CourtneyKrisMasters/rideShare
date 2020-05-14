@@ -113,6 +113,7 @@ export default {
           if (result.data.ok) {
             this.showDialog("Success", result.data.msge);
             this.accountCreated = true;
+            this.$store.commit("currentAccount", result.data.details);
           } else {
             this.showDialog("Sorry", result.data.msge);
           }
