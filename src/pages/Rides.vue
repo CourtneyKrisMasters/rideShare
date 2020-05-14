@@ -16,6 +16,8 @@
         v-bind:headers="headers"
         v-bind:items="rides"
         v-bind:search="search"
+        loading:
+        loading-text="Loading... Please wait"
       >
 
        <!--put this above if you want the loading bar to show.  How do we turn off loading after data has been loaded to the table?
