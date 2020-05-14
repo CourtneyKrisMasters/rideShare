@@ -120,11 +120,11 @@ export default {
         toLocation: `${currentRide.tolocation.city}, ${currentRide.tolocation.state}`,
         //fuelPrice: `$${currentRide.fuelprice}`,
         //fee: `$${currentRide.fee}`,
-        licenseNumber: currentRide.vehicles.licensenumber,
-        vehicleType: currentRide.vehicles.vehicletypes.type,
-        make: currentRide.vehicles.make,
-        model: currentRide.vehicles.model,
-        color: currentRide.vehicles.color,
+        licenseNumber: currentRide.vehicle.licensenumber,
+        vehicleType: currentRide.vehicle.vehicletypes.type,
+        make: currentRide.vehicle.make,
+        model: currentRide.vehicle.model,
+        color: currentRide.vehicle.color,
       }));
       console.log(this.$store.state.currentAccount.id)
       console.log(this.currentRides);

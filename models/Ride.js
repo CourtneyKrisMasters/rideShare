@@ -57,7 +57,7 @@ class Ride extends Model {
         },
       },
 
-      vehicles: {
+      vehicle: {
         relation: Model.BelongsToOneRelation,
         modelClass: __dirname + "/Vehicle",
         join: {
