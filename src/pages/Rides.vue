@@ -107,7 +107,7 @@ export default {
  mounted: function() {
     //prints out ride information
     this.$axios.get("/rides").then((response) => {
-      this.rides = response.data.map((ride) => ({
+      this.rides = response.data.details.map((ride) => ({
         id: ride.id,
         date: new Date(ride.date).toDateString(),
         time: ride.time,
