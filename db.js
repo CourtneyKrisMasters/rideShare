@@ -143,20 +143,22 @@ async function init() {
         // tables. This make it possible to add `where` clauses later.
         // Note that we are NOT executing the query yet.
         const query = Ride.query()
-          .withGraphJoined("[fromlocation, tolocation, vehicle, passengers, drivers]")
+          .withGraphJoined(
+            "[fromlocation, tolocation, vehicle, passengers, drivers]"
+          )
           .debug();
 
         // If there are query parameters in the request, update the Objection query appropriately.
         // This is a little verbose, but it allows the client to filter rides by any or all
         // of these fields.
         if (request.query.licenseNumber) {
-          query.where("vehicle.licensenumber", request.query.licenseNumber)
+          query.where("vehicle.licensenumber", request.query.licenseNumber);
         }
         if (request.query.date) {
-          query.where("date", request.query.date)
+          query.where("date", request.query.date);
         }
         if (request.query.time) {
-          query.where("time", request.query.time)
+          query.where("time", request.query.time);
         }
 
         // Finally, actually await the query, causing it to run.
@@ -179,7 +181,9 @@ async function init() {
       },
       handler: async (request, h) => {
         const rideId = request.params.driverId;
-        return Driver.query().withGraphFetched("rides");
+        return Driver.query()
+          .findById(rideId)
+          .withGraphFetched("vehicles.rides.[fromlocation,tolocation]");
 
         /*
         const rideId = request.params.driverId; 
@@ -244,6 +248,7 @@ async function init() {
           return {
             ok: true,
             msge: `Created passenger '${request.payload.phone}'`,
+            details: newAccount
           };
         } else {
           return {
