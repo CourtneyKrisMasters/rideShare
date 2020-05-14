@@ -103,9 +103,8 @@ async function init() {
       },
       handler: async (request, h) => {
         const vehicleLicenseId = request.params.licenseNumber; //do I need this?
-        return Vehicles.query()
-          .where("licenseNumber", vehicleLicenseId)
-        },
+        return Vehicles.query().where("licenseNumber", vehicleLicenseId);
+      },
     },
 
     //get all drivers
@@ -140,12 +139,33 @@ async function init() {
         description: "Retrieve all current rides",
       },
       handler: async (request, h) => {
-        return Ride.query()
-          .withGraphFetched("fromlocation")
-          .withGraphFetched("tolocation")
-          .withGraphFetched("vehicles")
-          .withGraphFetched("passengers")
-          .withGraphFetched("drivers");
+        // Use `withGraphJoined` so we end up with one big query containing all
+        // tables. This make it possible to add `where` clauses later.
+        // Note that we are NOT executing the query yet.
+        const query = Ride.query()
+          .withGraphJoined("[fromlocation, tolocation, vehicle, passengers, drivers]")
+          .debug();
+
+        // If there are query parameters in the request, update the Objection query appropriately.
+        // This is a little verbose, but it allows the client to filter rides by any or all
+        // of these fields.
+        if (request.query.licenseNumber) {
+          query.where("vehicle.licensenumber", request.query.licenseNumber)
+        }
+        if (request.query.date) {
+          query.where("date", request.query.date)
+        }
+        if (request.query.time) {
+          query.where("time", request.query.time)
+        }
+
+        // Finally, actually await the query, causing it to run.
+        const result = await query;
+
+        return {
+          ok: true,
+          details: result,
+        };
       },
     },
 
@@ -154,13 +174,12 @@ async function init() {
       method: "GET",
       path: "/drivers/{driverId}",
       config: {
-        description: "Retrieve the certain ride's information that lines up with the driver's authorization",
+        description:
+          "Retrieve the certain ride's information that lines up with the driver's authorization",
       },
       handler: async (request, h) => {
-        const rideId = request.params.driverId; 
-        return Driver.query()
-          .withGraphFetched('[vehicles.rides]');
-
+        const rideId = request.params.driverId;
+        return Driver.query().withGraphFetched("rides");
 
         /*
         const rideId = request.params.driverId; 
@@ -172,7 +191,7 @@ async function init() {
           .where('ride.vehicleId', 'driverId', 'authorization')
           .withGraphFetched('vehicles') //help
           */
-        },
+      },
     },
 
     //get specific ride information, use for update ride
@@ -188,7 +207,7 @@ async function init() {
           .andWhere("date", request.params.date)
           .andWhere("time", request.params.time)
           .first();
-        },
+      },
     },
 
     {
@@ -309,10 +328,9 @@ async function init() {
     //         ok: false,
     //         msge: "Couldn't authorize driver for ride",
     //       };
-    //     } 
+    //     }
     //   }
     // },
-
 
     {
       method: "POST",
@@ -334,7 +352,8 @@ async function init() {
             ok: false,
             msge: `No driver with ID ${request.payload.driverId}`,
           };
-        }``
+        }
+        ``;
 
         // Find the vehicle.
         const vehicle = await Vehicle.query().findById(
@@ -568,27 +587,27 @@ async function init() {
         //},
       },
       handler: async (request, h) => {
-          const existingRide = await Ride.query()
-            .where("vehicleid", request.payload.vehicleId)
+        const existingRide = await Ride.query()
+          .where("vehicleid", request.payload.vehicleId)
+          .andWhere("date", request.payload.date)
+          .andWhere("time", request.payload.time)
+          .first();
+        if (existingRide) {
+          console.log("The ride had been found");
+          const updateRide = await Vehicle.query()
+            .update({
+              date: request.payload.date,
+              time: request.payload.time,
+              distance: request.payload.distance,
+              fuelprice: request.payload.fuelPrice,
+              fee: request.payload.fee,
+              vehicleid: request.payload.vehicleId,
+              fromlocationid: request.payload.fromLocation,
+              tolocationid: request.payload.toLocation,
+            })
+            .where("licensenumber", request.payload.licenseNumber)
             .andWhere("date", request.payload.date)
-            .andWhere("time", request.payload.time)
-            .first();
-            if (existingRide) {
-              console.log("The ride had been found");
-              const updateRide = await Vehicle.query()
-                .update({
-                  date: request.payload.date,
-                  time: request.payload.time,
-                  distance: request.payload.distance,
-                  fuelprice: request.payload.fuelPrice,
-                  fee: request.payload.fee,
-                  vehicleid: request.payload.vehicleId,
-                  fromlocationid: request.payload.fromLocation,
-                  tolocationid: request.payload.toLocation,
-                })
-                .where("licensenumber", request.payload.licenseNumber)
-                .andWhere("date", request.payload.date)
-                .andWhere("time", request.payload.time);
+            .andWhere("time", request.payload.time);
           //show results
           if (updateRide) {
             return {
@@ -609,7 +628,7 @@ async function init() {
         }
       },
     },
-    
+
     {
       //method to add new locations to the database working
       method: "POST",
@@ -723,58 +742,58 @@ async function init() {
     },
 
     //Admin delete a ride from the database
-     {
+    {
       method: "DELETE",
       path: "/rides/{ride_id}",
       config: {
         description: "Delete a ride from current rides",
       },
       handler: async (request, h) => {
-        try{
-        // Find the ride.
-        const ride = await Ride.query().findById(request.params.ride_id);
-        // Unrelate ride from passengers table.
-        const deleteRideFromPassengers = await ride
-          .$relatedQuery("passengers")
-          .where("rideid", request.params.ride_id)
-          .unrelate();
-        if (deleteRideFromPassengers) {
+        try {
+          // Find the ride.
+          const ride = await Ride.query().findById(request.params.ride_id);
+          // Unrelate ride from passengers table.
+          const deleteRideFromPassengers = await ride
+            .$relatedQuery("passengers")
+            .where("rideid", request.params.ride_id)
+            .unrelate();
+          if (deleteRideFromPassengers) {
+            return {
+              ok: true,
+              msge: "Removed ride from Passenger's current rides",
+            };
+          }
+          // Unrelate ride from drivers table.
+          const deleteRideFromDrivers = await ride
+            .$relatedQuery("drivers")
+            .where("rideid", request.params.ride_id)
+            .unrelate();
+          if (deleteRideFromDrivers) {
+            return {
+              ok: true,
+              msge: "Removed ride from Drivers's current rides",
+            };
+          }
+          // Delete ride from ride table.
+          const deleteRide = await ride.delete();
+          if (deleteRide) {
+            return {
+              ok: true,
+              msge: "Removed ride from database",
+            };
+          }
+        } catch (e) {
           return {
             ok: true,
-            msge: "Removed ride from Passenger's current rides",
+            msge: e.message,
           };
         }
-        // Unrelate ride from drivers table.
-        const deleteRideFromDrivers = await ride
-          .$relatedQuery("drivers")
-          .where("rideid", request.params.ride_id)
-          .unrelate();
-        if (deleteRideFromDrivers) {
-          return {
-            ok: true,
-            msge: "Removed ride from Drivers's current rides",
-          };
-        }
-        // Delete ride from ride table.
-        const deleteRide = await ride.delete();
-        if (deleteRide) {
-          return {
-            ok: true,
-            msge: "Removed ride from database",
-          };
-        }
-      } catch (e){
-        return {
-          ok: true,
-          msge: e.message
-        }
-      }
       },
     },
 
-     //-------------------These are the passenger routes--------------//
+    //-------------------These are the passenger routes--------------//
     //Passenger log in
-     {
+    {
       method: "POST",
       path: "/passenger",
       config: {
@@ -833,13 +852,15 @@ async function init() {
         description: "Retrieve all current rides for this passenger",
       },
       handler: async (request, h) => {
-        try{
-        return Passenger.query()
-          .where("id", request.params.id)
-          .withGraphFetched("rides.[fromlocation, tolocation, vehicles.vehicletypes]")
-          .first()
-        } catch (e){
-          return request
+        try {
+          return Passenger.query()
+            .where("id", request.params.id)
+            .withGraphFetched(
+              "rides.[fromlocation, tolocation, vehicles.vehicletypes]"
+            )
+            .first();
+        } catch (e) {
+          return request;
         }
       },
     },
@@ -852,26 +873,28 @@ async function init() {
         description: "Delete a ride from a passenger's current rides",
       },
       handler: async (request, h) => {
-        try{
-        // Find the passenger.
-        const passenger = await Passenger.query().findById(request.params.passenger_id);
-        // delete the ride 
-        const deleteRide = await passenger
-          .$relatedQuery("rides")
-          .where("id", request.params.ride_id)
-          .unrelate();
-        if (deleteRide) {
+        try {
+          // Find the passenger.
+          const passenger = await Passenger.query().findById(
+            request.params.passenger_id
+          );
+          // delete the ride
+          const deleteRide = await passenger
+            .$relatedQuery("rides")
+            .where("id", request.params.ride_id)
+            .unrelate();
+          if (deleteRide) {
+            return {
+              ok: true,
+              msge: "Removed ride from Passenger's current rides",
+            };
+          }
+        } catch (e) {
           return {
             ok: true,
-            msge: "Removed ride from Passenger's current rides",
+            msge: e.message,
           };
         }
-      } catch (e){
-        return {
-          ok: true,
-          msge: e.message
-        }
-      }
       },
     },
 
@@ -904,7 +927,7 @@ async function init() {
               firstName: account.firstname,
               lastName: account.lastname,
               phone: account.phone,
-              licenseNumber: account.licensenumber
+              licenseNumber: account.licensenumber,
             },
           };
         } else {
@@ -923,13 +946,15 @@ async function init() {
         description: "Retrieve all current drives for this driver",
       },
       handler: async (request, h) => {
-        try{
-        return Driver.query()
-          .where("id", request.params.id)
-          .withGraphFetched("rides.[fromlocation, tolocation, vehicles.vehicletypes]")
-          .first()
-        } catch (e){
-          return request
+        try {
+          return Driver.query()
+            .where("id", request.params.id)
+            .withGraphFetched(
+              "rides.[fromlocation, tolocation, vehicles.vehicletypes]"
+            )
+            .first();
+        } catch (e) {
+          return request;
         }
       },
     },
@@ -942,26 +967,28 @@ async function init() {
         description: "Delete a ride from a driver's current rides",
       },
       handler: async (request, h) => {
-        try{
-        // Find the passenger.
-        const driver = await Driver.query().findById(request.params.driver_id);
-       //delete the ride
-        const deleteRide = await driver
-          .$relatedQuery("rides")
-          .where("id", request.params.ride_id)
-          .unrelate();
-        if (deleteRide) {
+        try {
+          // Find the passenger.
+          const driver = await Driver.query().findById(
+            request.params.driver_id
+          );
+          //delete the ride
+          const deleteRide = await driver
+            .$relatedQuery("rides")
+            .where("id", request.params.ride_id)
+            .unrelate();
+          if (deleteRide) {
+            return {
+              ok: true,
+              msge: "Removed ride from Passenger's current rides",
+            };
+          }
+        } catch (e) {
           return {
             ok: true,
-            msge: "Removed ride from Passenger's current rides",
+            msge: e.message,
           };
         }
-      } catch (e){
-        return {
-          ok: true,
-          msge: e.message
-        }
-      }
       },
     },
   ]);

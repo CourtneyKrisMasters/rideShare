@@ -112,7 +112,7 @@ export default {
         distance: `${ride.distance} mi`,
         fuelprice: `$ ${ride.fuelprice}`,
         fee: `$ ${ride.fee}`,
-        vehicleid: ride.vehicles.licensenumber,
+        vehicleid: ride.vehicle.licensenumber,
         fromlocation: `${ride.fromlocation.city}, ${ride.fromlocation.state}`,
         tolocation: `${ride.tolocation.city}, ${ride.tolocation.state}`,
         passengers: ride.passengers.map(p => `${p.firstname} ${p.lastname}`),

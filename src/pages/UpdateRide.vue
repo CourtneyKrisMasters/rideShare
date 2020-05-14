@@ -2,186 +2,187 @@
   <v-container>
     <div>
       <h4 class="display-1">Update a ride</h4>
-        <p class="body-1">Fill in your ride's documented license number, date, and time to show current it's information.</p>
-                <v-form v-model="valid">
+      <p class="body-1">
+        Fill in your ride's documented license number, date, and time to show
+        current it's information.
+      </p>
+      <v-form v-model="valid">
+        <!--verify vehicleId, date, and time -->
+        <v-text-field
+          v-model="confirmedLicenseNumber"
+          v-bind:rules="rules.required"
+          label="Vehicle License"
+          required
+        ></v-text-field>
 
-                <!--verify vehicleId, date, and time --> 
-                <v-text-field
-                v-model="confirmedVehicleId"
-                v-bind:rules="rules.vehicleId"
-                error-count="10"
-                type="vehicleId"
-                label="Vehicle Id"
-                required
-                ></v-text-field>
-                
-                <v-text-field
-                v-model="confirmedDate" 
-                type="date"
-                label="Date"
-                required
-                ></v-text-field>
+        <v-text-field
+          v-model="confirmedDate"
+          type="date"
+          label="Date"
+          required
+        ></v-text-field>
 
-                <v-text-field
-                v-model="confirmedTime"
-                type="time"
-                label="Time"
-                hint="Example input: 05:30 PM"
-                required
-                ></v-text-field>
+        <v-text-field
+          v-model="confirmedTime"
+          type="time"
+          label="Time"
+          hint="Example input: 05:30 PM"
+          required
+        ></v-text-field>
 
-                <v-alert v-if="showPrompt" type="info">
-                  Please fill out the vehicle's license number, registered date, and registered time.
-                </v-alert>
+        <v-alert v-if="showPrompt" type="info">
+          Please fill out the vehicle's license number, registered date, and
+          registered time.
+        </v-alert>
 
-                <v-alert v-if="showInvalid" type="warning">
-                  Not all of your fields are valid.
-                </v-alert>
+        <v-alert v-if="showInvalid" type="warning">
+          Not all of your fields are valid.
+        </v-alert>
 
-                <v-alert v-if="showValid" type="success">
-                  Great! Update the ride's information.
-                </v-alert>
-              <h4 class="display-1">Trip Information</h4>
-                <v-text-field
-                v-model="rideInfo.date" 
-                type="date"
-                label="Date"
-                required
-                ></v-text-field>
-                <v-text-field
-                v-model="rideInfo.time"
-                type="time"
-                label="Time"
-                hint="Example input: 05:30 PM"
-                required
-                ></v-text-field>
-                <v-text-field
-                v-model="rideInfo.distance"
-                v-bind:rules="rules.floats"
-                type="distance"
-                label="Distance"
-                hint="Distance in miles"
-                required
-                ></v-text-field>
-                 <v-text-field
-                v-model="rideInfo.fuelPrice"
-                v-bind:rules="rules.floats"
-                type="fuelPrice"
-                label="Fuel Price"
-                required
-                ></v-text-field>
-                 <v-text-field
-                v-model="rideInfo.fee"
-                v-bind:rules="rules.floats"
-                type="fee"
-                label="Fee"
-                required
-                ></v-text-field>
-                <!--instead of having the user type an ID in this field, can we make it a 
+        <v-alert v-if="showValid" type="success">
+          Great! Update the ride's information.
+        </v-alert>
+        <h4 class="display-1">Trip Information</h4>
+        <v-text-field
+          v-model="rideInfo.date"
+          type="date"
+          label="Date"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="rideInfo.time"
+          type="time"
+          label="Time"
+          hint="Example input: 05:30 PM"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="rideInfo.distance"
+          v-bind:rules="rules.floats"
+          type="distance"
+          label="Distance"
+          hint="Distance in miles"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="rideInfo.fuelPrice"
+          v-bind:rules="rules.floats"
+          type="fuelPrice"
+          label="Fuel Price"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="rideInfo.fee"
+          v-bind:rules="rules.floats"
+          type="fee"
+          label="Fee"
+          required
+        ></v-text-field>
+        <!--instead of having the user type an ID in this field, can we make it a 
                     dropdown with all of the possible vehicles that we have in the Vehicle table-->
-                <v-row >
-                  <v-col class="d-flex">
-                    <v-select
-                      v-model="rideInfo.vehicleId"
-                      :items="items"
-                      item-text="vehicleId"
-                      item-value="id"
-                      label="Vehicle's License Plate Number"
-                      required
-                    ></v-select>
-                  </v-col>
-                </v-row>
-            <h4 class="display-1">Departure Information</h4>
-                <v-text-field
-                v-model="departureInfo.name"  
-                v-bind:rules="rules.required"
-                type="name"
-                label="Location of Departure"
-                hint="Example: Bob's House"
-                required
-                ></v-text-field>
-                <v-text-field
-                v-model="departureInfo.address"
-                v-bind:rules="rules.required"
-                type="address"
-                label="Address"
-                required
-                ></v-text-field>
-                <v-text-field
-                v-model="departureInfo.city"
-                v-bind:rules="rules.city"
-                type="city"
-                label="City"
-                required
-                ></v-text-field>
-                <!--dropdown of states-->
-                <v-row >
-                  <v-col class="d-flex">
-                    <v-select
-                      v-model="departureInfo.state"
-                      :items="abbreviations"
-                      item-text="name"
-                      item-value="abbreviation"
-                      label="State"
-                      required
-                    ></v-select>
-                  </v-col>
-                </v-row>
-                <v-text-field
-                v-model="departureInfo.zipcode"
-                v-bind:rules="rules.zipcode"
-                type="zipcode"
-                label="Zipcode"
-                hint="Examples: 12345, 12345-6789, 12345 6789"
-                required
-                ></v-text-field>
-            <h4 class="display-1">Arrival Information</h4>
-                <v-text-field
-                v-model="arrivalInfo.name"  
-                v-bind:rules="rules.required"
-                type="name"
-                label="Location of Arrival"
-                hint="Example: Bob's House"
-                required
-                ></v-text-field>
-                <v-text-field
-                v-model="arrivalInfo.address"
-                v-bind:rules="rules.required"
-                type="address"
-                label="Address"
-                required
-                ></v-text-field>
-                <v-text-field
-                v-model="arrivalInfo.city"
-                v-bind:rules="rules.city"
-                type="city"
-                label="City"
-                required
-                ></v-text-field>
-                <!--dropdown of states-->
-                <v-row >
-                  <v-col class="d-flex">
-                    <v-select
-                      v-model="arrivalInfo.state"
-                      :items="abbreviations"
-                      item-text="name"
-                      item-value="abbreviation"
-                      label="State"
-                      required
-                    ></v-select>
-                  </v-col>
-                </v-row>
-                <v-text-field
-                v-model="arrivalInfo.zipcode"
-                v-bind:rules="rules.zipcode"
-                type="zipcode"
-                label="Zipcode"
-                required
-                ></v-text-field>
-            <v-btn v-bind:disabled="!valid" v-on:click="addRide"
-              >Update Ride
-            </v-btn>
-          </v-form>
+        <v-row>
+          <v-col class="d-flex">
+            <v-select
+              v-model="rideInfo.vehicleId"
+              :items="items"
+              item-text="vehicleId"
+              item-value="id"
+              label="Vehicle's License Plate Number"
+              required
+            ></v-select>
+          </v-col>
+        </v-row>
+        <h4 class="display-1">Departure Information</h4>
+        <v-text-field
+          v-model="departureInfo.name"
+          v-bind:rules="rules.required"
+          type="name"
+          label="Location of Departure"
+          hint="Example: Bob's House"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="departureInfo.address"
+          v-bind:rules="rules.required"
+          type="address"
+          label="Address"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="departureInfo.city"
+          v-bind:rules="rules.city"
+          type="city"
+          label="City"
+          required
+        ></v-text-field>
+        <!--dropdown of states-->
+        <v-row>
+          <v-col class="d-flex">
+            <v-select
+              v-model="departureInfo.state"
+              :items="abbreviations"
+              item-text="name"
+              item-value="abbreviation"
+              label="State"
+              required
+            ></v-select>
+          </v-col>
+        </v-row>
+        <v-text-field
+          v-model="departureInfo.zipcode"
+          v-bind:rules="rules.zipcode"
+          type="zipcode"
+          label="Zipcode"
+          hint="Examples: 12345, 12345-6789, 12345 6789"
+          required
+        ></v-text-field>
+        <h4 class="display-1">Arrival Information</h4>
+        <v-text-field
+          v-model="arrivalInfo.name"
+          v-bind:rules="rules.required"
+          type="name"
+          label="Location of Arrival"
+          hint="Example: Bob's House"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="arrivalInfo.address"
+          v-bind:rules="rules.required"
+          type="address"
+          label="Address"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="arrivalInfo.city"
+          v-bind:rules="rules.city"
+          type="city"
+          label="City"
+          required
+        ></v-text-field>
+        <!--dropdown of states-->
+        <v-row>
+          <v-col class="d-flex">
+            <v-select
+              v-model="arrivalInfo.state"
+              :items="abbreviations"
+              item-text="name"
+              item-value="abbreviation"
+              label="State"
+              required
+            ></v-select>
+          </v-col>
+        </v-row>
+        <v-text-field
+          v-model="arrivalInfo.zipcode"
+          v-bind:rules="rules.zipcode"
+          type="zipcode"
+          label="Zipcode"
+          required
+        ></v-text-field>
+        <v-btn v-bind:disabled="!valid" v-on:click="updateRide"
+          >Update Ride
+        </v-btn>
+      </v-form>
       <div class="text-xs-center">
         <v-dialog v-model="dialogVisible" width="500">
           <v-card>
@@ -206,7 +207,6 @@
   </v-container>
 </template>
 
-
 <script>
 import debounce from "lodash/debounce";
 
@@ -230,23 +230,23 @@ export default {
       },
 
       departureInfo: {
-          name: "",
-          address: "",
-          city: "",
-          state: "",
-          zipcode: "",
+        name: "",
+        address: "",
+        city: "",
+        state: "",
+        zipcode: "",
       },
 
       arrivalInfo: {
-          name: "",
-          address: "",
-          city: "",
-          state: "",
-          zipcode: "",
+        name: "",
+        address: "",
+        city: "",
+        state: "",
+        zipcode: "",
       },
 
       // Break this out from `vehicleInfo`.
-      confirmedVehicleId: "",
+      confirmedLicenseNumber: "",
       confirmedDate: "",
       confirmedTime: "",
       queryResponseReceived: false,
@@ -255,7 +255,7 @@ export default {
 
       items: [],
       abbreviations: [],
-      
+
       fromLocationId: "",
       toLocationId: "",
 
@@ -274,51 +274,49 @@ export default {
       // return either true (the field passes that validation) or a string
       // containing an error message indicating why the field doesn't pass validation.
       rules: {
-        required: [
-            (val) => val.length > 0 || "Required"
-        ],
-        numbers: [
-            (val) => /^[0-9]*$/.test(val) || "Requires digits",
-        ],
+        required: [(val) => val.length > 0 || "Required"],
+        numbers: [(val) => /^[0-9]*$/.test(val) || "Requires digits"],
         floats: [
-            (val) => /[+-]?([0-9]*[.])?[0-9]+/.test(val) || "Requires a decimal number",
+          (val) =>
+            /[+-]?([0-9]*[.])?[0-9]+/.test(val) || "Requires a decimal number",
         ],
         city: [
-            (val) => /^[a-zA-Z\- ]+$/.test(val) || "Requires a valid city name"
+          (val) => /^[a-zA-Z\- ]+$/.test(val) || "Requires a valid city name",
         ],
         zipcode: [
-            (val) => /^\d{5}(?:[-\s]\d{4})?$/.test(val) || "Requires a vaild zipcode"
+          (val) =>
+            /^\d{5}(?:[-\s]\d{4})?$/.test(val) || "Requires a vaild zipcode",
         ],
-
-      }
-
+      },
     };
   },
 
   //gets all vehicle types and states for the dropdowns on load
-  mounted: function() {
+  mounted: function () {
     // Create the debounce function for the query-by-license field.
     this.debouncedValidation = debounce(this.checkAllValidation, 2000);
 
     // Get all vehicle types for the dropdown.
-    this.$axios.get("/vehicles").then(response => {
-      this.items = response.data.map(item => ({
+    this.$axios.get("/vehicles").then((response) => {
+      this.items = response.data.map((item) => ({
         id: item.id,
         vehicleId: item.vehicleId,
       }));
     }),
-    this.$axios.get("/states").then(response => {
-      this.abbreviations = response.data.map(item => ({
-        abbreviation: item.abbreviation,
-        name: item.name,
-      }));
-    })
+      this.$axios.get("/states").then((response) => {
+        this.abbreviations = response.data.map((item) => ({
+          abbreviation: item.abbreviation,
+          name: item.name,
+        }));
+      });
   },
 
-  watch: {  //program is not catching these as functions
-    //if(confirmedVehicleId && confirmedDate && confirmedTime){function ()}
-    //['confirmedVehicleId', 'confirmedDate', 'confirmedTime'], function (){this.debouncedValidation();},
-    confirmedVehicleId: function () { //add some console.log statements
+  watch: {
+    //program is not catching these as functions
+    //if(confirmedLicenseNumber && confirmedDate && confirmedTime){function ()}
+    //['confirmedLicenseNumber', 'confirmedDate', 'confirmedTime'], function (){this.debouncedValidation();},
+    confirmedLicenseNumber: function () {
+      //add some console.log statements
       this.debouncedValidation();
     },
     confirmedDate: function () {
@@ -327,21 +325,21 @@ export default {
     confirmedTime: function () {
       this.debouncedValidation();
     },
-
   },
 
   computed: {
     showPrompt() {
       return (
-        this.confirmedVehicleId === "" ||
+        this.confirmedLicenseNumber === "" ||
         this.confirmedDate === "" ||
-        this.confirmedTime === "" || !this.queryResponseReceived
+        this.confirmedTime === "" ||
+        !this.queryResponseReceived
       );
     },
 
     showInvalid() {
       return (
-        this.confirmedVehicleId !== "" &&
+        this.confirmedLicenseNumber !== "" &&
         this.confirmedDate !== "" &&
         this.confirmedTime !== "" &&
         this.queryResponseReceived &&
@@ -354,31 +352,53 @@ export default {
     },
   },
 
-   methods: {
-     checkAllValidation() { //add some console.log statements
-       if (this.confirmedVehicleId && this.confirmedDate && this.confirmedTime){
-             this.addRide();
-       }},
+  methods: {
+    checkAllValidation() {
+      //add some console.log statements
+      if (
+        this.confirmedLicenseNumber &&
+        this.confirmedDate &&
+        this.confirmedTime
+      ) {
+        this.fetchMatchingRide();
+      }
+    },
 
-    addRide: function () {
+    fetchMatchingRide: function () {
       this.$axios
         //console.log("CHECK FOR SLASHES... confirmedDate is:" + this.confirmedDate)
         .get("/rides", {
           params: {
-            vehicleId: this.confirmedVehicleId,
+            licenseNumber: this.confirmedLicenseNumber,
             date: this.confirmedDate,
-            time: this.confirmedTime
+            time: this.confirmedTime,
           },
         })
-        
-        .then((result) => {
-          this.queryResponseReceived = true;
-          console.log("Getting rides")
 
-          
-          if (result.data.ok) {
-            const details = result.data.details;
-            //console.log("Result data worked")
+        .then((response) => {
+          this.queryResponseReceived = true;
+          console.log("Got response", response);
+
+          if (response.data.ok) {
+            const detailCount = response.data.details.length;
+
+            // We expect to have received exactly one details object.
+            if (detailCount === 0) {
+              this.showDialog("Sorry", "No matching ride");
+              return;
+            }
+            if (detailCount > 1) {
+              this.showDialog(
+                "Sorry",
+                `Found ${details.length} responses; expect just one`
+              );
+              return;
+            }
+
+            // Refer to the One True Ride details object.
+            const details = response.data.details[0];
+
+            console.log("Response details", details);
             // This could be simplified if the database columns and the properties
             // of vehicleInfo were named identically.
             this.rideInfo = {
@@ -387,28 +407,21 @@ export default {
               distance: details.distance,
               fuelPrice: details.fuelPrice,
               fee: details.fee,
-              vehicleId: details.vehicleId
+              vehicleId: details.vehicleId,
             };
-            this.departureInfo = {
-              name: details.name,
-              address: details.address,
-              city: details.city,
-              state: details.state,
-              zipcode: details.zipcode,
-            };
-            this.arrivalInfo = {
-              name: details.name,
-              address: details.address,
-              city: details.city,
-              state: details.state,
-              zipcode: details.zipcode,
-            };
+
+            // Because the properties in the `details` object match the ones
+            // in the departure and arrival info, we can just use the JavaScript
+            // spread syntax. 
+            // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
+            this.departureInfo = { ...details.fromlocation };
+            this.arrivalInfo = { ...details.tolocation };
 
             this.rideInfoValid = true;
           } else {
             // Clear the form in the case the user changes the license number
             // to an invalid one.
-            console.log("Result data DID NOT work")
+            console.log("response data DID NOT work");
             this.rideInfo = {
               date: "",
               time: "",
@@ -416,30 +429,28 @@ export default {
               fuelPrice: "",
               fee: "",
               vehicleId: "",
-            },
-
+            };
             this.departureInfo = {
               name: "",
               address: "",
               city: "",
               state: "",
               zipcode: "",
-            },
-
+            };
             this.arrivalInfo = {
               name: "",
               address: "",
               city: "",
               state: "",
               zipcode: "",
-            },
+            };
             this.rideInfoValid = false;
           }
         });
     },
 
-    // Invoked when the user clicks the 'Reset Password' button.
-    UpdateRide: function () {
+    // Invoked when the user clicks the 'Update Ride' button.
+    updateRide: function () {
       // Haven't been successful yet.
       this.rideAdd = false;
 
@@ -452,53 +463,51 @@ export default {
           state: this.departureInfo.state,
           zipcode: this.departureInfo.zipcode,
         })
-        .then((result) => {
-          if (result.data.ok) {
-            this.fromLocationId = result.data.newLocation.id;
-            console.log(this.fromLocationId)
-
+        .then((response) => {
+          if (response.data.ok) {
+            this.fromLocationId = response.data.newLocation.id;
+            console.log(this.fromLocationId);
           }
           //patch to location
-              this.$axios
-                .patch("/locations", {
-                name: this.arrivalInfo.name,
-                address: this.arrivalInfo.address,
-                city: this.arrivalInfo.city,
-                state: this.arrivalInfo.state,
-                zipcode: this.arrivalInfo.zipcode,
-              })
-              .then((result) => {
-                // Based on whether things worked or not, show the
-                // appropriate dialog.
-                if (result.data.ok) {
-                  this.toLocationId = result.data.newLocation.id
-                  console.log(this.toLocationId);
-                }
-                  this.$axios
-                    .patch("/rides", {
-                      date: this.rideInfo.date,
-                      time: this.rideInfo.time,
-                      distance: this.rideInfo.distance,
-                      fuelPrice: this.rideInfo.fuelPrice,
-                      fee: this.rideInfo.fee,
-                      vehicleId: this.rideInfo.vehicleId,
-                      fromLocation: this.fromLocationId,
-                      toLocation: this.toLocationId,
-                    })
-                    .then((result) => {
-                      // Based on whether things worked or not, show the
-                      // appropriate dialog.
-                      if (result.data.ok) {
-                        this.showDialog("Success", result.data.msge);
-                        this.rideAdd = true;
-                      } else {
-                        this.showDialog("Sorry", result.data.msge);
-                      }
-                    })
-                  })
+          this.$axios
+            .patch("/locations", {
+              name: this.arrivalInfo.name,
+              address: this.arrivalInfo.address,
+              city: this.arrivalInfo.city,
+              state: this.arrivalInfo.state,
+              zipcode: this.arrivalInfo.zipcode,
             })
+            .then((response) => {
+              // Based on whether things worked or not, show the
+              // appropriate dialog.
+              if (response.data.ok) {
+                this.toLocationId = response.data.newLocation.id;
+                console.log(this.toLocationId);
+              }
+              this.$axios
+                .patch("/rides", {
+                  date: this.rideInfo.date,
+                  time: this.rideInfo.time,
+                  distance: this.rideInfo.distance,
+                  fuelPrice: this.rideInfo.fuelPrice,
+                  fee: this.rideInfo.fee,
+                  vehicleId: this.rideInfo.vehicleId,
+                  fromLocation: this.fromLocationId,
+                  toLocation: this.toLocationId,
+                })
+                .then((response) => {
+                  // Based on whether things worked or not, show the
+                  // appropriate dialog.
+                  if (response.data.ok) {
+                    this.showDialog("Success", response.data.msge);
+                    this.rideAdd = true;
+                  } else {
+                    this.showDialog("Sorry", response.data.msge);
+                  }
+                });
+            });
+        })
         .catch((err) => this.showDialog("Failed", err));
-        
     },
 
     // Helper method to display the dialog box with the appropriate content.
@@ -530,5 +539,3 @@ export default {
   },
 };
 </script>
-
-
