@@ -287,7 +287,7 @@ async function init() {
           firstname: request.payload.firstName,
           lastname: request.payload.lastName,
           phone: request.payload.phone,
-          licenseNumber: request.payload.licenseNumber,
+          licensenumber: request.payload.licenseNumber,
         });
 
         if (newAccount) {
