@@ -111,6 +111,7 @@ export default {
     this.$axios
       .get(`/passengers/${this.$store.state.currentAccount.id}/rides`)
       .then((response) => {
+        console.log("RIDES", response.data);
         this.currentRides = response.data.rides.map((currentRide) => ({
           id: currentRide.id,
           date: new Date(currentRide.date).toDateString(),
