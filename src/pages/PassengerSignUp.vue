@@ -88,9 +88,7 @@ export default {
       // containing an error message indicating why the field doesn't pass validation.
       rules: {
         required: [(val) => val.length > 0 || "Required"],
-        phone: [
-          (val) => /^[0-9]\d{2}-\d{3}-\d{4}$/.test(val) || "phone",
-        ],
+        phone: [(val) => /^[0-9]\d{2}-\d{3}-\d{4}$/.test(val) || "phone"],
       },
     };
   },
@@ -113,7 +111,7 @@ export default {
           if (result.data.ok) {
             this.showDialog("Success", result.data.msge);
             this.accountCreated = true;
-            this.$store.commit("currentAccount", result.data.details);
+            this.$store.commit("logIn", result.data.details);
           } else {
             this.showDialog("Sorry", result.data.msge);
           }
