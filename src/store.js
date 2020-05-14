@@ -38,6 +38,9 @@ export default new Vuex.Store({
     },
     logOut(state) {
       state.currentAccount = null;
+    },
+    currentAccount(state, account){
+      state.currentAccount = account;
     }
   }
 });
