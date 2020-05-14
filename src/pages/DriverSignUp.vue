@@ -24,8 +24,8 @@
           label="Your phone number"
         ></v-text-field>
         <v-text-field
-          v-model="newDriver.required"
-          v-bind:rules="rules.licenseNumber"
+          v-model="newDriver.licenseNumber"
+          v-bind:rules="rules.required"
           error-count="10"
           type="licenseNumber"
           label="Your license number"

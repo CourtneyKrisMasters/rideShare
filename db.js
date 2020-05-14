@@ -282,7 +282,7 @@ async function init() {
           firstname: request.payload.firstName,
           lastname: request.payload.lastName,
           phone: request.payload.phone,
-          licenseNumber: request.payload.licenseNumber,
+          licensenumber: request.payload.licenseNumber,
         });
 
         if (newAccount) {
@@ -856,7 +856,7 @@ async function init() {
           return Passenger.query()
             .where("id", request.params.id)
             .withGraphFetched(
-              "rides.[fromlocation, tolocation, vehicles.vehicletypes]"
+              "rides.[fromlocation, tolocation, vehicle.vehicletypes]"
             )
             .first();
         } catch (e) {
