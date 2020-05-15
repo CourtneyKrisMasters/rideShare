@@ -179,6 +179,23 @@ async function init() {
           "Retrieve the certain ride's information that lines up with the driver's authorization",
       },
       handler: async (request, h) => {
+        const rideId = request.params.driverId;
+        const driverId = request.params.driverId;
+        return Driver.query()
+          .findById(rideId)
+          .findById(driverId)
+          .withGraphFetched("vehicles.rides.[fromlocation,tolocation]");
+      },
+    },
+
+     {
+      method: "POST",
+      path: "/drivers/{driver_id}/rides/{ride_id}",
+      config: {
+        description:
+          "sign a driver up for a ride",
+      },
+      handler: async (request, h) => {
         try {
           // Find the passenger.
           const driver = await Driver.query().findById(
@@ -192,7 +209,7 @@ async function init() {
           if (existingRide.length != 0) {
             return {
               ok: false,
-              msge: "Already signed up for this ride!",
+              msge: "Already signed up for this ride",
             };
           }
           const newSignUp = await driver
@@ -215,13 +232,13 @@ async function init() {
 
       }
     },
-
+    //sign a passenger up for a ride
     {
       method: "POST",
       path: "/passengers/{passenger_id}/rides/{ride_id}",
       config: {
         description:
-          "Retrieve the certain ride's information that lines up with the driver's authorization",
+          "Sign a passenger up for a ride",
       },
       handler: async (request, h) => {
         try {
