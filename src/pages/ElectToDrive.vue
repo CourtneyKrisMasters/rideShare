@@ -49,10 +49,10 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="rideSignUp(dialog.rideId), hideDialog()">
+            <v-btn color="cyan darken-1" class="white--text" @click="rideSignUp(dialog.rideId), hideDialog()">
               Yes
             </v-btn>
-            <v-btn color="primary" @click="hideDialog()">
+            <v-btn color="cyan darken-1" class="white--text" @click="hideDialog()">
               No
             </v-btn>
           </v-card-actions>
@@ -62,7 +62,7 @@
 
       <v-snackbar v-model="snackbar.show">
         {{ snackbar.text }}
-        <v-btn color="blue" text @click="snackbar.show = false">
+        <v-btn color="cyan darken-1" class="white--text" text @click="snackbar.show = false">
           Close
         </v-btn>
       </v-snackbar>
@@ -82,7 +82,7 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="primary" text v-on:click="hideSuccessDialog">Okay</v-btn>
+              <v-btn color="cyan darken-1" class="white--text" text v-on:click="hideSuccessDialog">Okay</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>

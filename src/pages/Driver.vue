@@ -4,7 +4,7 @@
       <h4 class="display-1">Welcome, Driver!</h4>
       <p class="body-1">Hey, there's some pretty cool driving stuff you can do here.</p>
 
-          <v-btn color = "primary" v-bind:to="{ name: 'electToDrive' }">
+          <v-btn color = "cyan darken-1" class="white--text" v-bind:to="{ name: 'electToDrive' }">
             Sign Up to Drive!
           </v-btn>
 
@@ -56,10 +56,10 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="cancelDrive(dialog.rideId)">
+            <v-btn color="cyan darken-1" class="white--text" @click="cancelDrive(dialog.rideId)">
               Yes
             </v-btn>
-            <v-btn color="primary" @click="hideDialog()">
+            <v-btn color="cyan darken-1" class="white--text" @click="hideDialog()">
               No
             </v-btn>
           </v-card-actions>
@@ -68,7 +68,7 @@
 
       <v-snackbar v-model="snackbar.visible">
         {{ snackbar.text }}
-        <v-btn color="blue" text @click="snackbar.visible = false">
+        <v-btn color="cyan darken-1" class="white--text" text @click="snackbar.visible = false">
           Close
         </v-btn>
       </v-snackbar>

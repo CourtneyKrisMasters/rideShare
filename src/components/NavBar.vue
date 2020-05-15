@@ -1,17 +1,17 @@
 <template>
-  <v-app-bar app dark color="primary">
-    <router-link v-bind:to="{ name: 'home-page' }">
+  <v-app-bar app dark color="cyan darken-1">
+    <v-btn text color="cyan darken-1" v-bind:to="{ name: 'home-page' }">
       <v-toolbar-title class="white--text">
         Ride Share
       </v-toolbar-title>
-    </router-link>
+    </v-btn>
 
     <v-spacer></v-spacer>
 
     <v-btn text v-if="!isLoggedIn" v-bind:to="{ name: 'admin' }">
       Admin
     </v-btn>
-    <v-btn text v-if="!isLoggedIn" v-bind:to="{ name: 'driverLogin' }">
+    <v-btn text v-if="!isLoggedIn" class="mx-2" v-bind:to="{ name: 'driverLogin' }">
       Driver
     </v-btn>
     <v-btn text v-if="!isLoggedIn" v-bind:to="{ name: 'passengerLogin' }">

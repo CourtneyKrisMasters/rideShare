@@ -5,7 +5,7 @@
       <p class="body-1">Hey, there's some pretty cool stuff you can do here.</p>
       
 
-       <v-btn color = "primary" v-bind:to="{ name: 'rideSignUp' }">
+       <v-btn color = "cyan darken-1" class="white--text" v-bind:to="{ name: 'rideSignUp' }">
             Sign Up for a Ride!
       </v-btn>
       <br>
@@ -57,10 +57,10 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="cancelRide(dialog.rideId)">
+            <v-btn color="cyan darken-1" class="white--text" @click="cancelRide(dialog.rideId)">
               Yes
             </v-btn>
-            <v-btn color="primary" @click="hideDialog()">
+            <v-btn color="cyan darken-1" class="white--text" @click="hideDialog()">
               No
             </v-btn>
           </v-card-actions>
@@ -69,7 +69,7 @@
 
       <v-snackbar v-model="snackbar.visible">
         {{ snackbar.text }}
-        <v-btn color="blue" text @click="snackbar.visible = false">
+        <v-btn color="cyan darken-1" class="white--text" text @click="snackbar.visible = false">
           Close
         </v-btn>
       </v-snackbar>

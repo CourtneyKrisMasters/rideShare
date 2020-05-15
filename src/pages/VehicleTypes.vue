@@ -5,7 +5,7 @@
     <v-row justify="center">
       <v-col cols="12" sm="8" md="6">
         <v-card class="elevation-12">
-          <v-toolbar color="primary" dark flat>
+          <v-toolbar color="cyan darken-1" dark flat>
             <v-toolbar-title>Add a Vehicle Type</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
@@ -19,7 +19,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn v-on:click="handleSubmit" color="primary">Add Type</v-btn>
+            <v-btn v-on:click="handleSubmit" class="white--text" color="cyan darken-1">Add Type</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -40,7 +40,7 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="primary" text v-on:click="hideDialog">Okay</v-btn>
+              <v-btn color="cyan darken-1" class="white--text" text v-on:click="hideDialog">Okay</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>

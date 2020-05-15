@@ -50,10 +50,10 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="cancelRide(dialog.rideId)">
+            <v-btn color="cyan darken-1" class="white--text" @click="cancelRide(dialog.rideId)">
               Yes
             </v-btn>
-            <v-btn color="primary" @click="hideDialog()">
+            <v-btn color="cyan darken-1" class="white--text" @click="hideDialog()">
               No
             </v-btn>
           </v-card-actions>
@@ -63,7 +63,7 @@
 
       <v-snackbar v-model="snackbar.show">
         {{ snackbar.text }}
-        <v-btn color="blue" text @click="snackbar.show = false">
+        <v-btn color="cyan darken-1" text @click="snackbar.show = false">
           Close
         </v-btn>
       </v-snackbar>

@@ -3,7 +3,7 @@
     <v-row justify="center">
       <v-col cols="12" sm="8" md="6">
         <v-card class="elevation-12">
-          <v-toolbar color="primary" dark flat>
+          <v-toolbar color="cyan darken-1" class="white--text" dark flat>
             <v-toolbar-title>Passenger Log in</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
@@ -24,8 +24,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn v-bind:to="{ name: 'passengerSignUp' }" color="white">Don't have an account? Sign up!</v-btn>
-            <v-btn v-on:click="logIn" color="primary">Log In</v-btn>
+            <v-btn v-bind:to="{ name: 'passengerSignUp' }" color="blue-grey" class="white--text">Don't have an account? Sign up!</v-btn>
+            <v-btn v-on:click="logIn" color="cyan darken-1" class="white--text">Log In</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -33,7 +33,7 @@
 
     <v-snackbar v-model="snackbar.show">
       {{ snackbar.msge }}
-      <v-btn text color="primary" @click="snackbar.show = false">Close</v-btn>
+      <v-btn text color="cyan darken-1" class="white--text" @click="snackbar.show = false">Close</v-btn>
     </v-snackbar>
   </v-container>
 </template>
