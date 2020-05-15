@@ -4,7 +4,7 @@
       <h4 class="display-1">Welcome, Driver!</h4>
       <p class="body-1">Hey, there's some pretty cool driving stuff you can do here.</p>
 
-          <v-btn text v-bind:to="{ name: 'electToDrive' }">
+          <v-btn color = "primary" v-bind:to="{ name: 'electToDrive' }">
             Sign Up to Drive
           </v-btn>
 

@@ -180,22 +180,56 @@ async function init() {
           "Retrieve the certain ride's information that lines up with the driver's authorization",
       },
       handler: async (request, h) => {
-        const rideId = request.params.driverId;
+        const driverId = request.params.driverId;
         return Driver.query()
-          .findById(rideId)
+          .findById(driverId)
           .withGraphFetched("vehicles.rides.[fromlocation,tolocation]");
-
-        /*
-        const rideId = request.params.driverId; 
-        return Driver.query()
-          .withGraphFetched(['vehicles','rides']);
-
-          .select('*')
-          .from('rides')
-          .where('ride.vehicleId', 'driverId', 'authorization')
-          .withGraphFetched('vehicles') //help
-          */
       },
+    },
+
+    {
+      method: "POST",
+      path: "/drivers/{driver_id}/rides/{ride_id}",
+      config: {
+        description:
+          "Retrieve the certain ride's information that lines up with the driver's authorization",
+      },
+      handler: async (request, h) => {
+        try {
+          // Find the passenger.
+          const driver = await Driver.query().findById(
+            request.params.driver_id
+          );
+          //find if driver is already signed up
+          const existingRide = await driver
+            .$relatedQuery("rides")
+            .where("id", request.params.ride_id)
+            // .count();
+          if (existingRide.length != 0) {
+            return {
+              ok: false,
+              msge: existingRide,
+            };
+          }
+          const newSignUp = await driver
+            .$relatedQuery("rides")
+            .relate(request.params.ride_id);
+
+          if (newSignUp) {
+            return {
+              ok: true,
+              msge: "Signed up for this ride!",
+            };
+          }
+
+        } catch (e) {
+          return {
+            ok: true,
+            msge: e.message,
+          };
+        }
+
+      }
     },
 
     //get specific ride information, use for update ride
@@ -305,38 +339,6 @@ async function init() {
       },
     },
 
-    // {
-    //   method: "POST",
-    //   path: "/drivers",
-    //   config: {
-    //     description: "Authorize a driver for a ride",
-    //     validate: {
-    //       payload: Joi.object({
-    //         rideId: Joi.number().integer().min(1).required(),
-    //         driverId: Joi.number().integer().min(1).required(),
-    //       }),
-    //     },
-    //   },
-    //   handler: async (request, h) => {
-    //     //find the driver
-    //     const driver = await Driver.query().findById(request.payload.driverId);
-    //     //find the ride
-    //     const ride = await Ride.query().findById(request.payload.rideId);
-    //     //relate the two
-    //     const affected = await driver.$relatedQuery("rides").relate(ride);
-    //     if (affected === 1) {
-    //       return {
-    //         ok: true,
-    //         msge: "Driver successfully authorized for ride",
-    //       };
-    //     } else {
-    //       return {
-    //         ok: false,
-    //         msge: "Couldn't authorize driver for ride",
-    //       };
-    //     }
-    //   }
-    // },
 
     {
       method: "POST",
@@ -836,20 +838,6 @@ async function init() {
       },
     },
 
-    //could use this later to get the fuel prices for each individual?
-    // {
-    //   method: "GET",
-    //   path: "/rides/{id}/fuelPrices",
-    //   config: {
-    //     description: "Retrieve all current rides fuel prices for this passenger",
-    //   },
-    //   handler: async (request, h) => {
-    //     return Ride.query()
-    //       .withGraphFetched("passengers")
-    //       .withGraphFetched("drivers")
-    //   },
-    // },
-
     //passenger current rides
     {
       method: "GET",
@@ -964,6 +952,7 @@ async function init() {
         }
       },
     },
+    
 
     //delete a ride from a driver's current drives
     {
