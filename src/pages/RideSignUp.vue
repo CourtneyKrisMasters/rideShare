@@ -1,0 +1,212 @@
+<!-- allows a passeger to sign up for a ride -->
+<template>
+  <v-container>
+    <div>
+      <h4 class="display-1">Sign up for Rides!</h4>
+      <br>
+
+       <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search for a ride with a specific license number, location, or date"
+        single-line
+        hide-details
+      ></v-text-field>
+
+      <v-data-table
+        class="elevation-1"
+        v-bind:headers="headers"
+        v-bind:items="rideItems"
+        v-bind:search="search"
+        loading
+        loading-text="Loading... Please wait"
+      >
+        <template v-slot:item="{ item }">
+          <tr v-bind:class="itemClass(item)">
+            <td>{{ item.date }}</td>
+            <td>{{ item.time }}</td>
+            <td>{{ item.distance }}</td>
+            <td>{{ item.fuelprice }}</td>
+            <td>{{ item.fee }}</td>
+            <td>{{ item.vehicleid }}</td>
+            <td>{{ item.fromlocation }}</td>
+            <td>{{ item.tolocation }}</td>
+            <td>
+              <v-icon small @click="showDialog(item.id)">mdi-checkbox-marked-circle</v-icon>
+            </td>
+          </tr>
+        </template>
+      </v-data-table>
+
+      <v-dialog v-model="dialog.visible" max-width="400">
+        <v-card>
+          <v-card-title class="headline">Sign up for this Ride</v-card-title>
+          <v-card-text>
+            Are you sure you want to sign up for this ride? <!--ID={{ dialog.rideId }}-->
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" @click="rideSignUp(dialog.rideId), hideDialog()">
+              Yes
+            </v-btn>
+            <v-btn color="primary" @click="hideDialog()">
+              No
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+
+      <v-snackbar v-model="snackbar.show">
+        {{ snackbar.text }}
+        <v-btn color="blue" text @click="snackbar.show = false">
+          Close
+        </v-btn>
+      </v-snackbar>
+
+      <div class="text-xs-center">
+        <v-dialog v-model="dialogVisible" width="500">
+          <v-card>
+            <v-card-title primary-title>
+              {{ dialogHeader }}
+            </v-card-title>
+
+            <v-card-text>
+              {{ dialogText }}
+            </v-card-text>
+
+            <v-divider></v-divider>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" text v-on:click="hideSuccessDialog">Okay</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </div>
+
+    </div>
+  </v-container>
+</template>
+
+<script>
+export default {
+  name: "Drivers",
+  data: function () {
+    return {
+      search: '',
+      headers: [
+        { text: "Date", value: "date" },
+        { text: "Time", value: "time" },
+        { text: "Distance", value: "distance" },
+        { text: "Fuel Price", value: "fuelprice" },
+        { text: "Fee", value: "fee" },
+        { text: "Vehicle ID", value: "vehicleid" },
+        { text: "From Location", value: "fromlocation" },
+        { text: "To Location", value: "tolocation" },
+      ],
+      rideItems: [],
+
+      snackbar: {
+        show: false,
+        text: "",
+      },
+
+      dialog: {
+        visible: false,
+        rideId: NaN,
+      },
+        authorizationObject: {
+        rideId: "",
+        driverId: "",
+      },
+  
+    // Was an account created successfully?
+    rideAdded: false,
+
+    // Data to be displayed by the dialog.
+    dialogHeader: "<no dialogHeader>",
+    dialogText: "<no dialogText>",
+    dialogVisible: false,
+
+    };
+  },
+
+//gets all rides for the table
+ mounted: function() {
+    //prints out ride information
+    this.$axios.get("/rides").then((response) => {
+      this.rideItems = response.data.details.map((ride) => ({
+        id: ride.id,
+        date: new Date(ride.date).toDateString(),
+        time: ride.time,
+        distance: `${ride.distance} mi`,
+        fuelprice: `$ ${ride.fuelprice}`,
+        fee: `$ ${ride.fee}`,
+        vehicleid: ride.vehicle.licensenumber,
+        fromlocation: `${ride.fromlocation.city}, ${ride.fromlocation.state}`,
+        tolocation: `${ride.tolocation.city}, ${ride.tolocation.state}`,
+      }));
+    });
+  },
+
+methods: {
+    //show dialog when delete button is pusshed
+    showDialog: function (rideId) {
+      this.dialog.rideId = rideId;
+      this.dialog.visible = true;
+    },
+
+    hideDialog: function () {
+      this.dialog.visible = false;
+    },
+
+    // Display a snackbar message.
+    showSnackbar(text) {
+      this.snackbar.text = text;
+      this.snackbar.show = true;
+    },
+
+    // Calculate the CSS class for an item
+    itemClass(item) {
+      const currentAccount = this.$store.state.currentAccount;
+      if (currentAccount && currentAccount.id === item.id) {
+        return "currentAccount";
+      }
+    },
+
+    rideSignUp(rideId) {
+      this.$axios.post(`/passengers/${this.$store.state.currentAccount.id}/rides/${rideId}`)
+       .then((result) => {
+          // Based on whether things worked or not, show the
+          // appropriate dialog.
+          //this.showSuccessDialog("Success", "result.data.msge");
+          if (result.data.ok) {
+            this.showSuccessDialog("Success", result.data.msge);
+            this.rideAdded = true;
+          } else {
+            this.showSuccessDialog("Sorry", result.data.msge);
+          }
+        })
+        .catch((err) => this.showSuccessDialog("Failed", err));
+    },
+    // Helper method to display the dialog box with the appropriate content.
+    showSuccessDialog: function (header, text) {
+      this.dialogHeader = header;
+      console.log(text);
+      this.dialogText = text;
+      this.dialogVisible = true;
+    },
+
+    // Invoked by the "Okay" button on the dialog; dismiss the dialog
+    // and navigate to the home page.
+    hideSuccessDialog: function () {
+      this.dialogVisible = false;
+      // if (this.rideAdded) {
+      //   // Only navigate away from the sign-up page if we were successful.
+      //   this.$router.push({ name: "admin" });
+      //}
+    },
+  },
+};
+</script>
