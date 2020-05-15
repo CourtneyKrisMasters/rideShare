@@ -171,7 +171,7 @@
               :items="items"
               item-text="licensenumber"
               item-value="id"
-              label="Vehicle's License Plate Number"
+              label="Change Vehicle's License Plate Number"
               required
             ></v-select>
           </v-col>
@@ -494,12 +494,12 @@ export default {
             // of vehicleInfo were named identically.
             this.rideInfo = {
               id: details.id,
-              date: details.date,
+              date: new Date(details.date).toDateString(),
               time: details.time,
               distance: details.distance,
-              fuelPrice: details.fuelPrice,
+              fuelPrice: details.fuelprice,
               fee: details.fee,
-              vehicleId: details.vehicleId,
+              vehicleId: details.vehicle.licensenumber,
             };
 
             // Because the properties in the `details` object match the ones

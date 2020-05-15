@@ -59,6 +59,7 @@
         <v-row>
           <v-col class="d-flex">
             <v-select
+              v-model="vehicleInfo.vehicleTypeId"
               :items="items"
               item-text="type"
               item-value="id"
@@ -67,14 +68,6 @@
           </v-col>
         </v-row>
         <!--...-->
-        <v-text-field
-          v-model="vehicleInfo.vehicleTypeId"
-          v-bind:rules="rules.vehicleTypeId"
-          error-count="10"
-          type="vehicleTypeId"
-          label="Vehicle Type ID"
-          required
-        ></v-text-field>
         <v-text-field
           v-model="vehicleInfo.capacity"
           v-bind:rules="rules.capacity"
@@ -257,7 +250,7 @@ export default {
               make: details.make,
               model: details.model,
               color: details.color,
-              vehicleTypeId: details.vehicletypeid,
+              //vehicleTypeId: details.vehicletypeid,
               capacity: details.capacity,
               mpg: details.mpg,
               licenseState: details.licensestate,

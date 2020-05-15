@@ -50,7 +50,10 @@ async function init() {
 
   // Configure routes.
   server.route([
-    //get all vehicle types
+
+    //GET routes
+
+    //all vehicle types
     {
       method: "GET",
       path: "/vehicleTypes",
@@ -188,6 +191,66 @@ async function init() {
       },
     },
 
+      //get specific ride information, use for update ride
+      {
+        method: "GET",
+        path: "/rides/{vehicleId}/{date}/{time}", //make sure date doesn't have slashes in it
+        config: {
+          description: "Retrieve the certain ride's information",
+        },
+        handler: async (request, h) => {
+          return Ride.query()
+            .where("vehicleid", request.params.vehicleId)
+            .andWhere("date", request.params.date)
+            .andWhere("time", request.params.time)
+            .first();
+        },
+      },
+
+      //passenger current rides
+    {
+      method: "GET",
+      path: "/passengers/{id}/rides",
+      config: {
+        description: "Retrieve all current rides for this passenger",
+      },
+      handler: async (request, h) => {
+        try {
+          return Passenger.query()
+            .where("id", request.params.id)
+            .withGraphFetched(
+              "rides.[fromlocation, tolocation, vehicle.vehicletypes]"
+            )
+            .first();
+        } catch (e) {
+          return request;
+        }
+      },
+    },
+
+    //Driver current rides
+    {
+      method: "GET",
+      path: "/drivers/{id}/drives",
+      config: {
+        description: "Retrieve all current drives for this driver",
+      },
+      handler: async (request, h) => {
+        try {
+          return Driver.query()
+            .where("id", request.params.id)
+            .withGraphFetched(
+              "rides.[fromlocation, tolocation, vehicle.vehicletypes]"
+            )
+            .first();
+        } catch (e) {
+          return request;
+        }
+      },
+    },
+
+    //POST routes
+
      {
       method: "POST",
       path: "/drivers/{driver_id}/rides/{ride_id}",
@@ -276,24 +339,45 @@ async function init() {
 
       }
     },
-
-
-    //get specific ride information, use for update ride
+    //login a passenger
     {
-      method: "GET",
-      path: "/rides/{vehicleId}/{date}/{time}", //make sure date doesn't have slashes in it
+      method: "POST",
+      path: "/passenger",
       config: {
-        description: "Retrieve the certain ride's information",
+        description: "Log in",
+        validate: {
+          payload: Joi.object({
+            firstName: Joi.string().required(),
+            lastName: Joi.string().required(),
+          }),
+        },
       },
       handler: async (request, h) => {
-        return Ride.query()
-          .where("vehicleid", request.params.vehicleId)
-          .andWhere("date", request.params.date)
-          .andWhere("time", request.params.time)
+        const account = await Passenger.query()
+          .where("firstname", request.payload.firstName)
+          .andWhere("lastname", request.payload.lastName)
           .first();
+        if (account) {
+          return {
+            ok: true,
+            msge: `Logged in successfully as '${request.payload.firstName}' '${request.payload.lastName}'`,
+            details: {
+              id: account.id,
+              firstName: account.firstname,
+              lastName: account.lastname,
+              phone: account.phone,
+            },
+          };
+        } else {
+          return {
+            ok: false,
+            msge: "Invalid name",
+          };
+        }
       },
     },
-
+  
+    //passenger sign up for RideShare
     {
       method: "POST",
       path: "/passengers",
@@ -338,6 +422,7 @@ async function init() {
       },
     },
 
+    //Driver sign up for RideShare
     {
       method: "POST",
       path: "/drivers",
@@ -367,56 +452,63 @@ async function init() {
           firstname: request.payload.firstName,
           lastname: request.payload.lastName,
           phone: request.payload.phone,
-          licenseNumber: request.payload.licenseNumber,
+          licensenumber: request.payload.licenseNumber,
         });
 
         if (newAccount) {
           return {
             ok: true,
-            msge: `Created Driver '${request.payload.phone}'`,
+            msge: `Created Driver '${request.payload.firstName} ${request.payload.lastName}'`,
           };
         } else {
           return {
             ok: false,
-            msge: `Couldn't create driver with phone '${request.payload.phone}'`,
+            msge: `Couldn't create driver with phone '${request.payload.firstName} ${request.payload.lastName}'`,
           };
         }
       },
     },
+    //Driver log in
+    {
+      method: "POST",
+      path: "/driver",
+      config: {
+        description: "Driver Log in",
+        validate: {
+          payload: Joi.object({
+            firstName: Joi.string().required(),
+            lastName: Joi.string().required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        const account = await Driver.query()
+          .where("firstname", request.payload.firstName)
+          .andWhere("lastname", request.payload.lastName)
+          .first();
+        if (account) {
+          return {
+            ok: true,
+            msge: `Logged in successfully as '${request.payload.firstName}' '${request.payload.lastName}'`,
+            details: {
+              id: account.id,
+              firstName: account.firstname,
+              lastName: account.lastname,
+              phone: account.phone,
+              licenseNumber: account.licensenumber,
+            },
+          };
+        } else {
+          return {
+            ok: false,
+            msge: "Invalid name",
+          };
+        }
+      },
+    },
+    
 
-    // {
-    //   method: "POST",
-    //   path: "/drivers",
-    //   config: {
-    //     description: "Authorize a driver for a ride",
-    //     validate: {
-    //       payload: Joi.object({
-    //         rideId: Joi.number().integer().min(1).required(),
-    //         driverId: Joi.number().integer().min(1).required(),
-    //       }),
-    //     },
-    //   },
-    //   handler: async (request, h) => {
-    //     //find the driver
-    //     const driver = await Driver.query().findById(request.payload.driverId);
-    //     //find the ride
-    //     const ride = await Ride.query().findById(request.payload.rideId);
-    //     //relate the two
-    //     const affected = await driver.$relatedQuery("rides").relate(ride);
-    //     if (affected === 1) {
-    //       return {
-    //         ok: true,
-    //         msge: "Driver successfully authorized for ride",
-    //       };
-    //     } else {
-    //       return {
-    //         ok: false,
-    //         msge: "Couldn't authorize driver for ride",
-    //       };
-    //     }
-    //   }
-    // },
-
+    //authorize a driver for a vehicle
     {
       method: "POST",
       path: "/authorization",
@@ -474,6 +566,119 @@ async function init() {
           return {
             ok: false,
             msge: "Couldn't authorize driver for vehicle",
+          };
+        }
+      },
+    },
+
+    {
+      //method to add new locations to the database working
+      method: "POST",
+      path: "/locations",
+      config: {
+        description: "Add new Locations",
+        validate: {
+          payload: Joi.object({
+            name: Joi.string().required(),
+            address: Joi.string().required(),
+            city: Joi.string().required(),
+            state: Joi.string().required(),
+            zipcode: Joi.string().required(),
+          }),
+        },
+      },
+      handler: async (request, h) => {
+        try {
+          const newLocation = await Location.query().insert({
+            name: request.payload.name,
+            address: request.payload.address,
+            city: request.payload.city,
+            state: request.payload.state,
+            zipcode: request.payload.zipcode,
+          });
+          //show results
+          if (newLocation) {
+            return {
+              ok: true,
+              msge: `Created new location '${request.payload.name}'`,
+              newLocation,
+            };
+          } else {
+            return {
+              ok: false,
+              msge: `Couldn't create location '${request.payload.name}'`,
+            };
+          }
+        } catch (e) {
+          return msge;
+        }
+      },
+    },
+
+
+    {
+      //method to add a new Ride to the database
+      method: "POST",
+      path: "/rides",
+      config: {
+        description: "Add a new Ride",
+        // validate: {
+        //   payload: Joi.object({
+        //     date:Joi.required(),
+        //     time: Joi.required(),
+        //     distance: Joi.string().required(),
+        //     fuelPrice: Joi.number().required(),
+        //     fee: Joi.number().required(),
+        //     vehicleId: Joi.number().required(),
+        //     fromLocation: Joi.number().required(),
+        //     toLocation: Joi.number().required(),
+        //   }),
+        //},
+      },
+      handler: async (request, h) => {
+        try {
+          //check if there is already a ride like this in the database
+          //--TODO might need to check this more thoroughly later--//
+          const existingRide = await Ride.query()
+            .where("vehicleid", request.payload.vehicleId)
+            .andWhere("date", request.payload.date)
+            .andWhere("time", request.payload.time)
+            .first();
+          if (existingRide) {
+            return {
+              ok: false,
+              msge: `Ride with '${request.payload.vehicleId}' license number leaving on '${request.payload.date}' at '${request.payload.time}' already exists`,
+            };
+          }
+          //if there is not a vehicle with that license number doing a ride at that time in the database, add new ride
+          const newRide = await Ride.query().insert({
+            date: request.payload.date,
+            time: request.payload.time,
+            distance: request.payload.distance,
+            fuelprice: request.payload.fuelPrice,
+            fee: request.payload.fee,
+            vehicleid: request.payload.vehicleId,
+            fromlocationid: request.payload.fromLocation,
+            tolocationid: request.payload.toLocation,
+          });
+          //show results
+          if (newRide) {
+            return {
+              ok: true,
+              msge: `Created ride!`,
+            };
+          } else {
+            return {
+              ok: false,
+              msge: `Couldn't create ride`,
+            };
+          }
+        } catch (e) {
+          return {
+            ok: false,
+            msge:
+              `Couldn't create ride with license number '${request.payload.vehicleId}'` +
+              e.message,
           };
         }
       },
@@ -595,6 +800,8 @@ async function init() {
       },
     },
 
+
+    //PATCH routes
     //method to update a certain vehicle
     {
       method: "PATCH",
@@ -741,73 +948,7 @@ async function init() {
       },
     },
 
-    {
-      //method to add a new Ride to the database
-      method: "POST",
-      path: "/rides",
-      config: {
-        description: "Add a new Ride",
-        // validate: {
-        //   payload: Joi.object({
-        //     date:Joi.required(),
-        //     time: Joi.required(),
-        //     distance: Joi.string().required(),
-        //     fuelPrice: Joi.number().required(),
-        //     fee: Joi.number().required(),
-        //     vehicleId: Joi.number().required(),
-        //     fromLocation: Joi.number().required(),
-        //     toLocation: Joi.number().required(),
-        //   }),
-        //},
-      },
-      handler: async (request, h) => {
-        try {
-          //check if there is already a ride like this in the database
-          //--TODO might need to check this more thoroughly later--//
-          const existingRide = await Ride.query()
-            .where("vehicleid", request.payload.vehicleId)
-            .andWhere("date", request.payload.date)
-            .andWhere("time", request.payload.time)
-            .first();
-          if (existingRide) {
-            return {
-              ok: false,
-              msge: `Ride with '${request.payload.vehicleId}' license number leaving on '${request.payload.date}' at '${request.payload.time}' already exists`,
-            };
-          }
-          //if there is not a vehicle with that license number doing a ride at that time in the database, add new ride
-          const newRide = await Ride.query().insert({
-            date: request.payload.date,
-            time: request.payload.time,
-            distance: request.payload.distance,
-            fuelprice: request.payload.fuelPrice,
-            fee: request.payload.fee,
-            vehicleid: request.payload.vehicleId,
-            fromlocationid: request.payload.fromLocation,
-            tolocationid: request.payload.toLocation,
-          });
-          //show results
-          if (newRide) {
-            return {
-              ok: true,
-              msge: `Created ride!`,
-            };
-          } else {
-            return {
-              ok: false,
-              msge: `Couldn't create ride`,
-            };
-          }
-        } catch (e) {
-          return {
-            ok: false,
-            msge:
-              `Couldn't create ride with license number '${request.payload.vehicleId}'` +
-              e.message,
-          };
-        }
-      },
-    },
+    //DELETE routes
 
     //Admin delete a ride from the database
     {
@@ -858,80 +999,7 @@ async function init() {
         }
       },
     },
-
-    //-------------------These are the passenger routes--------------//
-    //Passenger log in
-    {
-      method: "POST",
-      path: "/passenger",
-      config: {
-        description: "Log in",
-        validate: {
-          payload: Joi.object({
-            firstName: Joi.string().required(),
-            lastName: Joi.string().required(),
-          }),
-        },
-      },
-      handler: async (request, h) => {
-        const account = await Passenger.query()
-          .where("firstname", request.payload.firstName)
-          .andWhere("lastname", request.payload.lastName)
-          .first();
-        if (account) {
-          return {
-            ok: true,
-            msge: `Logged in successfully as '${request.payload.firstName}' '${request.payload.lastName}'`,
-            details: {
-              id: account.id,
-              firstName: account.firstname,
-              lastName: account.lastname,
-              phone: account.phone,
-            },
-          };
-        } else {
-          return {
-            ok: false,
-            msge: "Invalid name",
-          };
-        }
-      },
-    },
-
-    //could use this later to get the fuel prices for each individual?
-    // {
-    //   method: "GET",
-    //   path: "/rides/{id}/fuelPrices",
-    //   config: {
-    //     description: "Retrieve all current rides fuel prices for this passenger",
-    //   },
-    //   handler: async (request, h) => {
-    //     return Ride.query()
-    //       .withGraphFetched("passengers")
-    //       .withGraphFetched("drivers")
-    //   },
-    // },
-
-    //passenger current rides
-    {
-      method: "GET",
-      path: "/passengers/{id}/rides",
-      config: {
-        description: "Retrieve all current rides for this passenger",
-      },
-      handler: async (request, h) => {
-        try {
-          return Passenger.query()
-            .where("id", request.params.id)
-            .withGraphFetched(
-              "rides.[fromlocation, tolocation, vehicle.vehicletypes]"
-            )
-            .first();
-        } catch (e) {
-          return request;
-        }
-      },
-    },
+      
 
     //remove a ride from a passenger's current rides
     {
@@ -962,67 +1030,6 @@ async function init() {
             ok: true,
             msge: e.message,
           };
-        }
-      },
-    },
-
-    //-------------------These are the driver routes--------------//
-
-    //Driver log in
-    {
-      method: "POST",
-      path: "/driver",
-      config: {
-        description: "Driver Log in",
-        validate: {
-          payload: Joi.object({
-            firstName: Joi.string().required(),
-            lastName: Joi.string().required(),
-          }),
-        },
-      },
-      handler: async (request, h) => {
-        const account = await Driver.query()
-          .where("firstname", request.payload.firstName)
-          .andWhere("lastname", request.payload.lastName)
-          .first();
-        if (account) {
-          return {
-            ok: true,
-            msge: `Logged in successfully as '${request.payload.firstName}' '${request.payload.lastName}'`,
-            details: {
-              id: account.id,
-              firstName: account.firstname,
-              lastName: account.lastname,
-              phone: account.phone,
-              licenseNumber: account.licensenumber,
-            },
-          };
-        } else {
-          return {
-            ok: false,
-            msge: "Invalid name",
-          };
-        }
-      },
-    },
-    //Driver current rides
-    {
-      method: "GET",
-      path: "/drivers/{id}/drives",
-      config: {
-        description: "Retrieve all current drives for this driver",
-      },
-      handler: async (request, h) => {
-        try {
-          return Driver.query()
-            .where("id", request.params.id)
-            .withGraphFetched(
-              "rides.[fromlocation, tolocation, vehicle.vehicletypes]"
-            )
-            .first();
-        } catch (e) {
-          return request;
         }
       },
     },
