@@ -80,12 +80,12 @@
         ></v-text-field>
         <!--instead of having the user type an ID in this field, can we make it a 
                     dropdown with all of the possible vehicles that we have in the Vehicle table-->
-        <v-row>
+        <v-row >
           <v-col class="d-flex">
             <v-select
               v-model="rideInfo.vehicleId"
               :items="items"
-              item-text="vehicleId"
+              item-text="licensenumber"
               item-value="id"
               label="Vehicle's License Plate Number"
               required
@@ -297,12 +297,12 @@ export default {
     this.debouncedValidation = debounce(this.checkAllValidation, 2000);
 
     // Get all vehicle types for the dropdown.
-    this.$axios.get("/vehicles").then((response) => {
-      this.items = response.data.map((item) => ({
-        id: item.id,
-        vehicleId: item.vehicleId,
-      }));
-    }),
+    this.$axios.get("/vehicles").then(response => {
+        this.items = response.data.map(item => ({
+          id: item.id,
+          licensenumber: item.licensenumber,
+        }));
+      }),
       this.$axios.get("/states").then((response) => {
         this.abbreviations = response.data.map((item) => ({
           abbreviation: item.abbreviation,
@@ -456,7 +456,8 @@ export default {
 
       // Patch from location to the Hapi server.
       this.$axios
-        .patch("/locations", {
+        .patch("/locations", { //line 634 db.js
+          id: this.departureInfo.id,
           name: this.departureInfo.name,
           address: this.departureInfo.address,
           city: this.departureInfo.city,
@@ -468,9 +469,11 @@ export default {
             this.fromLocationId = response.data.newLocation.id;
             console.log(this.fromLocationId);
           }
+          console.log("Arrival", this.arrivalInfo);
           //patch to location
           this.$axios
-            .patch("/locations", {
+            .patch('/locations',{
+              id: this.arrivalInfo.id,
               name: this.arrivalInfo.name,
               address: this.arrivalInfo.address,
               city: this.arrivalInfo.city,

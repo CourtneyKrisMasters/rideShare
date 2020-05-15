@@ -143,22 +143,20 @@ async function init() {
         // tables. This make it possible to add `where` clauses later.
         // Note that we are NOT executing the query yet.
         const query = Ride.query()
-          .withGraphJoined(
-            "[fromlocation, tolocation, vehicle, passengers, drivers]"
-          )
+          .withGraphJoined("[fromlocation, tolocation, vehicle, passengers, drivers]")
           .debug();
 
         // If there are query parameters in the request, update the Objection query appropriately.
         // This is a little verbose, but it allows the client to filter rides by any or all
         // of these fields.
         if (request.query.licenseNumber) {
-          query.where("vehicle.licensenumber", request.query.licenseNumber);
+          query.where("vehicle.licensenumber", request.query.licenseNumber)
         }
         if (request.query.date) {
-          query.where("date", request.query.date);
+          query.where("date", request.query.date)
         }
         if (request.query.time) {
-          query.where("time", request.query.time);
+          query.where("time", request.query.time)
         }
 
         // Finally, actually await the query, causing it to run.
@@ -176,21 +174,6 @@ async function init() {
     {
       method: "GET",
       path: "/drivers/{driverId}",
-      config: {
-        description:
-          "Retrieve the certain ride's information that lines up with the driver's authorization",
-      },
-      handler: async (request, h) => {
-        const driverId = request.params.driverId;
-        return Driver.query()
-          .findById(driverId)
-          .withGraphFetched("vehicles.rides.[fromlocation,tolocation]");
-      },
-    },
-
-    {
-      method: "POST",
-      path: "/drivers/{driver_id}/rides/{ride_id}",
       config: {
         description:
           "Retrieve the certain ride's information that lines up with the driver's authorization",
@@ -328,7 +311,6 @@ async function init() {
           return {
             ok: true,
             msge: `Created passenger '${request.payload.phone}'`,
-            details: newAccount
           };
         } else {
           return {
@@ -338,6 +320,7 @@ async function init() {
         }
       },
     },
+
     {
       method: "POST",
       path: "/drivers",
@@ -367,14 +350,13 @@ async function init() {
           firstname: request.payload.firstName,
           lastname: request.payload.lastName,
           phone: request.payload.phone,
-          licensenumber: request.payload.licenseNumber,
+          licenseNumber: request.payload.licenseNumber,
         });
 
         if (newAccount) {
           return {
             ok: true,
             msge: `Created Driver '${request.payload.phone}'`,
-            details: newAccount
           };
         } else {
           return {
@@ -385,6 +367,38 @@ async function init() {
       },
     },
 
+    // {
+    //   method: "POST",
+    //   path: "/drivers",
+    //   config: {
+    //     description: "Authorize a driver for a ride",
+    //     validate: {
+    //       payload: Joi.object({
+    //         rideId: Joi.number().integer().min(1).required(),
+    //         driverId: Joi.number().integer().min(1).required(),
+    //       }),
+    //     },
+    //   },
+    //   handler: async (request, h) => {
+    //     //find the driver
+    //     const driver = await Driver.query().findById(request.payload.driverId);
+    //     //find the ride
+    //     const ride = await Ride.query().findById(request.payload.rideId);
+    //     //relate the two
+    //     const affected = await driver.$relatedQuery("rides").relate(ride);
+    //     if (affected === 1) {
+    //       return {
+    //         ok: true,
+    //         msge: "Driver successfully authorized for ride",
+    //       };
+    //     } else {
+    //       return {
+    //         ok: false,
+    //         msge: "Couldn't authorize driver for ride",
+    //       };
+    //     }
+    //   }
+    // },
 
     {
       method: "POST",
@@ -684,6 +698,49 @@ async function init() {
     },
 
     {
+      method: "PATCH",
+      path: "/locations",
+      config: {
+        description: "Update a Location",
+      },
+      handler: async (request, h) => {
+        const existingLocation = await Location.query()
+          .where("id", request.payload.id)
+          .first();
+        if (existingLocation) {
+          console.log("The location had been found");
+          const updateLocation = await Location.query()
+            .update({
+              //id: request.payload.id,
+              name: request.payload.name,
+              address: request.payload.address,
+              city: request.payload.city,
+              state: request.payload.state,
+              zipcode: request.payload.zipcode,
+            })
+            .where("id", request.payload.id);
+          //show results
+          if (updateLocation) {
+            return {
+              ok: true,
+              msge: `Location updated successfully for location id '${request.payload.id}'`,
+            };
+          } else {
+            return {
+              ok: false,
+              msge: "Location not updated",
+            };
+          }
+        } else {
+          return {
+            ok: false,
+            msge: "Location not found",
+          };
+        }
+      },
+    },
+
+    {
       //method to add new locations to the database working
       method: "POST",
       path: "/locations",
@@ -884,6 +941,20 @@ async function init() {
       },
     },
 
+    //could use this later to get the fuel prices for each individual?
+    // {
+    //   method: "GET",
+    //   path: "/rides/{id}/fuelPrices",
+    //   config: {
+    //     description: "Retrieve all current rides fuel prices for this passenger",
+    //   },
+    //   handler: async (request, h) => {
+    //     return Ride.query()
+    //       .withGraphFetched("passengers")
+    //       .withGraphFetched("drivers")
+    //   },
+    // },
+
     //passenger current rides
     {
       method: "GET",
@@ -896,7 +967,7 @@ async function init() {
           return Passenger.query()
             .where("id", request.params.id)
             .withGraphFetched(
-              "rides.[fromlocation, tolocation, vehicle.vehicletypes]"
+              "rides.[fromlocation, tolocation, vehicles.vehicletypes]"
             )
             .first();
         } catch (e) {
@@ -990,7 +1061,7 @@ async function init() {
           return Driver.query()
             .where("id", request.params.id)
             .withGraphFetched(
-              "rides.[fromlocation, tolocation, vehicle.vehicletypes]"
+              "rides.[fromlocation, tolocation, vehicles.vehicletypes]"
             )
             .first();
         } catch (e) {
@@ -998,7 +1069,6 @@ async function init() {
         }
       },
     },
-    
 
     //delete a ride from a driver's current drives
     {
