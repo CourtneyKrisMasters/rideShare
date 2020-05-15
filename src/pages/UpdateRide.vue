@@ -80,7 +80,7 @@
         ></v-text-field>
         <!--instead of having the user type an ID in this field, can we make it a 
                     dropdown with all of the possible vehicles that we have in the Vehicle table-->
-        <v-row >
+        <v-row>
           <v-col class="d-flex">
             <v-select
               v-model="rideInfo.vehicleId"
@@ -221,6 +221,7 @@ export default {
 
       // Object to collect account data
       rideInfo: {
+        id: 0,
         date: "",
         time: "",
         distance: "",
@@ -230,6 +231,7 @@ export default {
       },
 
       departureInfo: {
+        id: 0,
         name: "",
         address: "",
         city: "",
@@ -238,6 +240,7 @@ export default {
       },
 
       arrivalInfo: {
+        id: 0,
         name: "",
         address: "",
         city: "",
@@ -255,9 +258,6 @@ export default {
 
       items: [],
       abbreviations: [],
-
-      fromLocationId: "",
-      toLocationId: "",
 
       // Was the account reset successfully?
       rideAdd: false,
@@ -297,8 +297,8 @@ export default {
     this.debouncedValidation = debounce(this.checkAllValidation, 2000);
 
     // Get all vehicle types for the dropdown.
-    this.$axios.get("/vehicles").then(response => {
-        this.items = response.data.map(item => ({
+    this.$axios.get("/vehicles").then((response) => {
+        this.items = response.data.map((item) => ({
           id: item.id,
           licensenumber: item.licensenumber,
         }));
@@ -402,6 +402,7 @@ export default {
             // This could be simplified if the database columns and the properties
             // of vehicleInfo were named identically.
             this.rideInfo = {
+              id: details.id,
               date: details.date,
               time: details.time,
               distance: details.distance,
@@ -456,7 +457,8 @@ export default {
 
       // Patch from location to the Hapi server.
       this.$axios
-        .patch("/locations", { //line 634 db.js
+        .patch("/locations", { 
+          //line 634 db.js
           id: this.departureInfo.id,
           name: this.departureInfo.name,
           address: this.departureInfo.address,
@@ -465,14 +467,15 @@ export default {
           zipcode: this.departureInfo.zipcode,
         })
         .then((response) => {
-          if (response.data.ok) {
-            this.fromLocationId = response.data.newLocation.id;
-            console.log(this.fromLocationId);
+          if (!response.data.ok) {
+            console.log("DEPARTURE PATCH FAILED", response.data);
+            this.showDialog("Failure", response.data.msge);
+            return;
           }
-          console.log("Arrival", this.arrivalInfo);
+
           //patch to location
           this.$axios
-            .patch('/locations',{
+            .patch("/locations",{
               id: this.arrivalInfo.id,
               name: this.arrivalInfo.name,
               address: this.arrivalInfo.address,
@@ -481,22 +484,22 @@ export default {
               zipcode: this.arrivalInfo.zipcode,
             })
             .then((response) => {
-              // Based on whether things worked or not, show the
-              // appropriate dialog.
-              if (response.data.ok) {
-                this.toLocationId = response.data.newLocation.id;
-                console.log(this.toLocationId);
+              if (!response.data.ok) {
+                console.log("ARRIVAL PATCH FAILED", response.data);
+                this.showDialog("Failure", response.data.msge);
+                return;
               }
               this.$axios
                 .patch("/rides", {
+                  id: this.rideInfo.id,
                   date: this.rideInfo.date,
                   time: this.rideInfo.time,
                   distance: this.rideInfo.distance,
                   fuelPrice: this.rideInfo.fuelPrice,
                   fee: this.rideInfo.fee,
                   vehicleId: this.rideInfo.vehicleId,
-                  fromLocation: this.fromLocationId,
-                  toLocation: this.toLocationId,
+                  fromLocation: this.departureInfo.id,
+                  toLocation: this.arrivalInfo.id,
                 })
                 .then((response) => {
                   // Based on whether things worked or not, show the
@@ -510,7 +513,7 @@ export default {
                 });
             });
         })
-        .catch((err) => this.showDialog("Failed", err));
+        .catch((err) => this.showDialog("Error Caught", err));
     },
 
     // Helper method to display the dialog box with the appropriate content.

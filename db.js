@@ -681,7 +681,7 @@ async function init() {
           if (updateRide) {
             return {
               ok: true,
-              msge: `Ride updated successfully for car license '${request.payload.licenseNumber}'`,
+              msge: `Ride updated successfully!'`,
             };
           } else {
             return {
@@ -737,50 +737,6 @@ async function init() {
             ok: false,
             msge: "Location not found",
           };
-        }
-      },
-    },
-
-    {
-      //method to add new locations to the database working
-      method: "POST",
-      path: "/locations",
-      config: {
-        description: "Add new Locations",
-        validate: {
-          payload: Joi.object({
-            name: Joi.string().required(),
-            address: Joi.string().required(),
-            city: Joi.string().required(),
-            state: Joi.string().required(),
-            zipcode: Joi.string().required(),
-          }),
-        },
-      },
-      handler: async (request, h) => {
-        try {
-          const newLocation = await Location.query().insert({
-            name: request.payload.name,
-            address: request.payload.address,
-            city: request.payload.city,
-            state: request.payload.state,
-            zipcode: request.payload.zipcode,
-          });
-          //show results
-          if (newLocation) {
-            return {
-              ok: true,
-              msge: `Created new location '${request.payload.name}'`,
-              newLocation,
-            };
-          } else {
-            return {
-              ok: false,
-              msge: `Couldn't create location '${request.payload.name}'`,
-            };
-          }
-        } catch (e) {
-          return msge;
         }
       },
     },
