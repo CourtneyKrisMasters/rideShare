@@ -6,35 +6,53 @@
         <h4 class="display-1">New Ride Information</h4> <!-- make, model, color, vehicleTypeId(int), capacity(int), mpg(float), license state, liscence number -->
         <br>
           <v-form v-model="valid">
-            <v-row justify="left">
-              <v-date-picker
-                v-model="datepicker"
-                :landscape="landscape"
-                :show-current="showCurrent"
-              ></v-date-picker>
-            
-            </v-row>
-             <v-row justify="left">
-              <v-time-picker
-                v-model="timepicker"
-                class="mt-2"
-                :landscape="landscape"
-              ></v-time-picker>
-               </v-row>
-           
-                <!-- <v-text-field
-                v-model="rideInfo.date" 
-                type="date"
-                label="Date"
-                required
-                ></v-text-field>
+            <v-menu
+              v-model="menu1"
+              :close-on-content-click="false"
+              transition="scale-transition"
+              offset-y
+              min-width="290px"
+            >
+              <template v-slot:activator="{ on }">
                 <v-text-field
-                v-model="time"
-                type="time"
-                label="Time"
-                hint="Example input: 05:30 PM"
-                required
-                ></v-text-field> -->
+                  v-model="datepicker"
+                  label="Picker without buttons"
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker 
+                v-model="datepicker" 
+                @input="menu1 = false" 
+                color ="cyan darken-1"
+              ></v-date-picker>
+            </v-menu>
+           
+            <!-- menu for time picker -->
+               <v-menu
+                  ref="menu"
+                  v-model="menu2"
+                  :close-on-content-click="false"
+                  :return-value.sync="timepicker"
+                  transition="scale-transition"
+                  offset-y
+                  max-width="290px"
+                  min-width="290px"
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-text-field
+                      v-model="timepicker"
+                      label="Time"
+                      v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-time-picker
+                    v-if="menu2"
+                    v-model="timepicker"
+                    full-width
+                    @click:minute="$refs.menu.save(timepicker)"
+                    color ="cyan darken-1"
+                  ></v-time-picker>
+                </v-menu>
                 <v-text-field
                 v-model="rideInfo.distance"
                 v-bind:rules="rules.floats"
@@ -242,7 +260,10 @@ export default {
       datepicker: new Date().toISOString().substr(0, 10),
       landscape: true,
       showCurrent: true,
+      menu1: false,
+
       timepicker: null,
+      menu2: false,
       
 
       // Validation rules for the form fields. This functionality is an extension
