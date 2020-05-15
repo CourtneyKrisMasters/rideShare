@@ -681,7 +681,7 @@ async function init() {
           if (updateRide) {
             return {
               ok: true,
-              msge: `Ride updated successfully!'`,
+              msge: `Ride updated successfully!`,
             };
           } else {
             return {
