@@ -171,6 +171,7 @@ async function init() {
       },
     },
 
+    
     //get specific ride information, use for ElectToDrive
     {
       method: "GET",
@@ -208,7 +209,7 @@ async function init() {
           if (existingRide.length != 0) {
             return {
               ok: false,
-              msge: existingRide,
+              msge: "Already signed up for this ride!",
             };
           }
           const newSignUp = await driver
@@ -231,6 +232,51 @@ async function init() {
 
       }
     },
+
+    {
+      method: "POST",
+      path: "/passengers/{passenger_id}/rides/{ride_id}",
+      config: {
+        description:
+          "Retrieve the certain ride's information that lines up with the driver's authorization",
+      },
+      handler: async (request, h) => {
+        try {
+          // Find the passenger.
+          const passenger = await Passenger.query().findById(
+            request.params.passenger_id
+          );
+          //find if passenger is already signed up
+          const existingRide = await passenger
+            .$relatedQuery("rides")
+            .where("id", request.params.ride_id)
+          if (existingRide.length != 0) {
+            return {
+              ok: false,
+              msge: "Already signed up for this ride!",
+            };
+          }
+          const newSignUp = await passenger
+            .$relatedQuery("rides")
+            .relate(request.params.ride_id);
+
+          if (newSignUp) {
+            return {
+              ok: true,
+              msge: "Signed up for this ride!",
+            };
+          }
+
+        } catch (e) {
+          return {
+            ok: true,
+            msge: e.message,
+          };
+        }
+
+      }
+    },
+
 
     //get specific ride information, use for update ride
     {

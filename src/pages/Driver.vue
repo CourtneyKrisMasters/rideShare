@@ -5,7 +5,7 @@
       <p class="body-1">Hey, there's some pretty cool driving stuff you can do here.</p>
 
           <v-btn color = "primary" v-bind:to="{ name: 'electToDrive' }">
-            Sign Up to Drive
+            Sign Up to Drive!
           </v-btn>
 
  <v-spacer></v-spacer>

@@ -2,8 +2,8 @@
 <template>
   <v-container>
     <div>
-      <h4 class="display-1">Current Rides</h4>
-
+      <h4 class="display-1">Sign up for Rides!</h4>
+      <br>
        <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
@@ -17,7 +17,7 @@
         v-bind:headers="headers"
         v-bind:items="rideItems"
         v-bind:search="search"
-        loading:
+        loading 
         loading-text="Loading... Please wait"
       >
 
@@ -135,7 +135,7 @@ export default {
     };
   },
 
-//gets all rides for the dropdown
+//gets all rides for the table
 mounted: function() {
     this.$axios.get(`/drivers/${this.$store.state.currentAccount.id}`).then(response => {
       console.log(response.data);

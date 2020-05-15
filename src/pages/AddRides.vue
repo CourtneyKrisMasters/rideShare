@@ -4,20 +4,37 @@
       <h4 class="display-1">Make a New Ride!</h4>
         <p class="body-1">All fields are required.</p>
         <h4 class="display-1">New Ride Information</h4> <!-- make, model, color, vehicleTypeId(int), capacity(int), mpg(float), license state, liscence number -->
+        <br>
           <v-form v-model="valid">
-                <v-text-field
+            <v-row justify="left">
+              <v-date-picker
+                v-model="datepicker"
+                :landscape="landscape"
+                :show-current="showCurrent"
+              ></v-date-picker>
+            
+            </v-row>
+             <v-row justify="left">
+              <v-time-picker
+                v-model="timepicker"
+                class="mt-2"
+                :landscape="landscape"
+              ></v-time-picker>
+               </v-row>
+           
+                <!-- <v-text-field
                 v-model="rideInfo.date" 
                 type="date"
                 label="Date"
                 required
                 ></v-text-field>
                 <v-text-field
-                v-model="rideInfo.time"
+                v-model="time"
                 type="time"
                 label="Time"
                 hint="Example input: 05:30 PM"
                 required
-                ></v-text-field>
+                ></v-text-field> -->
                 <v-text-field
                 v-model="rideInfo.distance"
                 v-bind:rules="rules.floats"
@@ -222,6 +239,12 @@ export default {
       dialogText: "<no dialogText>",
       dialogVisible: false,
 
+      datepicker: new Date().toISOString().substr(0, 10),
+      landscape: true,
+      showCurrent: true,
+      timepicker: null,
+      
+
       // Validation rules for the form fields. This functionality is an extension
       // that's part of the Vuetify package. Each rule is a list of functions
       // (note the fat arrows). Vuetify invokes all functions in the list,
@@ -308,8 +331,8 @@ export default {
                 }
                   this.$axios
                     .post("/rides", {
-                      date: this.rideInfo.date,
-                      time: this.rideInfo.time,
+                      date: this.datepicker,
+                      time: this.timepicker,
                       distance: this.rideInfo.distance,
                       fuelPrice: this.rideInfo.fuelPrice,
                       fee: this.rideInfo.fee,

@@ -3,7 +3,13 @@
     <div>
       <h4 class="display-1">Welcome!</h4>
       <p class="body-1">Hey, there's some pretty cool stuff you can do here.</p>
+      
 
+       <v-btn color = "primary" v-bind:to="{ name: 'rideSignUp' }">
+            Sign Up for a Ride!
+      </v-btn>
+      <br>
+      <br>
       <v-spacer></v-spacer>
       <h4 class="display-1">Current Rides</h4>
 
