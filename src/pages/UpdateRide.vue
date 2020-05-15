@@ -15,20 +15,52 @@
           required
         ></v-text-field>
 
-        <v-text-field
-          v-model="confirmedDate"
-          type="date"
-          label="Date"
-          required
-        ></v-text-field>
+        <v-menu
+          v-model="menu1"
+          :close-on-content-click="false"
+          transition="scale-transition"
+          offset-y
+          min-width="290px"
+        >
+          <template v-slot:activator="{ on }">
+            <v-text-field
+              v-model="confirmedDate"
+              label="Date"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker 
+            v-model="confirmedDate" 
+            @input="menu1 = false" 
+            color ="cyan darken-1"
+          ></v-date-picker>
+        </v-menu>
 
-        <v-text-field
-          v-model="confirmedTime"
-          type="time"
-          label="Time"
-          hint="Example input: 05:30 PM"
-          required
-        ></v-text-field>
+        <v-menu
+          ref="menu"
+          v-model="menu2"
+          :close-on-content-click="false"
+          :return-value.sync="confirmedTime"
+          transition="scale-transition"
+          offset-y
+          max-width="290px"
+          min-width="290px"
+        >
+          <template v-slot:activator="{ on }">
+            <v-text-field
+              v-model="confirmedTime"
+              label="Time"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-time-picker
+            v-if="menu2"
+            v-model="confirmedTime"
+            full-width
+            @click:minute="$refs.menu.save(confirmedTime)"
+            color ="cyan darken-1"
+          ></v-time-picker>
+        </v-menu>
 
         <v-alert v-if="showPrompt" type="info">
           Please fill out the vehicle's license number, registered date, and
@@ -43,12 +75,63 @@
           Great! Update the ride's information.
         </v-alert>
         <h4 class="display-1">Trip Information</h4>
+
+        <v-menu
+          v-model="menu3"
+          :close-on-content-click="false"
+          transition="scale-transition"
+          offset-y
+          min-width="290px"
+        >
+          <template v-slot:activator="{ on }">
+            <v-text-field
+              v-model="rideInfo.date"
+              label="Date"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker 
+            v-model="rideInfo.date" 
+            @input="menu3 = false" 
+            color ="cyan darken-1"
+          ></v-date-picker>
+        </v-menu>
+
+        <v-menu
+          ref="menu_4"
+          v-model="menu4"
+          :close-on-content-click="false"
+          :return-value.sync="rideInfo.time"
+          transition="scale-transition"
+          offset-y
+          max-width="290px"
+          min-width="290px"
+        >
+          <template v-slot:activator="{ on }">
+            <v-text-field
+              v-model="rideInfo.time"
+              label="Time"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-time-picker
+            v-if="menu4"
+            v-model="rideInfo.time"
+            full-width
+            @click:minute="$refs.menu_4.save(rideInfo.time)"
+            color ="cyan darken-1"
+          ></v-time-picker>
+        </v-menu>
+
+
+        <!--
         <v-text-field
           v-model="rideInfo.date"
           type="date"
           label="Date"
           required
         ></v-text-field>
+        
         <v-text-field
           v-model="rideInfo.time"
           type="time"
@@ -56,6 +139,7 @@
           hint="Example input: 05:30 PM"
           required
         ></v-text-field>
+        -->
         <v-text-field
           v-model="rideInfo.distance"
           v-bind:rules="rules.floats"
@@ -250,8 +334,8 @@ export default {
 
       // Break this out from `vehicleInfo`.
       confirmedLicenseNumber: "",
-      confirmedDate: "",
-      confirmedTime: "",
+      confirmedDate: new Date().toISOString().substr(0, 10),
+      confirmedTime: null,
       queryResponseReceived: false,
       rideInfoValid: false,
       debouncedValidation: null,
@@ -266,6 +350,13 @@ export default {
       dialogHeader: "<no dialogHeader>",
       dialogText: "<no dialogText>",
       dialogVisible: false,
+
+      landscape: true,
+      showCurrent: true,
+      menu1: false,
+      menu2: false,
+      menu3: false,
+      menu4: false,
 
       // Validation rules for the form fields. This functionality is an extension
       // that's part of the Vuetify package. Each rule is a list of functions
@@ -294,7 +385,7 @@ export default {
   //gets all vehicle types and states for the dropdowns on load
   mounted: function () {
     // Create the debounce function for the query-by-license field.
-    this.debouncedValidation = debounce(this.checkAllValidation, 2000);
+    this.debouncedValidation = debounce(this.checkAllValidation, 3000);
 
     // Get all vehicle types for the dropdown.
     this.$axios.get("/vehicles").then((response) => {
