@@ -658,28 +658,14 @@ async function init() {
       path: "/rides",
       config: {
         description: "Update a Ride",
-        // validate: {
-        //   payload: Joi.object({
-        //     date:Joi.required(),
-        //     time: Joi.required(),
-        //     distance: Joi.string().required(),
-        //     fuelPrice: Joi.number().required(),
-        //     fee: Joi.number().required(),
-        //     vehicleId: Joi.number().required(),
-        //     fromLocation: Joi.number().required(),
-        //     toLocation: Joi.number().required(),
-        //   }),
-        //},
       },
       handler: async (request, h) => {
         const existingRide = await Ride.query()
-          .where("vehicleid", request.payload.vehicleId)
-          .andWhere("date", request.payload.date)
-          .andWhere("time", request.payload.time)
+          .where("id", request.payload.id)
           .first();
         if (existingRide) {
           console.log("The ride had been found");
-          const updateRide = await Vehicle.query()
+          const updateRide = await Ride.query()
             .update({
               date: request.payload.date,
               time: request.payload.time,
@@ -687,12 +673,10 @@ async function init() {
               fuelprice: request.payload.fuelPrice,
               fee: request.payload.fee,
               vehicleid: request.payload.vehicleId,
-              fromlocationid: request.payload.fromLocation,
-              tolocationid: request.payload.toLocation,
+              fromlocationid: request.payload.fromLocationid,
+              tolocationid: request.payload.toLocationid,
             })
-            .where("licensenumber", request.payload.licenseNumber)
-            .andWhere("date", request.payload.date)
-            .andWhere("time", request.payload.time);
+            .where("id", request.payload.id)
           //show results
           if (updateRide) {
             return {
